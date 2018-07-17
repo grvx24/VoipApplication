@@ -1,0 +1,44 @@
+﻿<Window x:Class="VoIP_Server.ServerMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VoIP_Server"
+        mc:Ignorable="d"
+        Title="Server" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow" ResizeMode="CanResizeWithGrip">
+    <Border Background="DarkGreen">
+        <Viewbox>
+            <Grid Width="732" Height="524">
+                <StackPanel Background="LightGreen" Orientation="Horizontal" VerticalAlignment="Top" MaxHeight="100" MinHeight="100">
+                    <Button BorderBrush="Red" Background="Red" Name="RunServerButton" MinWidth="130" MinHeight="60" BorderThickness="5" Margin="10" Click="RunServerButton_Click">
+                        Offline
+                    </Button>
+                    <Button Name="SettingsButton"  HorizontalAlignment="Right" BorderBrush="#FF673AB7" Background="DarkGreen" MinWidth="130" MinHeight="60" BorderThickness="5" Margin="10" Click="SettingsButton_Click" >
+                        Ustawienia
+                    </Button>
+                    <Button Background="DarkGreen" Name="ServerLogButton" MinWidth="130" MinHeight="60"  BorderThickness="5" Margin="10" Click="ServerLogButton_Click">
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">Log serwera</TextBlock>
+                    </Button>
+                </StackPanel>
+                <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,92,0,0">
+                    <Button Background="DarkGreen" Name="OnlineUsersButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="OnlineUsersButton_Click">
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Zalogowani użytkownicy"/>
+                    </Button>
+                    <Button Background="DarkGreen" Name="UsersButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="UsersButton_Click">
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Wszyscy użytkownicy"/>
+                    </Button>
+                    <Button Background="DarkGreen" Name="FriendsListButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsListButton_Click">
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">Baza znajomych</TextBlock>
+                    </Button>
+
+                </StackPanel>
+                <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,-0.4,0.4">
+                    <UserControl Name="CustomUserControl"></UserControl>
+                </Grid>
+
+            </Grid>
+        </Viewbox>
+    </Border>
+    
+    
+</Window>

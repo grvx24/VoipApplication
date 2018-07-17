@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using VoipApplication;
+
+namespace VoIP_Server
+{
+    /// <summary>
+    /// Interaction logic for DB_AddUserWindow.xaml
+    /// </summary>
+    public partial class DB_AddUserWindow : Window
+    {
+        DatabaseManager manager = new DatabaseManager();
+        public UsersDBControl UserControl { get; set; }
+
+        public DB_AddUserWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void AddUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var user = new Users() { Email = EmailTextBox.Text, Password = PasswordTextBox.Password,
+                    RegistrationDate = DateTime.Now,LastLoginDate=null };
+                manager.AddUser(user);
+
+                EmailTextBox.Clear();
+                PasswordTextBox.Clear();
+
+                if(UserControl != null)
+                {
+                    UserControl.RefreshDataGrid();
+                }
+
+                MessageBox.Show("Pomyślnie dodano użytkownika");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+    }
+}

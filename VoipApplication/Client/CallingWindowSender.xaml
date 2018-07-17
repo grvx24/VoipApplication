@@ -1,0 +1,14 @@
+﻿<Window x:Class="VoIP_Client.CallingWindowSender"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VoIP_Server.Client"
+        mc:Ignorable="d"
+        Title="Okno rozmowy" Height="150" Width="700">
+    <StackPanel Orientation="Horizontal">
+        <TextBlock TextWrapping="Wrap" x:Name="NickLabel" FontSize="20" Margin="20,22,20,33" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Email@example.com" Height="64" Width="256"/>
+        <Button IsHitTestVisible="False" x:Name="AnswerButton" Background="Green" Margin="20,0" MinHeight="75" MinWidth="150"  Content="Dzwonienie"/>
+        <Button x:Name="RejectButton" Background="Red" Margin="20,0" MinHeight="75" MinWidth="150"  Content="Odrzuć" Click="RejectButton_Click"/>
+    </StackPanel>
+</Window>

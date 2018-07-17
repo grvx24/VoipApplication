@@ -1,0 +1,29 @@
+﻿<Window x:Class="VoIP_Server.DB_EditUser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VoIP_Server"
+        mc:Ignorable="d"
+        Title="DB_EditUser" Height="300" Width="300">
+    <StackPanel Background="Orange">
+        <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
+            Email
+        </TextBlock>
+        <TextBox Name="EmailTextBox" Background="White" Margin="20,10" FontSize="25">
+        </TextBox>
+        <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
+            Hasło
+        </TextBlock>
+        <TextBox Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
+        </TextBox>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button Name="EditUserButton" MinWidth="100" Margin="25,15" Click="EditUserButton_Click">
+                Edytuj
+            </Button>
+            <Button Name="CancelButton" MinWidth="100" Margin="25,0" Click="CancelButton_Click">
+                Anuluj
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</Window>

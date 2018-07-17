@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="VoIP_Server.Server.SettingsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VoIP_Server.Server"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+    <StackPanel Background="LightGreen">
+        <Label FontWeight="Bold" HorizontalAlignment="Center" Margin="50,20" FontSize="26" Content="Adres IP">
+            
+        </Label>
+        <ComboBox  FontSize="26" Margin="50,0" Background="White" Name="IpAdressesComboBox">
+            
+        </ComboBox>
+        <Label FontWeight="Bold"  HorizontalAlignment="Center" Margin="50,20" FontSize="26" Content="Port">
+
+        </Label>
+        <TextBox MaxWidth="200" TextAlignment="Center" Text="1024" Margin="50,0" Background="White" FontSize="26" Name="ServerPortTextBox">
+            
+        </TextBox>
+        <Label FontWeight="Bold"  HorizontalAlignment="Center" Margin="50,20" FontSize="26" Content="Aktualny adres IP i port">
+
+        </Label>
+        <Label FontWeight="Bold"  HorizontalAlignment="Center" Margin="50,0" FontSize="26" Content="" Name="CurrentIPLabel">
+
+        </Label>
+
+
+    </StackPanel>
+</UserControl>

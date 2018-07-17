@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="VoIP_Client.FriendsList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VoIP_Client"
+             mc:Ignorable="d" 
+             d:DesignHeight="460" d:DesignWidth="650">
+    <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="100" MinWidth="600" Background="DarkOliveGreen"  Margin="0,0,0.4,0" Width="654">
+            <Button Background="LightGreen" Margin="10,25,471,25" MinHeight="50" Width="120">
+                <TextBlock Foreground="Black" TextWrapping="Wrap"><Run Text="Wyszukaj "/><Run Text="kontakty"/></TextBlock>
+            </Button>
+            <Button Background="LightGreen" Name="OnlineUsersButton" Margin="161,25,320,25" MinHeight="50" Width="120" Click="OnlineUsersButton_Click">
+                <TextBlock Foreground="Black" Text="Online" TextWrapping="Wrap"></TextBlock>
+            </Button>
+            <Button Background="LightGreen" Name="AllFriendsButton" Margin="316,25,165,25" MinHeight="50" Width="120" Click="AllFriendsButton_Click">
+                <TextBlock Foreground="Black" Text="Ulubione" TextWrapping="Wrap"></TextBlock>
+            </Button>
+            <Label FontSize="26" Content="..." HorizontalAlignment="Center" VerticalAlignment="Center" Name="InfoLabel" Margin="480,25,10,25">
+                
+            </Label>
+
+        </Grid>
+        <DataGrid IsReadOnly="True" CanUserAddRows="False" ItemsSource="{Binding}" Name="FriendsListDataGrid" AutoGenerateColumns="False"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="650" Margin="0,100,0,0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Path=Email, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Email" Width="150">
+
+                </DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Path=FriendName, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Nick" Width="100">
+
+                </DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Path=Status, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Status" Width="100">
+
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Opcje" Width="*" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    
+                </DataGridTemplateColumn>
+                
+                
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,22 @@
+﻿<Window x:Class="VoIP_Server.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VoIP_Server"
+        mc:Ignorable="d"
+        Title="BrokułoFon - okno startowe" Height="450" Width="450">
+    <Border Background="LightGreen">
+        <Viewbox>
+            <StackPanel Orientation="Vertical">
+                <Button Background="DarkGreen"  Name="StartServer" Margin="0,10" MinWidth="100" Content="Serwer" Click="StartServer_Click">
+                    
+                </Button>
+                <Button Background="DarkGreen" Name="StartClient" Margin="0,10" MinWidth="100" Content="Klient" Click="StartClient_Click">
+                    
+                </Button>
+                
+            </StackPanel>
+        </Viewbox>
+    </Border>
+</Window>
