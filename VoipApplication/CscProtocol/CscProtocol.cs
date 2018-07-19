@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoIP_Server
+namespace cscprotocol
 {
 
 
@@ -158,6 +158,22 @@ namespace VoIP_Server
             }
         }
 
+        public byte[] CreateSaltMessage(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 1;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
+
+
         #endregion
 
         #region Client methods
@@ -225,8 +241,20 @@ namespace VoIP_Server
 
             return result;
         }
+        public byte[] CreateChangeEmailMessage(CscUserData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
 
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 6;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
 
         #endregion
     }

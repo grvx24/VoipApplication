@@ -91,6 +91,12 @@ namespace VoIP_Client
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
+        public void SendChangeEmailRequest(CscUserData userData)
+        {
+            var msg = protocol.CreateChangeEmailMessage(userData);
+            client.GetStream().Write(msg, 0, msg.Length);
+        }
+
         public void Connect(IPAddress ip,int port)
         {
             IPAddress = ip;

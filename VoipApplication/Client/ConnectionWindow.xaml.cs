@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 
 namespace VoIP_Client
@@ -40,6 +41,17 @@ namespace VoIP_Client
 
                 if (client.IsConnected)
                 {
+
+                    byte[] cmdAndLength = new byte[3];
+                    var l1 = client.client.GetStream().Read(cmdAndLength, 0, cmdAndLength.Length);
+                    var msgLen = BitConverter.ToUInt16(cmdAndLength.Skip(1).ToArray(), 0);
+
+                    byte[] buffer = new byte[msgLen];
+                    var l2 = client.client.GetStream().Read(buffer, 0, buffer.Length);
+
+                    var salt = Encoding.Unicode.GetString(buffer);
+                    client.salt = salt;
+
                     LoginWindow window = new LoginWindow(client);
                     window.Show();
                     this.Close();

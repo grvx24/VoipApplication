@@ -15,11 +15,11 @@
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="ReturnButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="ReturnButton_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Powrót"/>
             </Button>
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC"/>
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="EmailButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="EmailButton_Click" >
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Zmień email"/>
             </Button>
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="FriendsListButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC2"/>
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="PasswordButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="PasswordButton_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Zmień hasło"/>
             </Button>
             <Button Background="Red" BorderBrush="Green" x:Name="ServerLogButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC3"/>
@@ -27,6 +27,15 @@
             <Image Source="/VoIP_Server;component/broccoli.png" />
 
         </StackPanel>
+        <TextBlock HorizontalAlignment="Left" Height="17" Margin="155,213,0,0" TextWrapping="Wrap" Text="Email" VerticalAlignment="Top" Width="38" />
+        <TextBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" Name="EmailTextBox" Margin="193,200,0,0" TextWrapping="Wrap" Text="email@example.com" VerticalAlignment="Top" Width="292" />
+        <TextBlock HorizontalAlignment="Left" Height="17" Margin="501,213,0,0" TextWrapping="Wrap" Text="Hasło" VerticalAlignment="Top" Width="38" />
+        <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="ChangeEmailPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="238" Margin="544,200,0,0"/>
+
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="155,280,0,0" TextWrapping="Wrap" Text="Stare hasło" VerticalAlignment="Top" Width="38" />
+        <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" Name="OldPasswordBox" Margin="193,280,0,0" VerticalAlignment="Top" Width="292" />
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="501,280,0,0" TextWrapping="Wrap" Text="Nowe hasło" VerticalAlignment="Top" Width="38" />
+        <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="NewPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="238" Margin="544,280,0,0"/>
 
     </Grid>
     <Window.Resources>

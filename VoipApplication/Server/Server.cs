@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Timers;
 using VoipApplication;
+using cscprotocol;
 
 namespace VoIP_Server
 {
@@ -76,7 +77,7 @@ namespace VoIP_Server
             listener.Start();
             ServerConsoleWriteEvent.Invoke("Serwer wystartował - Ip: " + iPAddress.ToString() + " port: " + port);
 
-            while(running)
+            while (running)
             {
 
                 try
@@ -84,7 +85,7 @@ namespace VoIP_Server
                     Random random = new Random();
                     TcpClient client = await listener.AcceptTcpClientAsync();
                     var ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-                    var connectedClient = new ConnectedUsers() { Email = "Niezalogowany użytkownik"+Guid.NewGuid().GetHashCode(), Id = -1, Ip = ip.ToString(),Status=0,Client=client };
+                    var connectedClient = new ConnectedUsers() { Email = "Niezalogowany użytkownik" + Guid.NewGuid().GetHashCode(), Id = -1, Ip = ip.ToString(), Status = 0, Client = client };
                     OnlineUsers.Add(connectedClient);
 
                     ServerConsoleWriteEvent.Invoke(client.Client.RemoteEndPoint.ToString());
@@ -94,39 +95,41 @@ namespace VoIP_Server
                         item.NewOnlineUsers.Push(connectedClient);
                     }
 
-                    ThreadPool.QueueUserWorkItem(Process,connectedClient);
+                    ThreadPool.QueueUserWorkItem(Process, connectedClient);
 
                     //await Process(connectedClient);
-                    
+
                 }
                 catch (Exception e)
                 {
                     ServerConsoleWriteEvent.Invoke(e.Message);
                 }
             }
-            
+
         }
 
 
-        private void SendFriendsList(TcpClient client,string email)
+        private void SendFriendsList(TcpClient client, string email)
         {
             var user = serverDB.Users.FirstOrDefault(x => x.Email == email);
-            if(user == null)
+            if (user == null)
             {
                 throw new NullReferenceException("UserId is null!");
             }
 
-            var friendsQueryResult = from f in serverDB.FriendsList join u in serverDB.Users on f.FriendId equals u.UserId where f.UserId == user.UserId
+            var friendsQueryResult = from f in serverDB.FriendsList
+                                     join u in serverDB.Users on f.FriendId equals u.UserId
+                                     where f.UserId == user.UserId
                                      select new { f.UserId, f.FriendName, u.Email, };
-            
-            
+
+
             foreach (var friend in friendsQueryResult)
             {
                 CscUserMainData friendsUserData = new CscUserMainData() { FriendName = friend.FriendName, Email = friend.Email, Id = friend.UserId, Status = 0, Ip = "none" };
                 var message = cscProtocol.CreateFriendUserDataMessage(friendsUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
-            
+
         }
 
         private void SendOnlineUsersList(TcpClient client)
@@ -135,7 +138,7 @@ namespace VoIP_Server
 
             foreach (var user in online)
             {
-                CscUserMainData userData = new CscUserMainData() { Email = user.Email,Id=user.Id,Status = 1, Ip = user.Ip, FriendName=""};
+                CscUserMainData userData = new CscUserMainData() { Email = user.Email, Id = user.Id, Status = 1, Ip = user.Ip, FriendName = "" };
                 var message = cscProtocol.CreateOnlineUserDataMessage(userData);
                 client.GetStream().Write(message, 0, message.Length);
             }
@@ -165,48 +168,57 @@ namespace VoIP_Server
 
         }
 
-        private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber,byte[] receivedMessage)
+        private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
         {
             switch (cmdNumber)
             {
                 //Logowanie
                 case 0:
-                    var userData=CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
-                    //tu bedzie trza jeszcze odszyfrowac itd, póki co jest jawnie
-                    ServerConsoleWriteEvent.Invoke("Próba zalogowania: "+userData.Email+" : " +userData.Password);
-
-                    var onlineUser = OnlineUsers.Where(e => e.Email == userData.Email).FirstOrDefault();
-
-                    if(onlineUser!=null)
                     {
-                        var error = cscProtocol.CreateErrorMessage("Podany użytkownik jest już zalogowany!");
-                        connectedUser.Client.GetStream().Write(error, 0, error.Length);
-                        return;
+                        var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
+                        //tu bedzie trza jeszcze odszyfrowac itd, póki co jest jawnie
+                        ServerConsoleWriteEvent.Invoke("Próba zalogowania: " + userData.Email + " : " + userData.Password);
+
+                        var onlineUser = OnlineUsers.Where(e => e.Email == userData.Email).FirstOrDefault();
+
+                        if (onlineUser != null)
+                        {
+                            var error = cscProtocol.CreateErrorMessage("Podany użytkownik jest już zalogowany!");
+                            connectedUser.Client.GetStream().Write(error, 0, error.Length);
+                            return;
+                        }
+
+                        var queryResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
+                        var passwordFromDB = queryResult.Password;
+
+                        var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
+
+                        if (!(hashWithSalt == userData.Password))
+                        {
+                            queryResult = null;
+                        }
+
+                        if (queryResult != null)
+                        {
+
+                            ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
+                            user.Email = queryResult.Email;
+                            user.Id = queryResult.UserId;
+
+                            var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+
+                            ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
+
+                        }
+                        else
+                        {
+                            ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password);
+                            var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                        }
+                        break;
                     }
-
-
-                    var queryResult=serverDB.Users.FirstOrDefault(u => u.Email == userData.Email && u.Password == userData.Password);
-
-                    if(queryResult!=null)
-                    {
-
-                        ConnectedUsers user=OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
-                        user.Email = queryResult.Email;
-                        user.Id = queryResult.UserId;
-
-                        var buffer=cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
-                        connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
-
-                        ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
-
-                    }
-                    else
-                    {
-                        ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password);
-                        var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania");
-                        connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
-                    }
-                    break;
 
                 case 1:
 
@@ -226,22 +238,21 @@ namespace VoIP_Server
                 case 2:
                     var userToRegister = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
 
-                    var userWithThisMail=serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
+                    var userWithThisMail = serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
 
-                    if(userWithThisMail!=null)
+                    if (userWithThisMail != null)
                     {
                         var response = cscProtocol.CreateErrorMessage("Podany adres e-mail już istnieje.");
-                        connectedUser.Client.GetStream().Write(response,0,response.Length); 
-                    }else
-                    {
-                        CreateAccount(userToRegister.Email, userToRegister.Password);
-                        var response=cscProtocol.CreateConfirmMessage("Rejestracja udana.");
                         connectedUser.Client.GetStream().Write(response, 0, response.Length);
                     }
-
-
-
+                    else
+                    {
+                        CreateAccount(userToRegister.Email, userToRegister.Password);
+                        var response = cscProtocol.CreateConfirmMessage("Rejestracja udana.");
+                        connectedUser.Client.GetStream().Write(response, 0, response.Length);
+                    }
                     break;
+
                 case 3://odświeżanie listy online
                     if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
                     {
@@ -268,6 +279,47 @@ namespace VoIP_Server
                 case 4:
                     break;
 
+                case 6://zmiana adresu email dla polaczonego usera
+                    {
+                        var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
+                        ServerConsoleWriteEvent.Invoke("Próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+
+                        var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
+                        var passwordFromDB = queryResult.Password;
+                        var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
+                        bool goodPasswordAndEmailUnused = true;
+                        if (!(hashWithSalt == userData.Password))
+                        {
+                            goodPasswordAndEmailUnused = false;
+                        }
+
+                        //sprawdzamy czy taki email jest nieuzywany
+
+                        var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
+                        if (!(queryEmailResult == null))
+                        {
+                            goodPasswordAndEmailUnused = false;
+                        }
+
+                        if (goodPasswordAndEmailUnused == true)
+                        {
+                            queryResult.Email = userData.Email;
+                            serverDB.SaveChanges();
+
+                            var buffer = cscProtocol.CreateConfirmMessage("Adres e-mail został zmieniony.");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+
+                            ServerConsoleWriteEvent.Invoke("Udana zmiana adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+                        }
+                        else
+                        {
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+                            var buffer = cscProtocol.CreateErrorMessage("Taki adres e-mail już istnieje w bazie!");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                        }
+                        break;
+                    }
+
 
 
                 default:
@@ -275,7 +327,21 @@ namespace VoIP_Server
             }
         }
 
+        private string SendSalt(ConnectedUsers user)
+        {
+            var salt = CscSHA512Generator.Get_salt();
 
+
+
+            var stream = user.Client.GetStream();
+
+            var msg = cscProtocol.CreateSaltMessage(salt);
+
+            stream.Write(msg, 0, msg.Length);
+
+            return salt;
+
+        }
 
 
         private async void Process(object obj)
@@ -291,9 +357,13 @@ namespace VoIP_Server
                 //    AutoFlush = true
                 //};
 
+                //wysyłanie soli
+                user.Salt = SendSalt(user);
+
+
                 while (running)
                 {
-                    
+
 
                     byte[] request = new byte[3];
                     var l1 = await networkStream.ReadAsync(request, 0, request.Length);
@@ -305,8 +375,7 @@ namespace VoIP_Server
 
                     if (buffer != null)
                     {
-                        ExecuteCSCCommand(user,request[0], buffer);
-
+                        ExecuteCSCCommand(user, request[0], buffer);
                     }
                 }
                 RemoveOfflineUserEvent(user);
@@ -317,7 +386,7 @@ namespace VoIP_Server
             }
             catch (Exception e)
             {
-                ServerConsoleWriteEvent.Invoke("Użytkownik: "+user.Email +" Komunikat: " + e.Message);
+                ServerConsoleWriteEvent.Invoke("Użytkownik: " + user.Email + " Komunikat: " + e.Message);
 
                 RemoveOfflineUserEvent(user);
                 //UsersToRemove.Push(user);
@@ -326,7 +395,7 @@ namespace VoIP_Server
                 {
                     user.Client.Dispose();
                 }
-                
+
 
             }
         }
@@ -356,11 +425,11 @@ namespace VoIP_Server
 
             serverDB.Users.Add(user);
             serverDB.SaveChanges();
-            
+
         }
 
 
-        
+
 
         //public ObservableCollection<ConnectedUsers> GetOnlineClients()
         //{

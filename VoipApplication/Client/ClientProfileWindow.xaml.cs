@@ -35,6 +35,7 @@ namespace VoIP_Client
             this.callingService = callingService;
             this.client = client;
             UserEmailLabel.Text = client.UserProfile.Email;//n
+            EmailTextBox.Text = client.UserProfile.Email;//n
         }
 
         private void UpdateProfileEmail(CscUserMainData profile)
@@ -73,9 +74,9 @@ namespace VoIP_Client
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-               //ConnectionWindow window = new ConnectionWindow();
-               //window.Show();
-               Close();
+                //ConnectionWindow window = new ConnectionWindow();
+                //window.Show();
+                Close();
 
             }));
 
@@ -90,6 +91,42 @@ namespace VoIP_Client
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void EmailButton_Click(object sender, RoutedEventArgs e)
+        {
+            CscUserData userData = new CscUserData()
+            {
+                Email = EmailTextBox.Text,
+                Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(ChangeEmailPasswordBox.Password) + client.salt)
+            };
+            client.SendChangeEmailRequest(userData);
+
+            var response = client.ReceiveBytes();
+            if (response[0] == 12)
+            {
+                var msg = CscProtocol.ParseConfirmMessage(response);
+                MessageBox.Show(msg);
+                client.UserProfile.Email = EmailTextBox.Text;
+                UserEmailLabel.Text = client.UserProfile.Email;//n
+                EmailTextBox.Text = client.UserProfile.Email;//n
+            }
+            if (response[0] == 13)
+            {
+                var msg = CscProtocol.ParseConfirmMessage(response);
+                MessageBox.Show(msg);
+                return;
+            }
+            else
+            {
+                //MessageBox.Show(Encoding.Unicode.GetString(response));
+            }
+        }
+
+        private void PasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            //sprawdz czy stare haslo jest poprawne
+            //jesli tak wyslij komunikat o zmiane hasla ze starego na nowe
         }
     }
 }
