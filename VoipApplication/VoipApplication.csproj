@@ -88,6 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\ClientProfileWindow.xaml.cs">
+      <DependentUpon>ClientProfileWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CscProtocol\CscSHA512Generator.cs" />
     <Compile Include="FriendsList.cs">
       <DependentUpon>UsersModel.tt</DependentUpon>
     </Compile>
@@ -145,6 +149,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Client\CallingWindowSender.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Client\ClientProfileWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -15,6 +15,7 @@ namespace VoIP_Server
         public int Status { get; set; }
         public string Ip { get; set; }
         public TcpClient Client { get; set; }
+        public string Salt { get; set; }
 
         public ConcurrentStack<ConnectedUsers> NewOnlineUsers = new ConcurrentStack<ConnectedUsers>();
         public ConcurrentStack<ConnectedUsers> UsersToRemove = new ConcurrentStack<ConnectedUsers>();

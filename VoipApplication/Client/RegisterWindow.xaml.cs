@@ -33,9 +33,10 @@ namespace VoIP_Client
 
 
         private void Register()
-        {            
+        {
+
             CscUserData userData = new CscUserData() { Email = RegisterEmailTextBox.Text,
-                Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterEmailTextBox.Text) };
+                Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterPasswordTextBox.Password) };
             var bytesToSend = protocol.CreateRegistrationMessage(userData);
             client.SendBytes(bytesToSend);
 

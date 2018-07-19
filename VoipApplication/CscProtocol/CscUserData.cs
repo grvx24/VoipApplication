@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoIP_Server
+namespace cscprotocol
 {
     [Serializable]
     public class CscUserData
