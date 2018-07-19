@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VoIP_Server;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -71,6 +72,7 @@ namespace VoIP_Client
             client.StartListening();
 
             client.GetBasicInfo();
+            UserEmailLabel.Text = client.UserProfile.Email;//n
 
         }
 
@@ -174,6 +176,10 @@ namespace VoIP_Client
 
         }
 
-
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientProfileWindow clientProfileWindow = new ClientProfileWindow(callingService, client);
+            clientProfileWindow.Show();
+        }
     }
 }

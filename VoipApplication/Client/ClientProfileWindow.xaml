@@ -1,4 +1,4 @@
-﻿<Window x:Class="VoIP_Client.ClientMainWindow"
+﻿<Window x:Class="VoIP_Client.ClientProfileWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,24 +12,21 @@
             <Image Margin="0,0,494,-144" Source="/VoIP_Server;component/MainLogo.png"/>
         </Grid>
         <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,100,0,0.4">
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="ProfileButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="ProfileButton_Click">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Profil"/>
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="ReturnButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="ReturnButton_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Powrót"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Znajomi"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="FriendsListButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Instrukcja"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC2"/>
             </Button>
             <Button Background="Red" BorderBrush="Green" x:Name="ServerLogButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Wyloguj się"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC3"/>
             </Button>
             <Image Source="/VoIP_Server;component/broccoli.png" />
 
         </StackPanel>
-        <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,-0.4,0.4">
-            <UserControl Name="CustomUserControl" Margin="0,0,-10,0"/>
-        </Grid>
 
     </Grid>
     <Window.Resources>

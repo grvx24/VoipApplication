@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.IO;
 using VoIP_Server;
 using System.Collections.ObjectModel;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -23,6 +24,8 @@ namespace VoIP_Client
         bool isConnected=false;
         bool isListening = false;
         public bool initialized = false;
+        public string salt { get; set; }
+
 
         public IPAddress LocalIP { get; set; }
 
@@ -38,6 +41,7 @@ namespace VoIP_Client
         public Client()
         {
             client = new TcpClient();
+            UserProfile = new CscUserMainData();//n
         }
 
 
