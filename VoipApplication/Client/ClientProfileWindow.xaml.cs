@@ -44,7 +44,6 @@ namespace VoIP_Client
             {
                 UserEmailLabel.Text = profile.Email;
             }));
-
         }
 
         public void ShowCallingWindow(object sender, CallingEventArgs eventArgs, TcpClient client)
@@ -57,16 +56,8 @@ namespace VoIP_Client
                 var callWindow = new CallingWindow(this.client, callingService, player, eventArgs, this);
                 callWindow.NickLabel.Text = eventArgs.Nick;
                 callWindow.Show();
-
-
             }));
         }
-
-        private void FriendsButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-
 
         public void LeaveServer()
         {
@@ -77,21 +68,15 @@ namespace VoIP_Client
                 //ConnectionWindow window = new ConnectionWindow();
                 //window.Show();
                 Close();
-
             }));
-
         }
 
         public void DebugConsole(string msg)
-        {
-            MessageBox.Show(msg);
-        }
+        { MessageBox.Show(msg); }
 
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        { Close(); }
 
         private void EmailButton_Click(object sender, RoutedEventArgs e)
         {
@@ -102,31 +87,28 @@ namespace VoIP_Client
             };
             client.SendChangeEmailRequest(userData);
 
-            var response = client.ReceiveBytes();
-            if (response[0] == 12)
-            {
-                var msg = CscProtocol.ParseConfirmMessage(response);
-                MessageBox.Show(msg);
-                client.UserProfile.Email = EmailTextBox.Text;
-                UserEmailLabel.Text = client.UserProfile.Email;//n
-                EmailTextBox.Text = client.UserProfile.Email;//n
-            }
-            if (response[0] == 13)
-            {
-                var msg = CscProtocol.ParseConfirmMessage(response);
-                MessageBox.Show(msg);
-                return;
-            }
-            else
-            {
-                //MessageBox.Show(Encoding.Unicode.GetString(response));
-            }
+            var WaitForMessageTask = Task.Run(() => WaitForMessage());
         }
 
         private void PasswordButton_Click(object sender, RoutedEventArgs e)
         {
             //sprawdz czy stare haslo jest poprawne
             //jesli tak wyslij komunikat o zmiane hasla ze starego na nowe
+        }
+        private void WaitForMessage()
+        {
+            while (client.LastConfirmMessage == string.Empty && client.LastErrorMessage == string.Empty)
+            { }
+            if (client.LastConfirmMessage != string.Empty)
+            {
+                MessageBox.Show(client.LastConfirmMessage);
+                client.LastConfirmMessage = string.Empty;
+            }
+            else
+            {
+                MessageBox.Show(client.LastErrorMessage);
+                client.LastErrorMessage = string.Empty;
+            }
         }
     }
 }

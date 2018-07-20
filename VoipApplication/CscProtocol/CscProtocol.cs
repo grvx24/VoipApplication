@@ -43,13 +43,10 @@ namespace cscprotocol
                 return (new BinaryFormatter()).Deserialize(memoryStream);
         }
 
-
-
         #region ServerMethods
 
         public CscUserData ReadUserData(byte[] message)
         {
-
             var result = DeserializeWithLengthInfo(message) as CscUserData;
 
             if (result == null)
@@ -60,8 +57,7 @@ namespace cscprotocol
 
         //dowolny uzytkownik z listy ulubionych
         public byte[] CreateFriendUserDataMessage(CscUserMainData friendsUserData)
-        {
-            
+        {            
             var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + friendsAsBytes.Length];
             message[0] = 9;
@@ -74,7 +70,6 @@ namespace cscprotocol
         //uzytkownik online
         public byte[] CreateOnlineUserDataMessage(CscUserMainData friendsUserData)
         {
-
             var users = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + users.Length];
             message[0] = 8;
@@ -86,7 +81,6 @@ namespace cscprotocol
         //uzytkownik offline
         public byte[] CreateOfflineUserDataMessage(CscUserMainData friendsUserData)
         {
-
             var users = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + users.Length];
             message[0] = 7;
@@ -112,7 +106,6 @@ namespace cscprotocol
         {
             if (!string.IsNullOrEmpty(message))
             {
-
                 var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
@@ -125,7 +118,6 @@ namespace cscprotocol
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
                 
                 return result;
-
             }
             else
             {
@@ -138,7 +130,6 @@ namespace cscprotocol
         {
             if (!string.IsNullOrEmpty(message))
             {
-
                 var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
@@ -150,7 +141,6 @@ namespace cscprotocol
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
 
                 return result;
-
             }
             else
             {
@@ -180,14 +170,11 @@ namespace cscprotocol
 
         public static string ParseConfirmMessage(byte[] message)
         {
-            var lenght=BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(),0);
+            var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
 
             string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
             return text;
-
         }
-
-
 
         public byte[] CreateLoginMessage(CscUserData userData)
         {
@@ -202,7 +189,6 @@ namespace cscprotocol
             mainMessage.CopyTo(fullData, lenghtBytes.Length+1);
 
             return fullData;
-
         }
 
         public byte[] CreateRegistrationMessage(CscUserData userData)
@@ -218,7 +204,6 @@ namespace cscprotocol
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 
             return fullData;
-
         }
 
 

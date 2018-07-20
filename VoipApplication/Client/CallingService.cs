@@ -29,8 +29,6 @@ namespace VoIP_Client
         public string Nick { get; set; }
         public string Ip { get; set; }
         public bool Encrypted{ get; set; }
-
-
     }
 
     public enum CallState { Waiting, Answer, Reject, }
@@ -68,8 +66,6 @@ namespace VoIP_Client
             Port = listenPort;
             listener = new TcpListener(ip, listenPort);
             Ip = ip.ToString();
-
-
         }
 
 
@@ -86,9 +82,7 @@ namespace VoIP_Client
                     listener = new TcpListener(ip, listenPort);
                     Ip = ip.ToString();
                 }
-            }
-
-            
+            }            
         }
 
         public void EndConnection()
@@ -114,7 +108,6 @@ namespace VoIP_Client
                 currentClient.Dispose();
                 return;
             }
-
         }
 
         public async Task<bool> Call(UserProfile userProfile, IPEndPoint ipendpoint)
@@ -136,7 +129,6 @@ namespace VoIP_Client
 
                 return true;
             }
-
             else
             {
                 if (InfoEvent != null)
@@ -144,10 +136,6 @@ namespace VoIP_Client
 
                 return false;
             }
-                
-
-
-            
         }
 
         public void CancelCall()
@@ -155,8 +143,7 @@ namespace VoIP_Client
             chatClient.Disconnect();
             waitingForAnswer = false;
             isCalling = false;
-            isBusy = false;
-            
+            isBusy = false;            
         }
 
         public void StopListening()
@@ -220,7 +207,6 @@ namespace VoIP_Client
                 chatClient.Disconnect();
                 return;
             }
-
         }
 
         private bool MakeCall(UserProfile userProfile, IPEndPoint ipendpoint)
@@ -289,10 +275,6 @@ namespace VoIP_Client
                 isBusy = false;
                 return false;
             }
-
-            
-
-
         }
 
 
@@ -313,10 +295,7 @@ namespace VoIP_Client
                 {
                     return;
                 }
-
-
             }
-
         }
 
 
@@ -324,7 +303,6 @@ namespace VoIP_Client
         {
             try
             {
-
                 NetworkStream networkStream = client.GetStream();
                 StreamReader reader = new StreamReader(networkStream);
                 StreamWriter writer = new StreamWriter(networkStream)
@@ -403,13 +381,9 @@ namespace VoIP_Client
                                 }
                             }
                         }
-
-                    }
-                    
-                }
-                
+                    }                    
+                }                
             }
-
             catch (Exception e)
             {
                 
@@ -417,11 +391,7 @@ namespace VoIP_Client
                 EndConnection();
 
                 return;
-
             }
         }
-
-
-
     }
 }

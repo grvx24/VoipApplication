@@ -26,7 +26,6 @@ namespace VoIP_Client
     {
         static FriendsList friendsListGrid;
 
-
         CallingService callingService;
         Client client;
         public ClientMainWindow(Client client, bool createNewInstance)
@@ -34,7 +33,7 @@ namespace VoIP_Client
             callingService = new CallingService(client.LocalIP, 2999);
 
 
-            friendsListGrid = new FriendsList(client,callingService,this);
+            friendsListGrid = new FriendsList(client, callingService, this);
 
             if (!createNewInstance)
             {
@@ -48,10 +47,18 @@ namespace VoIP_Client
 
                 client.ConnectionLostEvent += LeaveServer;
                 client.SetProfileText += UpdateProfileEmail;
-            }else
+            }
+            else
             {
-                this.client = new Client() { client = client.client, LocalIP = client.LocalIP, IsConnected = true,
-                    Port = client.Port, IPAddress = client.IPAddress, UserProfile = client.UserProfile };
+                this.client = new Client()
+                {
+                    client = client.client,
+                    LocalIP = client.LocalIP,
+                    IsConnected = true,
+                    Port = client.Port,
+                    IPAddress = client.IPAddress,
+                    UserProfile = client.UserProfile
+                };
 
                 this.client.AddItemEvent += AddOnlineUser;
                 this.client.RemoveItemEvent += RemoveOnlineUser;
@@ -63,8 +70,6 @@ namespace VoIP_Client
                 this.client.SetProfileText += UpdateProfileEmail;
             }
 
-
-
             InitializeComponent();
             callingService.OnCallingEvent += ShowCallingWindow;
             callingService.ListenIncomingCalls();
@@ -73,7 +78,6 @@ namespace VoIP_Client
 
             client.GetBasicInfo();
             UserEmailLabel.Text = client.UserProfile.Email;//n
-
         }
 
         private void UpdateProfileEmail(CscUserMainData profile)
@@ -82,7 +86,6 @@ namespace VoIP_Client
             {
                 UserEmailLabel.Text = profile.Email;
             }));
-            
         }
 
         private void AddFriendToObsCollection(CscUserMainData friendData)
@@ -103,20 +106,17 @@ namespace VoIP_Client
             ));
         }
 
-        public void ShowCallingWindow(object sender, CallingEventArgs eventArgs,TcpClient client)
+        public void ShowCallingWindow(object sender, CallingEventArgs eventArgs, TcpClient client)
         {
             var callingService = sender as CallingService;
 
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer("telephone_ring.wav");
-                var callWindow = new CallingWindow(this.client,callingService, player, eventArgs, this);
+                var callWindow = new CallingWindow(this.client, callingService, player, eventArgs, this);
                 callWindow.NickLabel.Text = eventArgs.Nick;
                 callWindow.Show();
-
-
             }));
-
         }
 
         private void FriendsButton_Click(object sender, RoutedEventArgs e)
@@ -124,20 +124,16 @@ namespace VoIP_Client
             CustomUserControl.Content = friendsListGrid;
         }
 
-
-
         public void LeaveServer()
         {
             MessageBox.Show("Połączenie z serwerem zostało zerwane");
 
-           Application.Current.Dispatcher.Invoke(new Action(() =>
-           {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
                //ConnectionWindow window = new ConnectionWindow();
                //window.Show();
                Close();
-               
-           }));
-
+            }));
         }
 
         public void DebugConsole(string msg)
@@ -150,16 +146,12 @@ namespace VoIP_Client
             Dispatcher.Invoke(new Action(() => client.onlineUsers.Remove(user)));
 
             var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
-            if(friend!=null)
+            if (friend != null)
             {
                 CscUserMainData newUser = new CscUserMainData() { Email = friend.Email, Id = friend.Id, Ip = "", FriendName = friend.FriendName, Status = 0 };
                 Dispatcher.Invoke(new Action(() => client.FriendsList.Remove(friend)));
                 client.FriendsList.Add(newUser);
             }
-
-            
-
-
         }
 
         public void AddOnlineUser(CscUserMainData user)
@@ -173,7 +165,6 @@ namespace VoIP_Client
                 Dispatcher.Invoke(new Action(() => client.FriendsList.Remove(friend)));
                 client.FriendsList.Add(newUser);
             }
-
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)

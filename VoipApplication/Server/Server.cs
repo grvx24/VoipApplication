@@ -42,7 +42,6 @@ namespace VoIP_Server
         {
             OnlineUsers = new ObservableCollection<ConnectedUsers>();
             UsersToRemove = new ConcurrentStack<ConnectedUsers>();
-
         }
 
         public void CreateServer(IPAddress iP, int port)
@@ -79,7 +78,6 @@ namespace VoIP_Server
 
             while (running)
             {
-
                 try
                 {
                     Random random = new Random();
@@ -105,7 +103,6 @@ namespace VoIP_Server
                     ServerConsoleWriteEvent.Invoke(e.Message);
                 }
             }
-
         }
 
 
@@ -129,7 +126,6 @@ namespace VoIP_Server
                 var message = cscProtocol.CreateFriendUserDataMessage(friendsUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
-
         }
 
         private void SendOnlineUsersList(TcpClient client)
@@ -142,7 +138,6 @@ namespace VoIP_Server
                 var message = cscProtocol.CreateOnlineUserDataMessage(userData);
                 client.GetStream().Write(message, 0, message.Length);
             }
-
         }
 
         private void SendOnlineUser(TcpClient client, ConnectedUsers newUser)
@@ -164,8 +159,6 @@ namespace VoIP_Server
             CscUserMainData userData = new CscUserMainData() { Email = user.Email, Id = user.Id, Status = 1, Ip = user.Ip, FriendName = "" };
             var message = cscProtocol.CreateUserProfileMessage(userData);
             user.Client.GetStream().Write(message, 0, message.Length);
-
-
         }
 
         private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
@@ -209,7 +202,6 @@ namespace VoIP_Server
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
 
                             ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
-
                         }
                         else
                         {

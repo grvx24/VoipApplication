@@ -17,15 +17,16 @@ namespace VoIP_Client
     {
         CscProtocol protocol = new CscProtocol();
         //public CscUserData UserProfile { get; set; }
-        public CscUserMainData UserProfile {get;set;}
+        public CscUserMainData UserProfile { get; set; }
         public TcpClient client;
         IPAddress serverIpAddress;
         int port;
-        bool isConnected=false;
+        bool isConnected = false;
         bool isListening = false;
         public bool initialized = false;
         public string salt { get; set; }
-
+        public string LastConfirmMessage { get; set; }
+        public string LastErrorMessage { get; set; }
 
         public IPAddress LocalIP { get; set; }
 
@@ -36,12 +37,14 @@ namespace VoIP_Client
         public event ChangeItem RemoveItemEvent;
         public event ChangeItem AddItemEvent;
         public event ChangeItem AddFriendEvent;
-        public event ChangeItem RemoveFriendEvent;        
+        public event ChangeItem RemoveFriendEvent;
 
         public Client()
         {
             client = new TcpClient();
             UserProfile = new CscUserMainData();//n
+            LastConfirmMessage = string.Empty;
+            LastErrorMessage = string.Empty;
         }
 
 
@@ -57,10 +60,11 @@ namespace VoIP_Client
 
         public ObservableCollection<CscUserMainData> GetFriendsList()
         {
-            if(FriendsList!=null)
+            if (FriendsList != null)
             {
                 return FriendsList;
-            }else
+            }
+            else
             {
                 throw new NullReferenceException("FriendsList is null");
             }
@@ -82,7 +86,7 @@ namespace VoIP_Client
         public void SendRefreshRequest()
         {
             var msg = protocol.CreateRefreshRequest();
-            client.GetStream().Write(msg,0,msg.Length);
+            client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void GetBasicInfo()
@@ -97,7 +101,7 @@ namespace VoIP_Client
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void Connect(IPAddress ip,int port)
+        public void Connect(IPAddress ip, int port)
         {
             IPAddress = ip;
             this.Port = port;
@@ -110,21 +114,18 @@ namespace VoIP_Client
                 LocalIP = ((IPEndPoint)c.LocalEndPoint).Address;
                 isConnected = true;
             }
-
         }
 
         public void StartListening()
         {
             isListening = true;
             Task.Run(() => Listening());
-
         }
 
-        private void ExecuteCSCCommand(byte commandNumber,byte[] receivedMessage)
+        private void ExecuteCSCCommand(byte commandNumber, byte[] receivedMessage)
         {
             switch (commandNumber)
             {
-
                 case 6:
 
                     var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
@@ -136,87 +137,91 @@ namespace VoIP_Client
                     var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                     var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
 
-                    if(RemoveItemEvent!=null)
+                    if (RemoveItemEvent != null)
                         RemoveItemEvent.Invoke(toRemove);
 
                     break;
 
 
                 case 8:
-                    var onlineUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (onlineUser.Email != UserProfile.Email)
+                    {
+                        var onlineUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        if (onlineUser.Email != UserProfile.Email)
 
-                        if (AddItemEvent != null)
-                            AddItemEvent.Invoke(onlineUser);
-
-                    
-
-                    break;
+                            if (AddItemEvent != null)
+                                AddItemEvent.Invoke(onlineUser);
+                        break;
+                    }
 
                 case 9:
-                    var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (AddFriendEvent != null)
-                        AddFriendEvent.Invoke(friendData);
+                    {
+                        var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        if (AddFriendEvent != null)
+                            AddFriendEvent.Invoke(friendData);
                         //friendsUserDatas.Add(friendData);
-
-                    break;
+                        break;
+                    }
 
                 case 10:
 
                     var userToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                     if (RemoveFriendEvent != null)
                         RemoveFriendEvent.Invoke(userToRemove);
-                        //onlineUsers.Remove(userToRemove);
+                    //onlineUsers.Remove(userToRemove);
 
                     break;
 
 
                 case 12:
-
-                    var message = CscProtocol.ParseConfirmMessage(receivedMessage);
-                    
-                    if(message == "ONLINE_USERS_OK")
                     {
-                        Environment.Exit(0);
+                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);
+
+                        if (message == "ONLINE_USERS_OK")
+                        {
+                            Environment.Exit(0);
+                        }
+                        else
+                        {
+                            LastConfirmMessage = message;
+                        }
+                        break;
                     }
 
+                case 13:
+                    {
+                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);
+                        LastErrorMessage = message;
+                        break;
+                    }
 
-                    break;
-               
                 default:
                     break;
             }
-
-
-
         }
 
         private void Listening()
         {
-
             try
             {
-                while(isListening)
+                while (isListening)
                 {
-                    if(!client.Connected)
+                    if (!client.Connected)
                     {
                         ConnectionLostEvent.Invoke();
                     }
 
-
                     byte[] cmdAndLength = new byte[3];
                     //protokoly
                     var l1 = client.GetStream().Read(cmdAndLength, 0, cmdAndLength.Length);
-                    var msgLen = BitConverter.ToUInt16(cmdAndLength.Skip(1).ToArray(),0);
+                    var msgLen = BitConverter.ToUInt16(cmdAndLength.Skip(1).ToArray(), 0);
 
-                    byte[] buffer = new byte[msgLen];           
+                    byte[] buffer = new byte[msgLen];
                     var l2 = client.GetStream().Read(buffer, 0, buffer.Length);
 
-                    if (buffer!=null)
+                    if (buffer != null)
                     {
-                        ExecuteCSCCommand(cmdAndLength[0],buffer);
+                        ExecuteCSCCommand(cmdAndLength[0], buffer);
                     }
-
                 }
             }
             catch (Exception e)
@@ -224,22 +229,14 @@ namespace VoIP_Client
                 Disconnect();
                 ConnectionLostEvent.Invoke();
             }
-
-
-
         }
 
         public void SendBytes(byte[] message)
         {
             try
-            {
-                client.GetStream().Write(message, 0, message.Length);
-            }
+            { client.GetStream().Write(message, 0, message.Length); }
             catch (Exception e)
-            {
-
-                throw e;
-            }
+            { throw e; }
         }
 
         public byte[] ReceiveBytes()
@@ -259,7 +256,7 @@ namespace VoIP_Client
         }
 
         public string ReceiveText()
-        {   
+        {
             StreamReader reader = new StreamReader(client.GetStream());
             var result = reader.ReadLine();
             return result;
