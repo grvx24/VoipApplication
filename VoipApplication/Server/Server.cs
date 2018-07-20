@@ -283,10 +283,13 @@ namespace VoIP_Server
                         if (!(hashWithSalt == userData.Password))
                         {
                             goodPasswordAndEmailUnused = false;
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+                            var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                            break;
                         }
 
                         //sprawdzamy czy taki email jest nieuzywany
-
                         var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
                         if (!(queryEmailResult == null))
                         {
@@ -298,15 +301,41 @@ namespace VoIP_Server
                             queryResult.Email = userData.Email;
                             serverDB.SaveChanges();
 
+                            ServerConsoleWriteEvent.Invoke("Udana zmiana adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
                             var buffer = cscProtocol.CreateConfirmMessage("Adres e-mail został zmieniony.");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
-
-                            ServerConsoleWriteEvent.Invoke("Udana zmiana adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
                         }
                         else
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
                             var buffer = cscProtocol.CreateErrorMessage("Taki adres e-mail już istnieje w bazie!");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                        }
+                        break;
+                    }
+
+                case 7://zmiana hasla dla polaczonego usera
+                    {
+                        var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscPasswordData;
+                        ServerConsoleWriteEvent.Invoke("Próba zmiany hasla dla UserID" + connectedUser.Id);
+
+                        var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
+                        var passwordFromDB = queryResult.Password;
+                        var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
+
+                        if (!(hashWithSalt == userData.OldPassword))
+                        {
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id);
+                            var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                        }
+                        else
+                        {
+                            queryResult.Password = userData.NewPassword;
+                            serverDB.SaveChanges();
+
+                            ServerConsoleWriteEvent.Invoke("Udana zmiana hasla dla UserID" + connectedUser.Id + " z " + passwordFromDB + " na " + userData.NewPassword);
+                            var buffer = cscProtocol.CreateConfirmMessage("Hasło zostało zmienione.");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -323,8 +352,6 @@ namespace VoIP_Server
         {
             var salt = CscSHA512Generator.Get_salt();
 
-
-
             var stream = user.Client.GetStream();
 
             var msg = cscProtocol.CreateSaltMessage(salt);
@@ -332,7 +359,6 @@ namespace VoIP_Server
             stream.Write(msg, 0, msg.Length);
 
             return salt;
-
         }
 
 
@@ -348,15 +374,11 @@ namespace VoIP_Server
                 //{
                 //    AutoFlush = true
                 //};
-
-                //wysyłanie soli
-                user.Salt = SendSalt(user);
-
+                                
+                user.Salt = SendSalt(user);//wysyłanie soli
 
                 while (running)
                 {
-
-
                     byte[] request = new byte[3];
                     var l1 = await networkStream.ReadAsync(request, 0, request.Length);
 
@@ -387,8 +409,6 @@ namespace VoIP_Server
                 {
                     user.Client.Dispose();
                 }
-
-
             }
         }
 

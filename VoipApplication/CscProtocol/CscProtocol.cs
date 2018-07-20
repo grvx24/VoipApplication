@@ -33,7 +33,7 @@ namespace cscprotocol
             var length = BitConverter.ToUInt16(lengthArray, 0);
 
 
-            using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length+1).Take(length).ToArray()))
+            using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length + 1).Take(length).ToArray()))
                 return (new BinaryFormatter()).Deserialize(memoryStream);
         }
 
@@ -57,7 +57,7 @@ namespace cscprotocol
 
         //dowolny uzytkownik z listy ulubionych
         public byte[] CreateFriendUserDataMessage(CscUserMainData friendsUserData)
-        {            
+        {
             var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + friendsAsBytes.Length];
             message[0] = 9;
@@ -111,18 +111,16 @@ namespace cscprotocol
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
 
-                byte[] result = new byte[mainMessage.Length + lenghtBytes.Length+1];
+                byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
                 result[0] = 12;
 
                 lenghtBytes.CopyTo(result, 1);
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-                
+
                 return result;
             }
             else
-            {
-                throw new ArgumentNullException("Message cannot be null");
-            }
+            { throw new ArgumentNullException("Message cannot be null"); }
         }
 
 
@@ -143,9 +141,7 @@ namespace cscprotocol
                 return result;
             }
             else
-            {
-                throw new ArgumentNullException("Message cannot be null");
-            }
+            { throw new ArgumentNullException("Message cannot be null"); }
         }
 
         public byte[] CreateSaltMessage(string message)
@@ -181,12 +177,12 @@ namespace cscprotocol
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
-            
+
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
             byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
             fullData[0] = 0;
             lenghtBytes.CopyTo(fullData, 1);
-            mainMessage.CopyTo(fullData, lenghtBytes.Length+1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 
             return fullData;
         }
@@ -235,6 +231,19 @@ namespace cscprotocol
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
             byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
             fullData[0] = 6;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
+        public byte[] CreateChangePasswordMessage(CscPasswordData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
+
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 7;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 

@@ -100,6 +100,11 @@ namespace VoIP_Client
             var msg = protocol.CreateChangeEmailMessage(userData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
+        public void SendChangePasswordRequest(CscPasswordData userData)
+        {
+            var msg = protocol.CreateChangePasswordMessage(userData);
+            client.GetStream().Write(msg, 0, msg.Length);
+        }
 
         public void Connect(IPAddress ip, int port)
         {
@@ -174,7 +179,7 @@ namespace VoIP_Client
 
                 case 12:
                     {
-                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);
+                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);//n czy to tu musi byc parsowane? chyba nie
 
                         if (message == "ONLINE_USERS_OK")
                         {
@@ -182,15 +187,16 @@ namespace VoIP_Client
                         }
                         else
                         {
-                            LastConfirmMessage = message;
+                            //LastConfirmMessage = message;
+                            LastConfirmMessage = Encoding.Unicode.GetString(receivedMessage, 0, receivedMessage.Count());
                         }
                         break;
                     }
 
                 case 13:
                     {
-                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);
-                        LastErrorMessage = message;
+                        //var message = CscProtocol.ParseConfirmMessage(receivedMessage);
+                        LastErrorMessage = Encoding.Unicode.GetString(receivedMessage, 0, receivedMessage.Count());
                         break;
                     }
 

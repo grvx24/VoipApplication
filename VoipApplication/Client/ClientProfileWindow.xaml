@@ -22,7 +22,7 @@
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Zmień hasło"/>
             </Button>
             <Button Background="Red" BorderBrush="Green" x:Name="ServerLogButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="NIC3"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Nic nie robi"/>
             </Button>
             <Image Source="/VoIP_Server;component/broccoli.png" />
 

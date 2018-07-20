@@ -24,9 +24,6 @@ namespace VoIP_Client
     /// </summary>
     public partial class ClientProfileWindow : Window
     {
-        static FriendsList friendsListGrid;
-
-
         CallingService callingService;
         Client client;
         public ClientProfileWindow(CallingService callingService, Client client)
@@ -45,29 +42,13 @@ namespace VoIP_Client
                 UserEmailLabel.Text = profile.Email;
             }));
         }
-
-        public void ShowCallingWindow(object sender, CallingEventArgs eventArgs, TcpClient client)
+        private void ClearPasswordFields()
         {
-            var callingService = sender as CallingService;
-
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer("telephone_ring.wav");
-                var callWindow = new CallingWindow(this.client, callingService, player, eventArgs, this);
-                callWindow.NickLabel.Text = eventArgs.Nick;
-                callWindow.Show();
-            }));
-        }
-
-        public void LeaveServer()
-        {
-            MessageBox.Show("Połączenie z serwerem zostało zerwane");
-
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                //ConnectionWindow window = new ConnectionWindow();
-                //window.Show();
-                Close();
+                ChangeEmailPasswordBox.Password = string.Empty;
+                OldPasswordBox.Password = string.Empty;
+                NewPasswordBox.Password = string.Empty;
             }));
         }
 
@@ -80,22 +61,51 @@ namespace VoIP_Client
 
         private void EmailButton_Click(object sender, RoutedEventArgs e)
         {
+            var NewEmail = EmailTextBox.Text;
             CscUserData userData = new CscUserData()
             {
-                Email = EmailTextBox.Text,
+                Email = NewEmail,
                 Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(ChangeEmailPasswordBox.Password) + client.salt)
             };
             client.SendChangeEmailRequest(userData);
 
-            var WaitForMessageTask = Task.Run(() => WaitForMessage());
+            var WaitForMessageTask = Task.Run(() => WaitForEmailMessage(NewEmail));
         }
 
         private void PasswordButton_Click(object sender, RoutedEventArgs e)
         {
+            var OldPassword = OldPasswordBox.Password;
+            var NewPassword = NewPasswordBox.Password;
+            CscPasswordData passwordData = new CscPasswordData()
+            {
+                OldPassword = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(OldPassword) + client.salt),
+                NewPassword = CscSHA512Generator.get_SHA512_hash_as_string(NewPassword)
+            };
+            client.SendChangePasswordRequest(passwordData);
+
+            var WaitForMessageTask = Task.Run(() => WaitForPasswordMessage());
             //sprawdz czy stare haslo jest poprawne
             //jesli tak wyslij komunikat o zmiane hasla ze starego na nowe
         }
-        private void WaitForMessage()
+        private void WaitForEmailMessage(string email)
+        {
+            while (client.LastConfirmMessage == string.Empty && client.LastErrorMessage == string.Empty)
+            { }
+            if (client.LastConfirmMessage != string.Empty)
+            {
+                MessageBox.Show(client.LastConfirmMessage);
+                client.LastConfirmMessage = string.Empty;
+                client.UserProfile.Email = email;
+                UpdateProfileEmail(client.UserProfile);
+            }
+            else
+            {
+                MessageBox.Show(client.LastErrorMessage);
+                client.LastErrorMessage = string.Empty;
+            }
+            ClearPasswordFields();
+        }
+        private void WaitForPasswordMessage()
         {
             while (client.LastConfirmMessage == string.Empty && client.LastErrorMessage == string.Empty)
             { }
@@ -109,6 +119,7 @@ namespace VoIP_Client
                 MessageBox.Show(client.LastErrorMessage);
                 client.LastErrorMessage = string.Empty;
             }
+            ClearPasswordFields();
         }
     }
 }
