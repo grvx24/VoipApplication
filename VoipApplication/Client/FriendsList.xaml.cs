@@ -28,16 +28,14 @@ namespace VoIP_Client
     public partial class FriendsList : UserControl
     {
         CallingService callingService;
-        ObservableCollection<CscUserMainData> obsCollection=new ObservableCollection<CscUserMainData>();
+        ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();
         Client client;
         Window parentWindow;
 
-        public FriendsList(Client client,CallingService callingService,Window parentWindow)
+        public FriendsList(Client client, CallingService callingService, Window parentWindow)
         {
             this.client = client;
             this.parentWindow = parentWindow;
-
-
             this.callingService = callingService;
 
             //callingService.Users = usersList;
@@ -46,7 +44,6 @@ namespace VoIP_Client
 
 
             InitializeComponent();
-
         }
 
         private void MSGBoxShow(string msg)
@@ -55,15 +52,14 @@ namespace VoIP_Client
         }
 
 
-        private void RowButtonCall_Click(object sender,RoutedEventArgs args)
+        private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
-            if(!callingService.isCalling)
+            if (!callingService.isCalling)
             {
-
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
-                var text = string.Format("{0} - {1} - {2}",data.FriendName, data.Ip, data.Email);
+                var text = string.Format("{0} - {1} - {2}", data.FriendName, data.Ip, data.Email);
 
-                if(data.Status==1)
+                if (data.Status == 1)
                 {
                     InfoLabel.Content = "Trwa łączenie";
                     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip), 2999);
@@ -84,23 +80,12 @@ namespace VoIP_Client
 
 
                     parentWindow.Close();
-
-                    
-
                 }
                 else
-                {
-                    MessageBox.Show("Użytkownik nie jest dostępny");
-                }
-
-            }else
-            {
-                callingService.CancelCall();
-
+                { MessageBox.Show("Użytkownik nie jest dostępny"); }
             }
-
-
-
+            else
+            { callingService.CancelCall(); }
             //MessageBox.Show(text);
         }
 
@@ -111,7 +96,6 @@ namespace VoIP_Client
                 InfoLabel.Content = msg;
             }
             ));
-
         }
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)

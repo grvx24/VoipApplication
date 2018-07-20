@@ -39,10 +39,8 @@
                             <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    
+
                 </DataGridTemplateColumn>
-                
-                
 
             </DataGrid.Columns>
         </DataGrid>

@@ -25,6 +25,7 @@ namespace VoIP_Client
     public partial class ClientMainWindow : Window
     {
         static FriendsList friendsListGrid;
+        static Profile profileGrid;
 
         CallingService callingService;
         Client client;
@@ -32,8 +33,8 @@ namespace VoIP_Client
         {
             callingService = new CallingService(client.LocalIP, 2999);
 
-
             friendsListGrid = new FriendsList(client, callingService, this);
+            profileGrid = new Profile(client, callingService, this);
 
             if (!createNewInstance)
             {
@@ -79,8 +80,17 @@ namespace VoIP_Client
             client.GetBasicInfo();
             UserEmailLabel.Text = client.UserProfile.Email;//n
         }
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            ////gdy uzywane bylo ClientProfilewindow a nie Profile
+            //ClientProfileWindow clientProfileWindow = new ClientProfileWindow(callingService, client);
+            //clientProfileWindow.Show();
+            CustomUserControl.Content = profileGrid;
+        }
 
-        private void UpdateProfileEmail(CscUserMainData profile)
+
+
+        public void UpdateProfileEmail(CscUserMainData profile)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -165,12 +175,6 @@ namespace VoIP_Client
                 Dispatcher.Invoke(new Action(() => client.FriendsList.Remove(friend)));
                 client.FriendsList.Add(newUser);
             }
-        }
-
-        private void ProfileButton_Click(object sender, RoutedEventArgs e)
-        {
-            ClientProfileWindow clientProfileWindow = new ClientProfileWindow(callingService, client);
-            clientProfileWindow.Show();
         }
     }
 }

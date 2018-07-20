@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,34 +15,47 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using VoIP_Server;
+using VoIP_Server.Client;
 using cscprotocol;
 
 namespace VoIP_Client
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Profile.xaml
     /// </summary>
-    public partial class ClientProfileWindow : Window
+    public partial class Profile : UserControl
     {
         CallingService callingService;
+        ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();
         Client client;
-        public ClientProfileWindow(CallingService callingService, Client client)
+        Window parentWindow;
+
+        public Profile(Client client, CallingService callingService, Window parentWindow)
         {
-            InitializeComponent();
-            this.callingService = callingService;
             this.client = client;
-            UserEmailLabel.Text = client.UserProfile.Email;//n
+            this.parentWindow = parentWindow;
+            this.callingService = callingService;
+
+            //callingService.Users = usersList;
+            callingService.InfoEvent += UpdateInfoLabel;
+            //callingService.InfoEvent += MSGBoxShow;
+
+            InitializeComponent();
+            //(parentWindow as ClientMainWindow).UserEmailLabel.Text = client.UserProfile.Email;//to robi fajny blad aplikacji przydatny do zrobienia poprawnego wylogowania usera po craschu apki
             EmailTextBox.Text = client.UserProfile.Email;//n
         }
 
-        private void UpdateProfileEmail(CscUserMainData profile)
+        public void UpdateInfoLabel(string msg)
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                UserEmailLabel.Text = profile.Email;
-            }));
+                InfoLabel.Content = msg;
+            }
+            ));
         }
+
         private void ClearPasswordFields()
         {
             Dispatcher.Invoke(new Action(() =>
@@ -51,13 +65,6 @@ namespace VoIP_Client
                 NewPasswordBox.Password = string.Empty;
             }));
         }
-
-        public void DebugConsole(string msg)
-        { MessageBox.Show(msg); }
-
-
-        private void ReturnButton_Click(object sender, RoutedEventArgs e)
-        { Close(); }
 
         private void EmailButton_Click(object sender, RoutedEventArgs e)
         {
@@ -84,9 +91,8 @@ namespace VoIP_Client
             client.SendChangePasswordRequest(passwordData);
 
             var WaitForMessageTask = Task.Run(() => WaitForPasswordMessage());
-            //sprawdz czy stare haslo jest poprawne
-            //jesli tak wyslij komunikat o zmiane hasla ze starego na nowe
         }
+
         private void WaitForEmailMessage(string email)
         {
             while (client.LastConfirmMessage == string.Empty && client.LastErrorMessage == string.Empty)
@@ -96,7 +102,8 @@ namespace VoIP_Client
                 MessageBox.Show(client.LastConfirmMessage);
                 client.LastConfirmMessage = string.Empty;
                 client.UserProfile.Email = email;
-                UpdateProfileEmail(client.UserProfile);
+                //UpdateProfileEmail(client.UserProfile);//stare z ClientProfilewindow
+                (parentWindow as ClientMainWindow).UpdateProfileEmail(client.UserProfile);
             }
             else
             {
@@ -105,6 +112,7 @@ namespace VoIP_Client
             }
             ClearPasswordFields();
         }
+
         private void WaitForPasswordMessage()
         {
             while (client.LastConfirmMessage == string.Empty && client.LastErrorMessage == string.Empty)
