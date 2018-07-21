@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VoIP_Server;
 using cscprotocol;
+using VoipApplication;
 
 namespace VoIP_Client
 {
@@ -35,6 +36,12 @@ namespace VoIP_Client
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!EmailValidator.IsValid(EmailTextBox.Text))
+            {
+                MessageBox.Show("Adres email niepoprawny!");
+                return;
+            }
+
             try
             {
                 CscUserData userData = new CscUserData() { Email = EmailTextBox.Text,

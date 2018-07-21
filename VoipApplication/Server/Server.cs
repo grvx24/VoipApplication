@@ -228,22 +228,31 @@ namespace VoIP_Server
 
                 //Rejestracja
                 case 2:
-                    var userToRegister = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
-
-                    var userWithThisMail = serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
-
-                    if (userWithThisMail != null)
                     {
-                        var response = cscProtocol.CreateErrorMessage("Podany adres e-mail już istnieje.");
-                        connectedUser.Client.GetStream().Write(response, 0, response.Length);
+                        var userToRegister = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
+
+                        if (!EmailValidator.IsValid(userToRegister.Email))
+                        {
+                            var response = cscProtocol.CreateErrorMessage("Adres e-mail niepoprawny.");
+                            connectedUser.Client.GetStream().Write(response, 0, response.Length);
+                            break;
+                        }
+
+                        var userWithThisMail = serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
+
+                        if (userWithThisMail != null)
+                        {
+                            var response = cscProtocol.CreateErrorMessage("Podany adres e-mail już istnieje.");
+                            connectedUser.Client.GetStream().Write(response, 0, response.Length);
+                        }
+                        else
+                        {
+                            CreateAccount(userToRegister.Email, userToRegister.Password);
+                            var response = cscProtocol.CreateConfirmMessage("Rejestracja udana.");
+                            connectedUser.Client.GetStream().Write(response, 0, response.Length);
+                        }
+                        break;
                     }
-                    else
-                    {
-                        CreateAccount(userToRegister.Email, userToRegister.Password);
-                        var response = cscProtocol.CreateConfirmMessage("Rejestracja udana.");
-                        connectedUser.Client.GetStream().Write(response, 0, response.Length);
-                    }
-                    break;
 
                 case 3://odświeżanie listy online
                     if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
@@ -275,6 +284,14 @@ namespace VoIP_Server
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
                         ServerConsoleWriteEvent.Invoke("Próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+
+                        if (!EmailValidator.IsValid(userData.Email))
+                        {
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+                            var buffer = cscProtocol.CreateErrorMessage("Adres email niepoprawny!");
+                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                            break;
+                        }
 
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
@@ -308,7 +325,7 @@ namespace VoIP_Server
                         else
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
-                            var buffer = cscProtocol.CreateErrorMessage("Taki adres e-mail już istnieje w bazie!");
+                            var buffer = cscProtocol.CreateErrorMessage("Podany adres email jest już zajęty!");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -374,7 +391,7 @@ namespace VoIP_Server
                 //{
                 //    AutoFlush = true
                 //};
-                                
+
                 user.Salt = SendSalt(user);//wysyłanie soli
 
                 while (running)

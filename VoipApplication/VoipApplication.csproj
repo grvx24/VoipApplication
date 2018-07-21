@@ -93,6 +93,7 @@
     </Compile>
     <Compile Include="CscProtocol\CscPasswordData.cs" />
     <Compile Include="CscProtocol\CscSHA512Generator.cs" />
+    <Compile Include="EmailValidator.cs" />
     <Compile Include="FriendsList.cs">
       <DependentUpon>UsersModel.tt</DependentUpon>
     </Compile>

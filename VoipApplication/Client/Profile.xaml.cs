@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using VoIP_Server;
 using VoIP_Server.Client;
 using cscprotocol;
+using VoipApplication;
 
 namespace VoIP_Client
 {
@@ -68,6 +69,12 @@ namespace VoIP_Client
 
         private void EmailButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!EmailValidator.IsValid(EmailTextBox.Text))
+            {
+                MessageBox.Show("Adres email niepoprawny!");
+                return;
+            }
+
             var NewEmail = EmailTextBox.Text;
             CscUserData userData = new CscUserData()
             {
