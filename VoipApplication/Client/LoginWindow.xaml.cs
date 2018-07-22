@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VoIP_Server;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -34,10 +35,11 @@ namespace VoIP_Client
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            //solenie i skrot hasla!!!
+
             try
             {
-                CscUserData userData = new CscUserData() { Email = EmailTextBox.Text, Password = PasswordTextBox.Password };
+                CscUserData userData = new CscUserData() { Email = EmailTextBox.Text,
+                    Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt) };
                 var bytesToSend = protocol.CreateLoginMessage(userData);
                 client.SendBytes(bytesToSend);
 

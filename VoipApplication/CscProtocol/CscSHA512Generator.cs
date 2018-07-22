@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PODlab5
+namespace cscprotocol
 {
     public class CscSHA512Generator
     {

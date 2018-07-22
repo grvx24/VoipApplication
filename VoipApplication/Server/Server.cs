@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Timers;
 using VoipApplication;
+using cscprotocol;
 
 namespace VoIP_Server
 {
@@ -19,6 +20,7 @@ namespace VoIP_Server
     public class MainServer
     {
         public event ServerLogDelegate ServerConsoleWriteEvent;
+        public event ServerLogDelegate ServerMessageBoxShowEvent;
         TcpListener listener;
         IPAddress iPAddress;
         int port;
@@ -72,9 +74,19 @@ namespace VoIP_Server
 
         public async void RunAsync()
         {
-            running = true;
-            listener.Start();
-            ServerConsoleWriteEvent.Invoke("Serwer wystartował - Ip: " + iPAddress.ToString() + " port: " + port);
+            try
+            {
+                running = true;
+                listener.Start();
+                ServerConsoleWriteEvent.Invoke("Serwer wystartował - Ip: " + iPAddress.ToString() + " port: " + port);
+            }
+            catch (Exception e)
+            {
+                running = false;
+                ServerConsoleWriteEvent.Invoke("Nie można wystartować serwera: " + e.Message);
+                ServerMessageBoxShowEvent.Invoke("Nie można wystartować serwera: " + e.Message);
+                return;
+            }
 
             while(running)
             {
@@ -98,6 +110,10 @@ namespace VoIP_Server
 
                     //await Process(connectedClient);
                     
+                }
+                catch(ObjectDisposedException e)
+                {
+                    ServerConsoleWriteEvent.Invoke("Serwer został wyłączony");
                 }
                 catch (Exception e)
                 {
@@ -185,9 +201,18 @@ namespace VoIP_Server
                     }
 
 
-                    var queryResult=serverDB.Users.FirstOrDefault(u => u.Email == userData.Email && u.Password == userData.Password);
+                    var queryResult=serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
+                    var passwordFromDB = queryResult.Password;
 
-                    if(queryResult!=null)
+
+                    var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
+
+                    if (!(hashWithSalt == userData.Password))
+                    {
+                        queryResult = null;
+                    }
+
+                    if (queryResult!=null)
                     {
 
                         ConnectedUsers user=OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
@@ -275,7 +300,21 @@ namespace VoIP_Server
             }
         }
 
+        private string SendSalt(ConnectedUsers user)
+        {
+            var salt = CscSHA512Generator.Get_salt();
 
+
+
+            var stream=user.Client.GetStream();
+
+            var msg = cscProtocol.CreateSaltMessage(salt);
+
+            stream.Write(msg, 0, msg.Length);
+
+            return salt;
+
+        }
 
 
         private async void Process(object obj)
@@ -290,6 +329,11 @@ namespace VoIP_Server
                 //{
                 //    AutoFlush = true
                 //};
+
+                //wysyłanie soli
+                user.Salt = SendSalt(user);
+                ServerConsoleWriteEvent.Invoke("Sól od serwera: " + user.Salt);
+
 
                 while (running)
                 {

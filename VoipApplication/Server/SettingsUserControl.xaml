@@ -10,7 +10,7 @@
         <Label FontWeight="Bold" HorizontalAlignment="Center" Margin="50,20" FontSize="26" Content="Adres IP">
             
         </Label>
-        <ComboBox  FontSize="26" Margin="50,0" Background="White" Name="IpAdressesComboBox">
+        <ComboBox FontSize="26" Margin="50,0" Background="White" Name="IpAdressesComboBox" SelectionChanged="IpAdressesComboBox_SelectionChanged">
             
         </ComboBox>
         <Label FontWeight="Bold"  HorizontalAlignment="Center" Margin="50,20" FontSize="26" Content="Port">

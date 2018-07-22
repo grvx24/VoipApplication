@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoIP_Server
+namespace cscprotocol
 {
 
 
@@ -158,6 +158,22 @@ namespace VoIP_Server
             }
         }
 
+        public byte[] CreateSaltMessage(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 1;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
+
+
         #endregion
 
         #region Client methods
@@ -224,6 +240,11 @@ namespace VoIP_Server
             result[2] = 0;
 
             return result;
+        }
+
+        public void CreateLogOutMessage()
+        {
+
         }
 
 

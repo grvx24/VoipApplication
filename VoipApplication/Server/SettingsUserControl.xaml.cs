@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +23,11 @@ namespace VoIP_Server.Server
     /// </summary>
     public partial class SettingsUserControl : UserControl
     {
+
         public SettingsUserControl()
         {
             InitializeComponent();
+
             IpAdressesComboBox.ItemsSource = GetIpAddresses();
             IpAdressesComboBox.SelectedIndex = 0;
             
@@ -32,7 +35,9 @@ namespace VoIP_Server.Server
 
         public IPAddress GetSelectedIp()
         {
-            return IpAdressesComboBox.SelectedItem as IPAddress;
+            var ipString = IpAdressesComboBox.SelectedItem.ToString();
+
+            return IPAddress.Parse(ipString.Split(new string[] { ":/" }, StringSplitOptions.None)[1]);
         }
 
         public int GetPort()
@@ -42,18 +47,38 @@ namespace VoIP_Server.Server
 
 
 
-        private IPAddress[] GetIpAddresses()
+        private string[] GetIpAddresses()
         {
-            IPAddress[] ipv4Addresses = Array.FindAll(
-                Dns.GetHostEntry(string.Empty).AddressList,
-                a => a.AddressFamily == AddressFamily.InterNetwork);
+            List<string> interfaces = new List<string>();
 
-            return ipv4Addresses.Reverse().ToArray();
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            var interfaceName = ni.Name + ":/" + ip.Address.ToString();
+                            interfaces.Add(interfaceName);
+                        }
+                    }
+                }
+                
+            }
+
+            return interfaces.ToArray();
+
+            //IPAddress[] ipv4Addresses = Array.FindAll(
+            //    Dns.GetHostEntry(string.Empty).AddressList,
+            //    a => a.AddressFamily == AddressFamily.InterNetwork);
+
+            //return ipv4Addresses.Reverse().ToArray();
         }
 
+        private void IpAdressesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
-
-
-
+        }
     }
 }

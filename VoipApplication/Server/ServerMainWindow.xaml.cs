@@ -48,17 +48,17 @@ namespace VoIP_Server
         {
             server = new MainServer();
             server.ServerConsoleWriteEvent += UpdateServerLog;
-            //server.CreateServer(IPAddress.Loopback, settingUserControl.GetPort());
-            server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
+            server.ServerMessageBoxShowEvent += ShowAlert;
+            server.CreateServer(IPAddress.Loopback, settingUserControl.GetPort());
             InitializeComponent();
             LoadGrid(currentPage);
             onlineUsers = server.GetOnlineClients();
             server.RemoveOfflineUserEvent += RemoveDisconnecteUser;
         }
 
-        private void CloseAllWindows()
+        private void ShowAlert(string msg)
         {
-
+            MessageBox.Show(msg);
         }
         public void UpdateServerLog(string message)
         {
@@ -71,18 +71,29 @@ namespace VoIP_Server
         }
 
         private void RunServerButton_Click(object sender, RoutedEventArgs e)
-        {   
-            if (!server.Running)
+        {   try
             {
-                server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
-                settingUserControl.CurrentIPLabel.Content = settingUserControl.GetSelectedIp() + ":"+settingUserControl.GetPort();
-                server.RunAsync();
-                
+                if (!server.Running)
+                {
+                    server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
+                    settingUserControl.CurrentIPLabel.Content = settingUserControl.GetSelectedIp() + ":" + settingUserControl.GetPort();
+                    server.RunAsync();
+
+                }
+                else
+                {
+                    settingUserControl.CurrentIPLabel.Content = "";
+                    server.StopRunning();
+                }
             }
-            else
+            catch(Exception ex)
             {
-                server.StopRunning();
+                settingUserControl.CurrentIPLabel.Content = "";
+                MessageBox.Show(ex.Message);
+                return;
             }
+
+
 
 
             RunServerButton.Content = server.Running ? "Online" : "Offline";

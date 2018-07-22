@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using VoIP_Server;
 using VoIP_Server.Client;
+using cscprotocol;
 
 namespace VoIP_Client
 {

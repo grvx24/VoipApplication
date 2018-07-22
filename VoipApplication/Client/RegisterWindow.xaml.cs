@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VoIP_Server;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -33,7 +34,9 @@ namespace VoIP_Client
 
         private void Register()
         {
-            CscUserData userData = new CscUserData() { Email = RegisterEmailTextBox.Text, Password = RegisterEmailTextBox.Text };
+
+            CscUserData userData = new CscUserData() { Email = RegisterEmailTextBox.Text,
+                Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterPasswordTextBox.Password) };
             var bytesToSend = protocol.CreateRegistrationMessage(userData);
             client.SendBytes(bytesToSend);
 

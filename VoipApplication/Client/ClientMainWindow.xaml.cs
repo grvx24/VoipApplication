@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VoIP_Server;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -122,6 +123,11 @@ namespace VoIP_Client
             CustomUserControl.Content = friendsListGrid;
         }
 
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
 
         public void LeaveServer()
@@ -174,6 +180,10 @@ namespace VoIP_Client
 
         }
 
+        private void LogOut(object sender, RoutedEventArgs e)
+        {
+
+        }
 
     }
 }
