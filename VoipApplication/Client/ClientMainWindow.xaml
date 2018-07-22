@@ -27,8 +27,8 @@
             <Image Source="/VoIP_Server;component/broccoli.png" />
 
         </StackPanel>
-        <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,-0.4,0.4">
-            <UserControl Name="CustomUserControl" Margin="0,0,-10,0"/>
+        <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,0,0">
+            <UserControl Name="CustomUserControl" Margin="0,0,0,0"/>
         </Grid>
 
     </Grid>

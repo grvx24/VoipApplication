@@ -48,6 +48,7 @@ namespace VoIP_Client
 
                 client.ConnectionLostEvent += LeaveServer;
                 client.SetProfileText += UpdateProfileEmail;
+                client.AddSearchEvent += AddSearchUser;
             }
             else
             {
@@ -69,6 +70,7 @@ namespace VoIP_Client
 
                 this.client.ConnectionLostEvent += LeaveServer;
                 this.client.SetProfileText += UpdateProfileEmail;
+                this.client.AddSearchEvent += AddSearchUser;
             }
 
             InitializeComponent();
@@ -175,6 +177,10 @@ namespace VoIP_Client
                 Dispatcher.Invoke(new Action(() => client.FriendsList.Remove(friend)));
                 client.FriendsList.Add(newUser);
             }
+        }
+        public void AddSearchUser(CscUserMainData user)
+        {
+            Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user)));
         }
     }
 }

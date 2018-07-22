@@ -127,6 +127,21 @@ namespace VoIP_Server
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
+        private void SendSearchList(TcpClient client, string text)
+        {
+            var queryResult = serverDB.Users.Where(u => u.Email.Contains(text));
+
+            foreach (var user in queryResult)
+            {
+                CscUserMainData searchedUserData = new CscUserMainData()
+                { FriendName = user.Email, Email = user.Email, Id = user.UserId,
+                    Status = OnlineUsers.Any(u => u.Email == user.Email) ? 1 : 0,
+                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none" };
+
+                var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
+                client.GetStream().Write(message, 0, message.Length);
+            }
+        }
 
         private void SendOnlineUsersList(TcpClient client)
         {
@@ -355,6 +370,14 @@ namespace VoIP_Server
                             var buffer = cscProtocol.CreateConfirmMessage("Hasło zostało zmienione.");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
+                        break;
+                    }
+
+                case 8://wyszukiwanie userow ktorych email zawiera podana fraze
+                    {
+                        var text = Encoding.Unicode.GetString(receivedMessage.ToArray());
+                        ServerConsoleWriteEvent.Invoke("Prośba od " + connectedUser.Id + " o userów zawierających w adresie e-mail frazę " + text);
+                        SendSearchList(connectedUser.Client, text);
                         break;
                     }
 

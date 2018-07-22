@@ -55,6 +55,18 @@ namespace cscprotocol
                 return result;
         }
 
+        //user pasujacy
+        public byte[] CreateSearchUserDataResponse(CscUserMainData searchUserData)
+        {
+            var searchUserAsBytes = CscProtocol.Serialize(searchUserData);
+            var message = new byte[3 + searchUserAsBytes.Length];
+            message[0] = 3;
+            BitConverter.GetBytes((UInt16)searchUserAsBytes.Length).CopyTo(message, 1);
+            searchUserAsBytes.CopyTo(message, 3);
+
+            return message;
+        }
+
         //dowolny uzytkownik z listy ulubionych
         public byte[] CreateFriendUserDataMessage(CscUserMainData friendsUserData)
         {
@@ -162,6 +174,10 @@ namespace cscprotocol
 
         #endregion
 
+
+
+
+
         #region Client methods
 
         public static string ParseConfirmMessage(byte[] message)
@@ -236,6 +252,7 @@ namespace cscprotocol
 
             return fullData;
         }
+
         public byte[] CreateChangePasswordMessage(CscPasswordData userData)
         {
             var mainMessage = Serialize(userData);
@@ -248,6 +265,21 @@ namespace cscprotocol
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 
             return fullData;
+        }
+
+        public byte[] CreateSearchUserRequest(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 8;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
         }
 
         #endregion

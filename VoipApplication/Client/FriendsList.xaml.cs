@@ -108,5 +108,11 @@ namespace VoIP_Client
         {
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
+
+        private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientSearchWindow window = new ClientSearchWindow(FriendsListDataGrid, client);
+            window.Show();
+        }
     }
 }

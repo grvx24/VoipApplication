@@ -38,6 +38,7 @@ namespace VoIP_Client
         public event ChangeItem AddItemEvent;
         public event ChangeItem AddFriendEvent;
         public event ChangeItem RemoveFriendEvent;
+        public event ChangeItem AddSearchEvent;
 
         public Client()
         {
@@ -57,6 +58,7 @@ namespace VoIP_Client
 
         public ObservableCollection<CscUserMainData> FriendsList = new ObservableCollection<CscUserMainData>();
         public ObservableCollection<CscUserMainData> onlineUsers = new ObservableCollection<CscUserMainData>();
+        public ObservableCollection<CscUserMainData> SearchedUsers = new ObservableCollection<CscUserMainData>();
 
         public ObservableCollection<CscUserMainData> GetFriendsList()
         {
@@ -75,6 +77,17 @@ namespace VoIP_Client
             if (onlineUsers != null)
             {
                 return onlineUsers;
+            }
+            else
+            {
+                throw new NullReferenceException("OnlineUsers list is null");
+            }
+        }
+        public ObservableCollection<CscUserMainData> GeSearchUsers()
+        {
+            if (SearchedUsers != null)
+            {
+                return SearchedUsers;
             }
             else
             {
@@ -100,9 +113,15 @@ namespace VoIP_Client
             var msg = protocol.CreateChangeEmailMessage(userData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
+
         public void SendChangePasswordRequest(CscPasswordData userData)
         {
             var msg = protocol.CreateChangePasswordMessage(userData);
+            client.GetStream().Write(msg, 0, msg.Length);
+        }
+        public void SendSearchUserRequest(string text)
+        {
+            var msg = protocol.CreateSearchUserRequest(text);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
@@ -131,6 +150,17 @@ namespace VoIP_Client
         {
             switch (commandNumber)
             {
+                case 3://odebranie kontaktow pasujacych do frazy wpisanej w pole search
+                    {
+                        var searchUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        if (searchUser.Email != UserProfile.Email)
+                        {
+                            if (AddSearchEvent != null)
+                                AddSearchEvent.Invoke(searchUser);
+                        }
+                        break;
+                    }
+
                 case 6:
 
                     var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
