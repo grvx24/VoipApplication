@@ -210,17 +210,19 @@ namespace VoIP_Server
                         }
 
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
-                        var passwordFromDB = queryResult.Password;
 
-                        var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
-
-                        if (!(hashWithSalt == userData.Password))
-                        {
-                            queryResult = null;
-                        }
 
                         if (queryResult != null)
                         {
+
+                            var passwordFromDB = queryResult.Password;
+
+                            var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
+
+                            if (!(hashWithSalt == userData.Password))
+                            {
+                                queryResult = null;
+                            }
 
                             ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                             user.Email = queryResult.Email;
