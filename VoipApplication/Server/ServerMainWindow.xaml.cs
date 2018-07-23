@@ -21,10 +21,6 @@ using VoipApplication;
 
 namespace VoIP_Server
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class ServerMainWindow : Window
     {
         //front end info
@@ -48,7 +44,7 @@ namespace VoIP_Server
         {
             server = new MainServer();
             server.ServerConsoleWriteEvent += UpdateServerLog;
-            //server.CreateServer(IPAddress.Loopback, settingUserControl.GetPort());
+            server.ServerMessageBoxShowEvent += ShowAlert;
             server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
             InitializeComponent();
             LoadGrid(currentPage);
@@ -56,9 +52,10 @@ namespace VoIP_Server
             server.RemoveOfflineUserEvent += RemoveDisconnecteUser;
         }
 
-        private void CloseAllWindows()
+        private void ShowAlert(string msg)
         {
-
+            settingUserControl.CurrentIPLabel.Content = "";
+            MessageBox.Show(msg);
         }
         public void UpdateServerLog(string message)
         {
@@ -81,6 +78,7 @@ namespace VoIP_Server
             }
             else
             {
+                settingUserControl.CurrentIPLabel.Content = "";
                 server.StopRunning();
             }
 
