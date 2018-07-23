@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VoIP_Server"
         mc:Ignorable="d"
         Title="DB_AddUserWindow" Height="300" Width="300">
-    <StackPanel Background="Orange">
+    <StackPanel Background="Green">
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Email
         </TextBlock>
