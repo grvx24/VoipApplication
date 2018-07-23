@@ -43,6 +43,9 @@ namespace cscprotocol
                 return (new BinaryFormatter()).Deserialize(memoryStream);
         }
 
+
+
+
         #region ServerMethods
 
         public CscUserData ReadUserData(byte[] message)
@@ -170,6 +173,20 @@ namespace cscprotocol
 
             return result;
         }
+        public byte[] CreateDiffieHellmanMessage(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 0;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
 
 
         #endregion
@@ -280,6 +297,19 @@ namespace cscprotocol
             mainMessage.CopyTo(result, lenghtBytes.Length + 1);
 
             return result;
+        }
+        public byte[] CreateAddUserToFriendsListDataMessage(CscChangeFriendData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
+
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 4;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
         }
 
         #endregion

@@ -88,14 +88,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\FriendsListEditWindow.xaml.cs">
+      <DependentUpon>FriendsListEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Client\ClientSearchWindow.xaml.cs">
       <DependentUpon>ClientSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client\Profile.xaml.cs">
       <DependentUpon>Profile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CPOL\BigInt.cs" />
+    <Compile Include="CPOL\DiffieHellman.cs" />
+    <Compile Include="CPOL\StrongNumberProvider.cs" />
+    <Compile Include="CscProtocol\CscAes.cs" />
     <Compile Include="CscProtocol\CscPasswordData.cs" />
     <Compile Include="CscProtocol\CscSHA512Generator.cs" />
+    <Compile Include="CscProtocol\CscChangeFriendData.cs" />
     <Compile Include="EmailValidator.cs" />
     <Compile Include="FriendsList.cs">
       <DependentUpon>UsersModel.tt</DependentUpon>
@@ -158,6 +166,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Client\ClientMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Client\FriendsListEditWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -318,6 +330,7 @@
   <ItemGroup>
     <Resource Include="broccoli.png" />
     <Resource Include="MainLogo.png" />
+    <Content Include="CPOL\CPOL.htm" />
     <Content Include="UsersModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UsersModel.Context.cs</LastGenOutput>

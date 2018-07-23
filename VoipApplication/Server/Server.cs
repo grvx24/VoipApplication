@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Timers;
 using VoipApplication;
 using cscprotocol;
+using CPOL;
 
 namespace VoIP_Server
 {
@@ -292,8 +293,13 @@ namespace VoIP_Server
 
                     break;
 
-                case 4:
-                    break;
+                case 4://dodanie usera do ulubionych
+                    {
+                        var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
+                        ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " do znajomych usera " + connectedUser.Id);
+                        //niedokonczone
+                        break;
+                    }
 
                 case 6://zmiana adresu email dla polaczonego usera
                     {
@@ -381,6 +387,14 @@ namespace VoIP_Server
                         break;
                     }
 
+                case 234:
+                    {
+                        var DHclientdata = Encoding.Unicode.GetString(receivedMessage.ToArray());
+                        ServerConsoleWriteEvent.Invoke("Otrzymano od klienta " + connectedUser.Id + " dane algorytmu DiffieHellmana: " + DHclientdata);
+                        connectedUser.DH.HandleResponse(DHclientdata);
+                        break;
+                    }
+
 
 
                 default:
@@ -394,11 +408,26 @@ namespace VoIP_Server
 
             var stream = user.Client.GetStream();
 
-            var msg = cscProtocol.CreateSaltMessage(salt);
+            var encryptedsalt = new CscAes(user.DH.Key).EncryptStringToBytes(salt);//zamiana tablicy bajtow spowrotem na string w celu szyfrowania
+
+            //var msg = cscProtocol.CreateSaltMessage(salt);
+            var msg = cscProtocol.CreateSaltMessage(Encoding.Unicode.GetString(encryptedsalt.ToArray()));
 
             stream.Write(msg, 0, msg.Length);
 
             return salt;
+        }
+        private string SendDiffieHellman(ConnectedUsers user)
+        {
+            var DHdata = user.DH.ToString();
+
+            var stream = user.Client.GetStream();
+
+            var msg = cscProtocol.CreateDiffieHellmanMessage(DHdata);
+
+            stream.Write(msg, 0, msg.Length);
+
+            return DHdata;
         }
 
 
@@ -414,6 +443,29 @@ namespace VoIP_Server
                 //{
                 //    AutoFlush = true
                 //};
+
+                user.DH = new DiffieHellman(256).GenerateRequest();
+                SendDiffieHellman(user);
+
+                //odbieranie DiffieHellmana od klienta
+                {
+                    byte[] request = new byte[3];
+                    var l1 = await networkStream.ReadAsync(request, 0, request.Length);
+
+                    var msgLen = BitConverter.ToUInt16(request.Skip(1).ToArray(), 0);
+
+                    byte[] buffer = new byte[msgLen];
+                    var l2 = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+
+                    if (buffer != null)
+                    {
+                        ExecuteCSCCommand(user, request[0], buffer);
+                    }
+                }
+
+                ////////////////////////////////////
+                //odtad wszystko co odbieramy powinno juz byc zaszyfrowane
+                ////////////////////////////////////
 
                 user.Salt = SendSalt(user);//wysyłanie soli
 
