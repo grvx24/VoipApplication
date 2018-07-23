@@ -13,7 +13,7 @@ using System.Timers;
 using VoipApplication;
 using cscprotocol;
 using CPOL;
-
+//wersja final
 namespace VoIP_Server
 {
 
@@ -147,9 +147,13 @@ namespace VoIP_Server
             foreach (var user in queryResult)
             {
                 CscUserMainData searchedUserData = new CscUserMainData()
-                { FriendName = user.Email, Email = user.Email, Id = user.UserId,
+                {
+                    FriendName = user.Email,
+                    Email = user.Email,
+                    Id = user.UserId,
                     Status = OnlineUsers.Any(u => u.Email == user.Email) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none" };
+                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none"
+                };
 
                 var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
                 client.GetStream().Write(message, 0, message.Length);
@@ -198,7 +202,7 @@ namespace VoIP_Server
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
                         //tu bedzie trza jeszcze odszyfrowac itd, póki co jest jawnie
-                        ServerConsoleWriteEvent.Invoke("Próba zalogowania: " + userData.Email + " : " + userData.Password);
+                        //ServerConsoleWriteEvent.Invoke("Próba zalogowania: " + userData.Email + " : " + userData.Password);
 
                         var onlineUser = OnlineUsers.Where(e => e.Email == userData.Email).FirstOrDefault();
 
@@ -211,32 +215,35 @@ namespace VoIP_Server
 
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
 
-
                         if (queryResult != null)
                         {
 
                             var passwordFromDB = queryResult.Password;
 
                             var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
-
-                            if (!(hashWithSalt == userData.Password))
+                            
+                            if (hashWithSalt == userData.Password)
                             {
-                                queryResult = null;
+                                ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
+                                user.Email = queryResult.Email;
+                                user.Id = queryResult.UserId;
+
+                                var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
+                                connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+
+                                ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
                             }
-
-                            ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
-                            user.Email = queryResult.Email;
-                            user.Id = queryResult.UserId;
-
-                            var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
-                            connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
-
-                            ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
+                            else
+                            {
+                                ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password + " =/= " + hashWithSalt);
+                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Hasło niepoprawne");
+                                connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
+                            }
                         }
                         else
                         {
-                            ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password);
-                            var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania");
+                            ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email);
+                            var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Taki użytkownik nie istnieje.");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -369,7 +376,6 @@ namespace VoIP_Server
                 case 7://zmiana hasla dla polaczonego usera
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscPasswordData;
-                        ServerConsoleWriteEvent.Invoke("Próba zmiany hasla dla UserID" + connectedUser.Id);
 
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
@@ -377,7 +383,7 @@ namespace VoIP_Server
 
                         if (!(hashWithSalt == userData.OldPassword))
                         {
-                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id);
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id + " z " + passwordFromDB + " na " + userData.NewPassword);
                             var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
@@ -425,7 +431,8 @@ namespace VoIP_Server
             var encryptedsalt = new CscAes(user.DH.Key).EncryptStringToBytes(salt);//zamiana tablicy bajtow spowrotem na string w celu szyfrowania
 
             //var msg = cscProtocol.CreateSaltMessage(salt);
-            var msg = cscProtocol.CreateSaltMessage(Encoding.Unicode.GetString(encryptedsalt.ToArray()));
+            //var msg = cscProtocol.CreateSaltMessage(Encoding.Unicode.GetString(encryptedsalt.ToArray()));
+            var msg = cscProtocol.CreateSaltMessage(encryptedsalt);
 
             stream.Write(msg, 0, msg.Length);
 
@@ -482,6 +489,7 @@ namespace VoIP_Server
                 ////////////////////////////////////
 
                 user.Salt = SendSalt(user);//wysyłanie soli
+                ServerConsoleWriteEvent.Invoke("Wysłano sól " + user.Salt);
 
                 while (running)
                 {
