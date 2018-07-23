@@ -18,7 +18,7 @@
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Znajomi"/>
             </Button>
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="FriendsListButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Instrukcja"/>
             </Button>
             <Button Background="Red" BorderBrush="Green" x:Name="ServerLogButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
@@ -27,8 +27,8 @@
             <Image Source="/VoIP_Server;component/broccoli.png" />
 
         </StackPanel>
-        <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,-0.4,0.4">
-            <UserControl Name="CustomUserControl" Margin="0,0,-10,0"/>
+        <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,0,0">
+            <UserControl Name="CustomUserControl" Margin="0,0,0,0"/>
         </Grid>
 
     </Grid>

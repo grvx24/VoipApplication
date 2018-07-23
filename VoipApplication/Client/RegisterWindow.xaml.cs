@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VoIP_Server;
 using cscprotocol;
+using VoipApplication;
 
 namespace VoIP_Client
 {
@@ -33,9 +34,12 @@ namespace VoIP_Client
 
 
         private void Register()
-        {            
-            CscUserData userData = new CscUserData() { Email = RegisterEmailTextBox.Text,
-                Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterEmailTextBox.Text) };
+        {
+            CscUserData userData = new CscUserData()
+            {
+                Email = RegisterEmailTextBox.Text,
+                Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterPasswordTextBox.Password)
+            };
             var bytesToSend = protocol.CreateRegistrationMessage(userData);
             client.SendBytes(bytesToSend);
 
@@ -59,6 +63,11 @@ namespace VoIP_Client
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!EmailValidator.IsValid(RegisterEmailTextBox.Text))
+            {
+                MessageBox.Show("Adres email niepoprawny!");
+                return;
+            }
             Register();
         }
 

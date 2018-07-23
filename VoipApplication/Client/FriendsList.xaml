@@ -8,7 +8,7 @@
              d:DesignHeight="460" d:DesignWidth="650">
     <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
         <Grid HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="100" MinWidth="600" Background="DarkOliveGreen"  Margin="0,0,0.4,0" Width="654">
-            <Button Background="LightGreen" Margin="10,25,471,25" MinHeight="50" Width="120">
+            <Button Name="ClientSearchButton" Background="LightGreen" Margin="10,25,471,25" MinHeight="50" Width="120" Click="ClientSearchButton_Click">
                 <TextBlock Foreground="Black" TextWrapping="Wrap"><Run Text="Wyszukaj "/><Run Text="kontakty"/></TextBlock>
             </Button>
             <Button Background="LightGreen" Name="OnlineUsersButton" Margin="161,25,320,25" MinHeight="50" Width="120" Click="OnlineUsersButton_Click">
@@ -36,13 +36,14 @@
                 <DataGridTemplateColumn Header="Opcje" Width="*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
+                            <StackPanel Orientation="Horizontal" Background="LightGreen" HorizontalAlignment="Center" Width="150" Margin="0,100,0,0.4">
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonwEdit_Click" >Edytuj</Button>
+                            </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    
+
                 </DataGridTemplateColumn>
-                
-                
 
             </DataGrid.Columns>
         </DataGrid>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using cscprotocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,8 +41,22 @@ namespace VoIP_Server
         {
             try
             {
+                if (!EmailValidator.IsValid(EmailTextBox.Text))
+                {
+                    MessageBox.Show("Adres email niepoprawny!");
+                    return;
+                }
+
+                VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
+                var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);
+                if (!(queryEmailResult == null))
+                {
+                    MessageBox.Show("Podany adres email jest już zajęty!");
+                    return;
+                }
+
                 user.Email = EmailTextBox.Text;
-                user.Password = PasswordTextBox.Text;
+                user.Password = CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Text);
 
                 manager.EditUser(user);
 

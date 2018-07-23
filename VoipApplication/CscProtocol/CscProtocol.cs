@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoIP_Server
+namespace cscprotocol
 {
 
 
@@ -33,7 +33,7 @@ namespace VoIP_Server
             var length = BitConverter.ToUInt16(lengthArray, 0);
 
 
-            using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length+1).Take(length).ToArray()))
+            using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length + 1).Take(length).ToArray()))
                 return (new BinaryFormatter()).Deserialize(memoryStream);
         }
 
@@ -45,11 +45,11 @@ namespace VoIP_Server
 
 
 
+
         #region ServerMethods
 
         public CscUserData ReadUserData(byte[] message)
         {
-
             var result = DeserializeWithLengthInfo(message) as CscUserData;
 
             if (result == null)
@@ -58,10 +58,21 @@ namespace VoIP_Server
                 return result;
         }
 
+        //user pasujacy
+        public byte[] CreateSearchUserDataResponse(CscUserMainData searchUserData)
+        {
+            var searchUserAsBytes = CscProtocol.Serialize(searchUserData);
+            var message = new byte[3 + searchUserAsBytes.Length];
+            message[0] = 3;
+            BitConverter.GetBytes((UInt16)searchUserAsBytes.Length).CopyTo(message, 1);
+            searchUserAsBytes.CopyTo(message, 3);
+
+            return message;
+        }
+
         //dowolny uzytkownik z listy ulubionych
         public byte[] CreateFriendUserDataMessage(CscUserMainData friendsUserData)
         {
-            
             var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + friendsAsBytes.Length];
             message[0] = 9;
@@ -74,7 +85,6 @@ namespace VoIP_Server
         //uzytkownik online
         public byte[] CreateOnlineUserDataMessage(CscUserMainData friendsUserData)
         {
-
             var users = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + users.Length];
             message[0] = 8;
@@ -86,7 +96,6 @@ namespace VoIP_Server
         //uzytkownik offline
         public byte[] CreateOfflineUserDataMessage(CscUserMainData friendsUserData)
         {
-
             var users = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + users.Length];
             message[0] = 7;
@@ -112,25 +121,21 @@ namespace VoIP_Server
         {
             if (!string.IsNullOrEmpty(message))
             {
-
                 var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
 
-                byte[] result = new byte[mainMessage.Length + lenghtBytes.Length+1];
+                byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
                 result[0] = 12;
 
                 lenghtBytes.CopyTo(result, 1);
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-                
-                return result;
 
+                return result;
             }
             else
-            {
-                throw new ArgumentNullException("Message cannot be null");
-            }
+            { throw new ArgumentNullException("Message cannot be null"); }
         }
 
 
@@ -138,7 +143,6 @@ namespace VoIP_Server
         {
             if (!string.IsNullOrEmpty(message))
             {
-
                 var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
@@ -150,43 +154,70 @@ namespace VoIP_Server
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
 
                 return result;
-
             }
             else
-            {
-                throw new ArgumentNullException("Message cannot be null");
-            }
+            { throw new ArgumentNullException("Message cannot be null"); }
         }
 
+        public byte[] CreateSaltMessage(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 1;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
+        public byte[] CreateDiffieHellmanMessage(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 0;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
+
+
         #endregion
+
+
+
+
 
         #region Client methods
 
         public static string ParseConfirmMessage(byte[] message)
         {
-            var lenght=BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(),0);
+            var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
 
             string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
             return text;
-
         }
-
-
 
         public byte[] CreateLoginMessage(CscUserData userData)
         {
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
-            
+
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
             byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
             fullData[0] = 0;
             lenghtBytes.CopyTo(fullData, 1);
-            mainMessage.CopyTo(fullData, lenghtBytes.Length+1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 
             return fullData;
-
         }
 
         public byte[] CreateRegistrationMessage(CscUserData userData)
@@ -202,7 +233,6 @@ namespace VoIP_Server
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 
             return fullData;
-
         }
 
 
@@ -225,8 +255,62 @@ namespace VoIP_Server
 
             return result;
         }
+        public byte[] CreateChangeEmailMessage(CscUserData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
 
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 6;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
+
+        public byte[] CreateChangePasswordMessage(CscPasswordData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
+
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 7;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
+
+        public byte[] CreateSearchUserRequest(string message)
+        {
+            var mainMessage = Encoding.Unicode.GetBytes(message);
+            UInt16 messageLength = (UInt16)mainMessage.Length;
+            var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+            result[0] = 8;
+
+            lenghtBytes.CopyTo(result, 1);
+            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+            return result;
+        }
+        public byte[] CreateAddUserToFriendsListDataMessage(CscChangeFriendData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
+
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 4;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
 
         #endregion
     }

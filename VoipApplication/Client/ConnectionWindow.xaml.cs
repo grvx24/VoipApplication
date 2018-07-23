@@ -13,7 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Diagnostics;
+using CPOL;
+using cscprotocol;
 
 namespace VoIP_Client
 {
@@ -40,6 +42,53 @@ namespace VoIP_Client
 
                 if (client.IsConnected)
                 {
+                    //odbieranie DiffieHellmana od serwera
+
+                    byte[] cmdAndLength = new byte[3];
+                    var l1 = client.client.GetStream().Read(cmdAndLength, 0, cmdAndLength.Length);
+                    var msgLen = BitConverter.ToUInt16(cmdAndLength.Skip(1).ToArray(), 0);
+
+                    byte[] buffer = new byte[msgLen];
+                    var l2 = client.client.GetStream().Read(buffer, 0, buffer.Length);
+
+                    var DHdata = Encoding.Unicode.GetString(buffer);
+
+                    DiffieHellman DHclient = new DiffieHellman(256).GenerateResponse(DHdata);
+
+                    //////////////////////////
+                    //wysylanie DiffieHellmana do serwera
+                    
+                    var mainMessage = Encoding.Unicode.GetBytes(DHclient.ToString());
+
+                    UInt16 messageLength = (UInt16)mainMessage.Length;
+                    var lenghtBytes = BitConverter.GetBytes(messageLength);
+
+                    byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+                    result[0] = 234;//wazne ustalic kod dla DiffieHellmana od klienta od serwera
+
+                    lenghtBytes.CopyTo(result, 1);
+                    mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
+                    client.client.GetStream().Write(result, 0, result.Length);
+
+                    ////////////////////////////////////
+                    //odtad wszystko co odbieramy powinno juz byc zaszyfrowane
+                    ////////////////////////////////////
+
+                    var aes = new CscAes(DHclient.Key);
+
+                    cmdAndLength = new byte[3];
+                    l1 = client.client.GetStream().Read(cmdAndLength, 0, cmdAndLength.Length);
+                    msgLen = BitConverter.ToUInt16(cmdAndLength.Skip(1).ToArray(), 0);
+
+                    buffer = new byte[msgLen];
+                    l2 = client.client.GetStream().Read(buffer, 0, buffer.Length);
+
+
+                    //var salt = Encoding.Unicode.GetString(buffer);
+                    //client.salt = salt;
+                    client.salt = aes.DecryptStringFromBytes(buffer);
+
                     LoginWindow window = new LoginWindow(client);
                     window.Show();
                     this.Close();

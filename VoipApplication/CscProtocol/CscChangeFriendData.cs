@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace cscprotocol
 {
     [Serializable]
-    public class CscUserData
+    public class CscChangeFriendData
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public int Id { get; set; }
+        public string FriendName { get; set; }
     }
 }

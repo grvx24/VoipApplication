@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CPOL;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace VoIP_Server
         public int Status { get; set; }
         public string Ip { get; set; }
         public TcpClient Client { get; set; }
+        public string Salt { get; set; }
+        public string EncryptionKey { get; set; }
+        public DiffieHellman DH { get; set; }
 
         public ConcurrentStack<ConnectedUsers> NewOnlineUsers = new ConcurrentStack<ConnectedUsers>();
         public ConcurrentStack<ConnectedUsers> UsersToRemove = new ConcurrentStack<ConnectedUsers>();
