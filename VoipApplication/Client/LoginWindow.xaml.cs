@@ -32,7 +32,7 @@ namespace VoIP_Client
             this.client = client;
             protocol = new CscProtocol();
         }
-        
+
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
@@ -44,16 +44,20 @@ namespace VoIP_Client
 
             try
             {
-                CscUserData userData = new CscUserData() { Email = EmailTextBox.Text,
-                    Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt) };
+                CscUserData userData = new CscUserData()
+                {
+                    Email = EmailTextBox.Text,
+                    Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt)
+                };
                 var bytesToSend = protocol.CreateLoginMessage(userData);
                 client.SendBytes(bytesToSend);
                 client.UserProfile.Email = EmailTextBox.Text;//n
+                //MessageBox.Show("hasło wysyłane " + userData.Password);
 
                 var response = client.ReceiveBytes();
-                if(response[0]==12)
+                if (response[0] == 12)
                 {
-                    var length=BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(),0);
+                    var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
                     var message = response.Skip(3).ToArray();
                     MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
 
@@ -78,7 +82,7 @@ namespace VoIP_Client
 
 
             }
-            catch(SocketException ex)
+            catch (SocketException ex)
             {
                 MessageBox.Show("Nastąpiło rozłączenie z serwerem: " + ex.Message);
                 client.Disconnect();
@@ -92,7 +96,7 @@ namespace VoIP_Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Wystąpił nieznany błąd: "+ex.Message);
+                MessageBox.Show("Wystąpił nieznany błąd: " + ex.Message);
             }
 
         }
