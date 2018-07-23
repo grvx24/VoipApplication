@@ -21,6 +21,7 @@ namespace VoIP_Server
     public class MainServer
     {
         public event ServerLogDelegate ServerConsoleWriteEvent;
+        public event ServerLogDelegate ServerMessageBoxShowEvent;
         TcpListener listener;
         IPAddress iPAddress;
         int port;
@@ -73,9 +74,20 @@ namespace VoIP_Server
 
         public async void RunAsync()
         {
-            running = true;
-            listener.Start();
-            ServerConsoleWriteEvent.Invoke("Serwer wystartował - Ip: " + iPAddress.ToString() + " port: " + port);
+            try
+            {
+                running = true;
+                listener.Start();
+                ServerConsoleWriteEvent.Invoke("Serwer wystartował - Ip: " + iPAddress.ToString() + " port: " + port);
+            }
+            catch (Exception e)
+            {
+                running = false;
+                ServerConsoleWriteEvent.Invoke("Nie można uruchomić serwera: " + e.Message);
+                ServerMessageBoxShowEvent.Invoke("Nie można uruchomić serwera: " + e.Message);
+                return;
+            }
+
 
             while (running)
             {
