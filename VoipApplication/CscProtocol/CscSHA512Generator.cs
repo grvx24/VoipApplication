@@ -11,16 +11,16 @@ namespace cscprotocol
     {
         public static byte[] get_SHA512_hash(string data_as_string)
         {
-            byte[] data = Encoding.ASCII.GetBytes(data_as_string);
+            byte[] data = Encoding.Unicode.GetBytes(data_as_string);
             SHA512 sha = SHA512Managed.Create();
             return sha.ComputeHash(data);
         }
         public static string get_SHA512_hash_as_string(string data_as_string)
         {
-            byte[] data = Encoding.ASCII.GetBytes(data_as_string);
+            byte[] data = Encoding.Unicode.GetBytes(data_as_string);
             SHA512 sha = SHA512Managed.Create();
             var hash = sha.ComputeHash(data);
-            return Encoding.ASCII.GetString(hash);
+            return Encoding.Unicode.GetString(hash);
         }
         public static string RandomString(int length)
         {
