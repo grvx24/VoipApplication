@@ -1,397 +1,433 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
-using VoIP_Server;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace VoIP_Client
 {
 
-    //Cała klasa jest do naprawy :)
-
-
-    public static class CallCommands
-    {
-        public static string INVITE = "INVITE:";
-        public static string CANCEL = "CANCEL";
-        public static string ACK = "ACK";
-        public static string BYE = "BYE";
-        public static string OK = "OK:";
-    }
-
-    public class CallingEventArgs : EventArgs
-    {
-        public string Nick { get; set; }
-        public string Ip { get; set; }
-        public bool Encrypted{ get; set; }
-    }
-
-    public enum CallState { Waiting, Answer, Reject, }
     public class CallingService
     {
-        TcpListener listener;
-        public string Ip { get; private set; }
-        public int Port { get; private set; }
-
-        TcpClient tcpClient;
-        bool isListening = false;
-        public bool isCalling = false;
-        public bool isBusy = false;
-        bool waitingForAnswer = false;
-        bool isTalking = false;
-
-        TcpClient currentClient;
-
-        public VoiceChatClient chatClient;
-
-        public CallState callState = CallState.Waiting;
-
-        //events
-        public delegate void CallInfo(object sender, CallingEventArgs e, TcpClient client);
-        public event CallInfo OnCallingEvent;
-
-        public delegate void Debug(string msg);
-        public event Debug InfoEvent;
-
-
-        public CallingService(IPAddress ip,int listenPort)
+        private class Commands
         {
-            chatClient = new VoiceChatClient(ip,listenPort);
+            public static string Invite = "INVITE";
+            public static string Ack = "ACK";
+            public static string Reject = "REJECT";
+            public static string Bye = "BYE";
+            public static string Busy = "BUSY";
+            public static string Cancel = "CANCEL";
+        }
 
-            Port = listenPort;
-            listener = new TcpListener(ip, listenPort);
-            Ip = ip.ToString();
+        public TcpClient ConnectedClient { get; private set; }
+
+        public delegate void CallAlert(string name);
+        public delegate void EndCallAlert();
+        public delegate void ErrorAlert(string name);
+        public delegate void VoiceSending();
+        public delegate void UdpListening(IPEndPoint endPoint);
+
+        public event CallAlert IncomingCallEvent;
+        public event CallAlert MakeCallEvent;
+        public event CallAlert TalkEvent;
+        public event EndCallAlert EndCall;
+        public event ErrorAlert ErrorEvent;
+
+        public event VoiceSending UDPSenderStart;
+        public event VoiceSending UDPSenderStop;
+        public event UdpListening UDPListenerStart;
+
+
+
+        private TcpClient hostTcpClient;
+        private TcpListener tcpListener;
+
+
+        public volatile bool connected = false;
+        public volatile bool isListening = false;
+        public volatile bool isBusy = false;
+
+        IPEndPoint localEndPoint;
+
+        public CallingService(IPEndPoint endPoint)
+        {
+            localEndPoint = endPoint;
         }
 
 
-        public CallingService(int listenPort)
+        public async void StartListening()
         {
-            chatClient = new VoiceChatClient(listenPort);
+            tcpListener = new TcpListener(localEndPoint);
 
-            Port = listenPort;
-            var host=Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if(ip.AddressFamily==AddressFamily.InterNetwork)
-                {
-                    listener = new TcpListener(ip, listenPort);
-                    Ip = ip.ToString();
-                }
-            }            
-        }
+            tcpListener.Start();
+            isListening = true;
 
-        public void EndConnection()
-        {
             try
             {
-                if (currentClient != null)
+                while (isListening)
                 {
-                    StreamWriter writer = new StreamWriter(currentClient.GetStream());
-                    writer.WriteLine(CallCommands.BYE);
-                    isBusy = false;
-                    isCalling = false;
-                    currentClient.Dispose();
+                    var client = await tcpListener.AcceptTcpClientAsync();
+                    if (ConnectedClient == null)
+                    {
+                        ConnectedClient = client;
+                    }
+                    var t = Task.Run(() => HandleConnection(client));
                 }
-                InfoEvent.Invoke("...");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                InfoEvent.Invoke("...");
+
+                if (tcpListener != null)
+                {
+                    tcpListener.Stop();
+                }
+
+                ConnectedClient = null;
                 isBusy = false;
-                isCalling = false;
-                currentClient.Close();
-                currentClient.Dispose();
-                return;
+                isListening = false;
+
+                ErrorEvent.Invoke(e.Message);
+
             }
-        }
-
-        public async Task<bool> Call(UserProfile userProfile, IPEndPoint ipendpoint)
-        {
-            if(InfoEvent!=null)
-            {
-                InfoEvent.Invoke("Trwa łączenie...");
-            }
-
-            callState = CallState.Waiting;
-            tcpClient = new TcpClient();
-            var t= await Task.Run(() => MakeCall(userProfile, ipendpoint));
-
-            if (t)
-            {
-                chatClient.StartRecording(0);
-                if (InfoEvent != null)
-                    InfoEvent.Invoke("Trwa rozmowa");
-
-                return true;
-            }
-            else
-            {
-                if (InfoEvent != null)
-                    InfoEvent.Invoke("Odrzucono");
-
-                return false;
-            }
-        }
-
-        public void CancelCall()
-        {
-            chatClient.Disconnect();
-            waitingForAnswer = false;
-            isCalling = false;
-            isBusy = false;            
         }
 
         public void StopListening()
         {
-            listener.Server.Dispose();
+            ConnectedClient = null;
+            tcpListener.Stop();
+            tcpListener = null;
+            isListening = false;
         }
 
-        public void SendCancel()
+
+        private void HandleConnection(TcpClient client)
         {
-            if(currentClient!=null)
+            StreamReader streamReader = new StreamReader(client.GetStream());
+            StreamWriter streamWriter = new StreamWriter(client.GetStream())
             {
-                using (StreamWriter writer = new StreamWriter(currentClient.GetStream())
-                {
-                    AutoFlush = true
-                })
-                {
-                    writer.WriteLine(CallCommands.CANCEL);
-                }
-            }
-        }
-
-        private void ProcessCurrentConversation(object obj)
-        {
+                AutoFlush = true
+            };
 
             try
             {
-                var client = obj as TcpClient;
-
-                NetworkStream networkStream = client.GetStream();
-                StreamReader reader = new StreamReader(networkStream);
-                StreamWriter writer = new StreamWriter(networkStream)
+                if (isBusy || isCalling)
                 {
-                    AutoFlush = true
-                };
-
-                while (isTalking)
+                    //odrzuć połączenie
+                    streamWriter.WriteLine(Commands.Busy);
+                }
+                else
                 {
-                    var request = reader.ReadLine();
-
-                    if (request.StartsWith(CallCommands.CANCEL))
+                    isBusy = true;
+                    //akceptuj połączenie
+                    while (isBusy)
                     {
-                        isTalking = false;
-                        isBusy = false;
-                        chatClient.Disconnect();
-                        return;
-                    }
+                        var message = streamReader.ReadLine();
 
-                    if (request.StartsWith(CallCommands.BYE))
-                    {
-                        isTalking = false;
-                        isBusy = false;
-                        chatClient.Disconnect();
-                        return;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                isTalking = false;
-                isBusy = false;
-                chatClient.Disconnect();
-                return;
-            }
-        }
-
-        private bool MakeCall(UserProfile userProfile, IPEndPoint ipendpoint)
-        {
-
-            isBusy = true;
-            try
-            {
-                tcpClient.Connect(ipendpoint);
-
-
-                NetworkStream networkStream = tcpClient.GetStream();
-                StreamReader reader = new StreamReader(networkStream);
-                StreamWriter writer = new StreamWriter(networkStream)
-                {
-                    AutoFlush = true
-                };
-
-                if (userProfile != null)
-                {
-                    var text = CallCommands.INVITE +userProfile.Email+":" +userProfile.UserIp + ":" + userProfile.UserPort.ToString() + ":" + userProfile.Status;
-                    
-                    //wlaczenie udp
-                    chatClient.StartUdpListeningThread();
-                    writer.WriteLine(text);
-                    isCalling = true;
-                }
-
-                //reader.BaseStream.ReadTimeout = 5000;
-                while (isCalling)
-                {
-                    var response = reader.ReadLine();
-
-                    if (response.StartsWith(CallCommands.CANCEL))
-                    {
-                        chatClient.Disconnect();
-                        isCalling = false;
-                        isBusy = false;
-                        return false;
-                    }
-
-                    if(response.StartsWith(CallCommands.OK))
-                    {
-                        var msg = response.Split(new char[] { ':' });
-                        var receivedIP = msg[1];
-
-                        chatClient.Connect(new IPEndPoint(IPAddress.Parse(receivedIP), 2999));
-                        writer.WriteLine(CallCommands.ACK);
-                        isCalling = false;
-                        isTalking = true;
-                        ThreadPool.QueueUserWorkItem(ProcessCurrentConversation, tcpClient);
-                        return true;
-                    }
-
-                }
-                tcpClient.Close();
-                isBusy = false;
-                return false;
-                
-            }
-            catch (Exception)
-            {
-                InfoEvent.Invoke("Odrzucono");
-                chatClient.Disconnect();
-                tcpClient.Close();
-                isBusy = false;
-                return false;
-            }
-        }
-
-
-        public async void ListenIncomingCalls()
-        {
-            isListening = true;
-            listener.Start();
-
-            while (isListening)
-            {
-                try
-                {
-                    var client = await listener.AcceptTcpClientAsync();
-                    currentClient = client;
-                    var t= Task.Run(() => HandleConnection(currentClient));
-                }
-                catch (Exception)
-                {
-                    return;
-                }
-            }
-        }
-
-
-        private async void HandleConnection(TcpClient client)
-        {
-            try
-            {
-                NetworkStream networkStream = client.GetStream();
-                StreamReader reader = new StreamReader(networkStream);
-                StreamWriter writer = new StreamWriter(networkStream)
-                {
-                    AutoFlush = true
-                };
-
-
-                if (isBusy)
-                {
-                    writer.WriteLine(CallCommands.CANCEL);
-                    client.Dispose();
-                    return;
-                }
-
-                string ip = "";
-
-                while (isListening)
-                {
-                    var request = await reader.ReadLineAsync();
-
-                    if(request!=null)
-                    {
-                        if (request.StartsWith(CallCommands.CANCEL))
+                        if (message.StartsWith(Commands.Invite))
                         {
-                            isBusy = false;
-                            chatClient.Disconnect();
+                            IncomingCallEvent.Invoke("Ktoś dzwoni: " + message);
                         }
 
-                        if (request.StartsWith(CallCommands.BYE))
+                        if (message.StartsWith(Commands.Cancel))
                         {
-                            isBusy = false;
-                            chatClient.Disconnect();
-                        }
-
-                        if (request.StartsWith(CallCommands.ACK))
-                        {
-                            chatClient.Connect(new IPEndPoint(IPAddress.Parse(ip), 2999));
-                        }
-
-
-                        if (request.StartsWith(CallCommands.INVITE) && !isBusy)
-                        {
-                            var message = request.Split(new char[] { ':' });
-
-                            if (!string.IsNullOrEmpty(message[2]))
+                            if (EndCall != null)
                             {
-                                var name = message[1];
-                                ip = message[2];
-                                isBusy = true;
-                                OnCallingEvent.Invoke(this, new CallingEventArgs() { Nick = name, Ip = ip, Encrypted = false }, client);
-                                waitingForAnswer = true;
-
-                                while (waitingForAnswer)
-                                {
-                                    if(callState == CallState.Answer)
-                                    {
-                                        chatClient.StartUdpListeningThread();
-
-                                        writer.WriteLine(CallCommands.OK + Ip);//powinien odsylac swoje ip
-                                        waitingForAnswer = false;
-                                        callState = CallState.Waiting;
-                                    }
-                                    if(callState == CallState.Reject)
-                                    {
-                                        writer.WriteLine(CallCommands.CANCEL);
-
-                                        isBusy = false;
-                                        waitingForAnswer = false;
-                                        callState = CallState.Waiting;
-                                        chatClient.Disconnect();
-                                        client.GetStream().Close();
-                                        client.Dispose();
-                                        return;
-                                    }
-                                }
+                                EndCall.Invoke();
                             }
+
+                            if (UDPSenderStop != null)
+                            {
+                                UDPSenderStop.Invoke();
+                            }
+
+                            break;
                         }
-                    }                    
-                }                
+
+                        if (message.StartsWith(Commands.Bye))
+                        {
+                            if (EndCall != null)
+                            {
+                                EndCall.Invoke();
+                            }
+
+                            if (UDPSenderStop != null)
+                            {
+                                UDPSenderStop.Invoke();
+                            }
+
+                            break;
+                        }
+
+                    }
+                }
+                if (ConnectedClient == client)
+                {
+                    ConnectedClient = null;
+                    isBusy = false;
+                }
+
+                client.GetStream().Close();
+                client.Close();
+
+
             }
             catch (Exception e)
             {
-                
-                chatClient.Disconnect();
-                EndConnection();
+                //disconnected
+                if (ConnectedClient == client)
+                {
+                    ConnectedClient = null;
+                    isBusy = false;
+                }
 
+                if (client != null)
+                {
+                    client.Close();
+                }
+
+                ErrorEvent.Invoke(e.Message);
+            }
+
+
+        }
+
+
+        //receiver methods
+
+        public void AnswerCall()
+        {
+            if (ConnectedClient != null)
+            {
+                StreamWriter streamWriter = new StreamWriter(ConnectedClient.GetStream())
+                {
+                    AutoFlush = true
+                };
+
+                streamWriter.WriteLine(Commands.Ack);
+                Trace.WriteLine("Ack");
+
+                if (UDPSenderStart != null)
+                {
+                    UDPSenderStart.Invoke();
+                }
+
+                if (UDPListenerStart != null)
+                {
+                    UDPListenerStart.Invoke(new IPEndPoint(GetLocalIPAddress(), localEndPoint.Port));
+                }
+
+            }
+
+
+        }
+
+        public void RejectCall()
+        {
+            if (ConnectedClient != null)
+            {
+                StreamWriter streamWriter = new StreamWriter(ConnectedClient.GetStream())
+                {
+                    AutoFlush = true
+                };
+
+                streamWriter.WriteLine(Commands.Reject);
+
+                ConnectedClient.GetStream().Close();
+                ConnectedClient.Close();
+                ConnectedClient = null;
+                isBusy = false;
+
+
+            }
+
+
+        }
+
+        //sender fields
+
+        private volatile bool isCalling = false;
+
+        //sender methods
+
+        public async void MakeCall(IPEndPoint endPoint)
+        {
+            if (!isCalling)
+            {
+                isCalling = true;
+
+                if (MakeCallEvent != null)
+                {
+                    MakeCallEvent.Invoke("Trwa dzwonienie!");
+                }
+
+                try
+                {
+                    Connect(endPoint);
+                    SendText(Commands.Invite + ":" + hostTcpClient.Client.LocalEndPoint.AddressFamily.ToString());
+
+
+                    while (isCalling)
+                    {
+                        var msg = await ReceiveTextAsync();
+
+                        if (msg.StartsWith(Commands.Busy))
+                        {
+                            ErrorEvent.Invoke("Zajęte");
+                        }
+                        else if (msg.StartsWith(Commands.Reject))
+                        {
+                            BreakCall();
+                        }
+                        else if (msg.StartsWith(Commands.Ack))
+                        {
+                            if (UDPSenderStart != null)
+                            {
+                                UDPSenderStart.Invoke();
+                            }
+
+                            if (UDPListenerStart != null)
+                            {
+                                UDPListenerStart.Invoke(new IPEndPoint(GetLocalIPAddress(), localEndPoint.Port));
+                            }
+
+                            //Akceptacja połączenia - zmiana gui
+                            if (TalkEvent != null)
+                            {
+                                TalkEvent.Invoke("W trakcie rozmowy");
+                            }
+                        }
+                        else
+                        {
+                            ErrorEvent.Invoke(msg);
+                        }
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    isCalling = false;
+
+                    if (ErrorEvent != null)
+                    {
+                        ErrorEvent.Invoke(e.Message);
+                    }
+
+                    if (EndCall != null)
+                    {
+                        EndCall.Invoke();
+                    }
+
+                }
+            }
+
+        }
+
+        public void BreakCall(bool sendCancelCommand = false)
+        {
+            if (sendCancelCommand)
+                SendText(Commands.Cancel);
+
+            if (hostTcpClient != null)
+            {
+                if (hostTcpClient.Connected)
+                {
+                    hostTcpClient.GetStream().Close();
+                    hostTcpClient.Close();
+                }
+            }
+
+
+            if (EndCall != null)
+            {
+                EndCall.Invoke();
+            }
+
+            isCalling = false;
+        }
+
+        private void Connect(IPEndPoint endPoint)
+        {
+            hostTcpClient = new TcpClient();
+            var result = hostTcpClient.BeginConnect(endPoint.Address, endPoint.Port, null, null);
+            var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
+
+            if (!success)
+            {
+                if (EndCall != null)
+                {
+                    EndCall.Invoke();
+                }
+                throw new Exception("Przekroczono czas połączenia.");
+            }
+
+            connected = true;
+
+        }
+
+
+
+
+        private void SendText(string text)
+        {
+            try
+            {
+                if (hostTcpClient.Connected)
+                {
+                    StreamWriter streamWriter = new StreamWriter(hostTcpClient.GetStream())
+                    {
+                        AutoFlush = true
+                    };
+
+                    streamWriter.WriteLine(text);
+                }
+            }
+            catch (Exception)
+            {
                 return;
             }
+
+
+        }
+
+        private async Task<string> ReceiveTextAsync()
+        {
+            StreamReader streamReader = new StreamReader(hostTcpClient.GetStream());
+
+            var text = await streamReader.ReadLineAsync();
+            return text;
+
+        }
+
+        public static string GetLocalIPAddressString()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+
+        public static IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
     }
 }
