@@ -49,7 +49,7 @@ namespace VoIP_Server
 
                 VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
                 var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);
-                if (!(queryEmailResult == null) && queryEmailResult.Email != user.Email)
+                if (!(queryEmailResult == null))
                 {
                     MessageBox.Show("Podany adres email jest już zajęty!");
                     return;
