@@ -88,6 +88,16 @@ namespace VoIP_Client
             { callingService.CancelCall(); }
             //MessageBox.Show(text);
         }
+        private void RowButtonwEdit_Click(object sender, RoutedEventArgs args)
+        {
+            CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
+            FriendsListEditWindow window;
+            if (client.FriendsList.Where(u => u.Id == data.Id) != null)
+            { window = new FriendsListEditWindow(client, data, true); }
+            else
+            { window = new FriendsListEditWindow(client, data, false); }
+            window.Show();
+        }
 
         public void UpdateInfoLabel(string msg)
         {

@@ -36,7 +36,10 @@
                 <DataGridTemplateColumn Header="Opcje" Width="*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
+                            <StackPanel Orientation="Horizontal" Background="LightGreen" HorizontalAlignment="Center" Width="150" Margin="0,100,0,0.4">
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" >Zadzwoń</Button>
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonwEdit_Click" >Edytuj</Button>
+                            </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
 
