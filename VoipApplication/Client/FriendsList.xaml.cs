@@ -38,11 +38,6 @@ namespace VoIP_Client
             this.parentWindow = parentWindow;
             this.callingService = callingService;
 
-            //callingService.Users = usersList;
-            callingService.InfoEvent += UpdateInfoLabel;
-            //callingService.InfoEvent += MSGBoxShow;
-
-
             InitializeComponent();
         }
 
@@ -54,39 +49,35 @@ namespace VoIP_Client
 
         private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
-            if (!callingService.isCalling)
+            if (!callingService.isCalling || !callingService.isBusy)
             {
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
                 var text = string.Format("{0} - {1} - {2}", data.FriendName, data.Ip, data.Email);
 
                 if (data.Status == 1)
                 {
-                    InfoLabel.Content = "Trwa łączenie";
-                    IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip), 2999);
-                    UserProfile userProfile = new UserProfile()
+                    try
                     {
-                        Email = client.UserProfile.Email,
-                        Status = 1,
-                        Id = client.UserProfile.Id,
-                        UserIp = client.UserProfile.Ip,
-                        UserPort = 2999
-                    };
+                        IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
 
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer("telephone_ring.wav");
-                    var callingWindowSender = new CallingWindowSender(client, callingService, player, parentWindow, new IPEndPoint(IPAddress.Parse(data.Ip), 2999), userProfile);
-                    callingWindowSender.NickLabel.Text = (parentWindow as ClientMainWindow).UserEmailLabel.Text;
-                    callingWindowSender.AnswerButton.Content = "Trwa łączenie";
-                    callingWindowSender.Show();
+                        Task.Run(() =>
+                        {
+                            callingService.MakeCall(iPEndPoint);
+                        });
 
-
-                    parentWindow.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
                 else
                 { MessageBox.Show("Użytkownik nie jest dostępny"); }
             }
             else
-            { callingService.CancelCall(); }
-            //MessageBox.Show(text);
+            {
+                MessageBox.Show("Jesteś w trakcie rozmowy");
+            }
         }
         private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {

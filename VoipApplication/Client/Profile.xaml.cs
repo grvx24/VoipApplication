@@ -20,6 +20,7 @@ using VoIP_Server;
 using VoIP_Server.Client;
 using cscprotocol;
 using VoipApplication;
+using NAudio.Wave;
 
 namespace VoIP_Client
 {
@@ -38,24 +39,27 @@ namespace VoIP_Client
             this.client = client;
             this.parentWindow = parentWindow;
             this.callingService = callingService;
-
-            //callingService.Users = usersList;
-            callingService.InfoEvent += UpdateInfoLabel;
-            //callingService.InfoEvent += MSGBoxShow;
-
+            
             InitializeComponent();
+            PopulateInputDevicesCombo();
             //(parentWindow as ClientMainWindow).UserEmailLabel.Text = client.UserProfile.Email;//to robi fajny blad aplikacji przydatny do zrobienia poprawnego wylogowania usera po craschu apki
             EmailTextBox.Text = client.UserProfile.Email;//n
         }
 
-        public void UpdateInfoLabel(string msg)
+        private void PopulateInputDevicesCombo()
         {
-            Dispatcher.Invoke(new Action(() =>
+            for (int n = 0; n < WaveIn.DeviceCount; n++)
             {
-                InfoLabel.Content = msg;
+                var capabilities = WaveIn.GetCapabilities(n);
+                InputDeviceComboBox.Items.Add(capabilities.ProductName);
+
             }
-            ));
+            if (InputDeviceComboBox.Items.Count > 0)
+            {
+                InputDeviceComboBox.SelectedIndex = 0;
+            }
         }
+
 
         private void ClearPasswordFields()
         {
