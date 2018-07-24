@@ -246,18 +246,19 @@ namespace VoIP_Server
                     }
 
                 case 1:
+                    {
+                        ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
+                        //Dane użytkownika
+                        SendProfileInfo(currUser);
 
-                    ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
-                    //Dane użytkownika
-                    SendProfileInfo(currUser);
+                        //Friends
+                        SendFriendsList(connectedUser.Client, currUser.Email);
 
-                    //Friends
-                    SendFriendsList(connectedUser.Client, currUser.Email);
+                        //All online users
+                        SendOnlineUsersList(connectedUser.Client);
 
-                    //All online users
-                    SendOnlineUsersList(connectedUser.Client);
-
-                    break;
+                        break;
+                    }
 
                 //Rejestracja
                 case 2:
@@ -315,15 +316,19 @@ namespace VoIP_Server
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
                         ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " do ulubionych usera " + connectedUser.Id);
                         serverDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
+                        serverDB.SaveChanges();
                         //niedokonczone
                         //czy tu powinien być jakis refresh request zeby user otrzymal aktualna liste znajomych?
+                        //Friends
+                        ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
+                        SendFriendsList(connectedUser.Client, currUser.Email);
                         break;
                     }
 
                 case 6://zmiana adresu email dla polaczonego usera
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
-                        ServerConsoleWriteEvent.Invoke("Próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
+                        //ServerConsoleWriteEvent.Invoke("Próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
 
                         if (!EmailValidator.IsValid(userData.Email))
                         {

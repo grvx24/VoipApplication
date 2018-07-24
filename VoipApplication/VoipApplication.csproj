@@ -104,7 +104,6 @@
     <Compile Include="CscProtocol\CscPasswordData.cs" />
     <Compile Include="CscProtocol\CscSHA512Generator.cs" />
     <Compile Include="CscProtocol\CscChangeFriendData.cs" />
-    <Compile Include="EmailValidator.cs" />
     <Compile Include="FriendsList.cs">
       <DependentUpon>UsersModel.tt</DependentUpon>
     </Compile>
@@ -157,6 +156,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UsersModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Validators\EmailValidator.cs" />
+    <Compile Include="Validators\PasswordlValidator.cs" />
     <Page Include="Client\CallingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

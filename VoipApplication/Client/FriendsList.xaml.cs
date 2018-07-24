@@ -92,15 +92,19 @@ namespace VoIP_Client
         {
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
-            MessageBox.Show("Przekazuje usera " + data.Email);
+            MessageBox.Show("Przekazuje usera " + data.Email + " o ID " + data.Id);
             FriendsListEditWindow window;
-            if (client.FriendsList.Where(u => u.Id == data.Id) != null)
+            MessageBox.Show("FriendsList zawiera " + client.FriendsList.Count() + " userow");
+            var result = client.FriendsList.FirstOrDefault(u => u.Id == data.Id);
+            MessageBox.Show("Result ID: " + result.Id);
+            if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
             {
-                MessageBox.Show("");
+                MessageBox.Show("Znajomy");
                 window = new FriendsListEditWindow(client, data, true);
             }
             else
             {
+                MessageBox.Show("Nieznajomy");
                 window = new FriendsListEditWindow(client, data, false);
             }
             window.Show();
