@@ -13,7 +13,7 @@ using System.Timers;
 using VoipApplication;
 using cscprotocol;
 using CPOL;
-//wersja final
+
 namespace VoIP_Server
 {
 
@@ -147,13 +147,9 @@ namespace VoIP_Server
             foreach (var user in queryResult)
             {
                 CscUserMainData searchedUserData = new CscUserMainData()
-                {
-                    FriendName = user.Email,
-                    Email = user.Email,
-                    Id = user.UserId,
+                { FriendName = user.Email, Email = user.Email, Id = user.UserId,
                     Status = OnlineUsers.Any(u => u.Email == user.Email) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none"
-                };
+                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none" };
 
                 var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
                 client.GetStream().Write(message, 0, message.Length);
@@ -194,7 +190,7 @@ namespace VoIP_Server
         }
 
         private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
-        {
+        {//niee liczac diffie hl=ellmana to tutaj bedzie trzeba odszyfrowac receivedMessage przed przekazaniem dalej
             switch (cmdNumber)
             {
                 //Logowanie
@@ -212,7 +208,7 @@ namespace VoIP_Server
                             connectedUser.Client.GetStream().Write(error, 0, error.Length);
                             return;
                         }
-
+                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
 
                         if (queryResult != null)
@@ -221,7 +217,7 @@ namespace VoIP_Server
                             var passwordFromDB = queryResult.Password;
 
                             var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
-                            
+
                             if (hashWithSalt == userData.Password)
                             {
                                 ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
@@ -236,7 +232,7 @@ namespace VoIP_Server
                             else
                             {
                                 ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password + " =/= " + hashWithSalt);
-                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Hasło niepoprawne");
+                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Hasło niepoprawne.");
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                             }
                         }
@@ -317,8 +313,10 @@ namespace VoIP_Server
                 case 4://dodanie usera do ulubionych
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
-                        ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " do znajomych usera " + connectedUser.Id);
+                        ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " do ulubionych usera " + connectedUser.Id);
+                        serverDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
                         //niedokonczone
+                        //czy tu powinien być jakis refresh request zeby user otrzymal aktualna liste znajomych?
                         break;
                     }
 
@@ -376,6 +374,7 @@ namespace VoIP_Server
                 case 7://zmiana hasla dla polaczonego usera
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscPasswordData;
+                        ServerConsoleWriteEvent.Invoke("Próba zmiany hasla dla UserID" + connectedUser.Id);
 
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
@@ -383,7 +382,7 @@ namespace VoIP_Server
 
                         if (!(hashWithSalt == userData.OldPassword))
                         {
-                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id + " z " + passwordFromDB + " na " + userData.NewPassword);
+                            ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id);
                             var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
@@ -402,7 +401,7 @@ namespace VoIP_Server
                 case 8://wyszukiwanie userow ktorych email zawiera podana fraze
                     {
                         var text = Encoding.Unicode.GetString(receivedMessage.ToArray());
-                        ServerConsoleWriteEvent.Invoke("Prośba od " + connectedUser.Id + " o userów zawierających w adresie e-mail frazę " + text);
+                        ServerConsoleWriteEvent.Invoke("Prośba od userID " + connectedUser.Id + " o userów zawierających w adresie e-mail frazę '" + text + "'");
                         SendSearchList(connectedUser.Client, text);
                         break;
                     }
@@ -490,7 +489,6 @@ namespace VoIP_Server
 
                 user.Salt = SendSalt(user);//wysyłanie soli
                 ServerConsoleWriteEvent.Invoke("Wysłano sól " + user.Salt);
-
                 while (running)
                 {
                     byte[] request = new byte[3];
