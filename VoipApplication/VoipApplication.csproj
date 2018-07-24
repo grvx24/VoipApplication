@@ -158,14 +158,6 @@
     </Compile>
     <Compile Include="Validators\EmailValidator.cs" />
     <Compile Include="Validators\PasswordlValidator.cs" />
-    <Page Include="Client\CallingWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Client\CallingWindowSender.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Client\ClientMainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -215,12 +207,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Client\CallingService.cs" />
-    <Compile Include="Client\CallingWindow.xaml.cs">
-      <DependentUpon>CallingWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Client\CallingWindowSender.xaml.cs">
-      <DependentUpon>CallingWindowSender.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Client\Client.cs" />
     <Compile Include="Client\ClientMainWindow.xaml.cs">
       <DependentUpon>ClientMainWindow.xaml</DependentUpon>
