@@ -10,12 +10,12 @@
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Email
         </TextBlock>
-        <TextBox Name="EmailTextBox" Background="White" Margin="20,10" FontSize="25">
+        <TextBox Text="a@a.a" Name="EmailTextBox" Background="White" Margin="20,10" FontSize="25">
         </TextBox>
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Hasło
         </TextBlock>
-        <PasswordBox Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
+        <PasswordBox Password="1Qqqqqqq" Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
         </PasswordBox>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
             <Button Name="AddUserButton" MinWidth="100" Margin="25,15" Click="AddUserButton_Click">

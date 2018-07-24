@@ -43,6 +43,11 @@ namespace VoIP_Server
                     MessageBox.Show("Adres email niepoprawny!");
                     return;
                 }
+                if (!PasswordValidator.ValidatePassword(PasswordTextBox.Password))
+                {
+                    MessageBox.Show("Hasło jest za słabe!");
+                    return;
+                }
 
                 VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
                 var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);

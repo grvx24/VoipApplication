@@ -173,6 +173,7 @@ namespace cscprotocol
 
             return result;
         }
+
         public byte[] CreateSaltMessage(byte[] mainMessage)
         {
             UInt16 messageLength = (UInt16)mainMessage.Length;
@@ -186,6 +187,7 @@ namespace cscprotocol
 
             return result;
         }
+
         public byte[] CreateDiffieHellmanMessage(string message)
         {
             var mainMessage = Encoding.Unicode.GetBytes(message);
