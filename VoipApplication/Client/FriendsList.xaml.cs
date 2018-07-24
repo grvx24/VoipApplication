@@ -88,14 +88,21 @@ namespace VoIP_Client
             { callingService.CancelCall(); }
             //MessageBox.Show(text);
         }
-        private void RowButtonwEdit_Click(object sender, RoutedEventArgs args)
+        private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
+
+            MessageBox.Show("Przekazuje usera " + data.Email);
             FriendsListEditWindow window;
             if (client.FriendsList.Where(u => u.Id == data.Id) != null)
-            { window = new FriendsListEditWindow(client, data, true); }
+            {
+                MessageBox.Show("");
+                window = new FriendsListEditWindow(client, data, true);
+            }
             else
-            { window = new FriendsListEditWindow(client, data, false); }
+            {
+                window = new FriendsListEditWindow(client, data, false);
+            }
             window.Show();
         }
 

@@ -9,8 +9,8 @@
 
     <Border Background="Green">
         <Grid Background="GreenYellow">
-            <TextBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="EmailTextBox" HorizontalAlignment="Left" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="202" Margin="73,80,0,0" Text="Stefan123@gmail.com"/>
-            <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="PasswordTextBox" HorizontalAlignment="Left" Height="36"  VerticalAlignment="Top" Width="202" Margin="73,127,0,0" />
+            <TextBox Text="a@a.a" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="EmailTextBox" HorizontalAlignment="Left" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="202" Margin="73,80,0,0"/>
+            <PasswordBox Password="1Qqqqqqq" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="PasswordTextBox" HorizontalAlignment="Left" Height="36"  VerticalAlignment="Top" Width="202" Margin="73,127,0,0" />
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="15,80,0,0" Width="58"><Run Text="Adres "/><LineBreak/><Run Text="e-mail"/></TextBlock>
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Hasło" VerticalAlignment="Top" Margin="15,127,0,0" RenderTransformOrigin="1.007,1.159"/>
             <Button Background="Green" Name="LoginButton" HorizontalAlignment="Left" VerticalAlignment="Top" Width="130" Margin="10,168,0,0" Height="30" Click="LoginButton_Click">

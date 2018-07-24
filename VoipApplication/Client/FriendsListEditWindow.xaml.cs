@@ -23,13 +23,13 @@ namespace VoIP_Client
     {
         Client client;
         CscUserMainData friendData;
-        private bool isoutfriend;
+        private bool IsOurFriend;
 
         public FriendsListEditWindow(Client client, CscUserMainData userdata, bool isfriend)
         {
             this.client = client;
             friendData = userdata;
-            isoutfriend = isfriend;
+            IsOurFriend = isfriend;
             InitializeComponent();
                 EmailTextBlock.Text = userdata.Email;
             if (isfriend)
@@ -43,22 +43,27 @@ namespace VoIP_Client
 
         private void EditFavouriteUserButton_Click(object sender, RoutedEventArgs e)
         {
-            if (isoutfriend)
+            if (IsOurFriend)
             {
                 if (UsernameTextBox.Text != string.Empty)
                 {
+                    MessageBox.Show("Przyjaciel zmien nazwe");
                     //wyslij komunikat od serwera o zmiane friendname tego usera
                     //czyli tak na prawde usun tego usera ze znajomych
                     //a potem go dodaj z inna friendname
                 }
                 else
                 { //usun tego usera z ulubionych
+
+                    MessageBox.Show("Przyjaciel usun go");
                 }
             }
             else
             {
+                MessageBox.Show("Nieprzyjaciel");
                 if (UsernameTextBox.Text != string.Empty)
                 {
+                    MessageBox.Show("Nieprzyjaciel dodaj do ulubionych");
                     //dodaj tego usera do naszych znajomych
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData {Id = friendData.Id, FriendName = UsernameTextBox.Text });
                 }
