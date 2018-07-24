@@ -88,7 +88,7 @@ namespace VoIP_Client
                     //var salt = Encoding.Unicode.GetString(buffer);
                     //client.salt = salt;
                     client.salt = aes.DecryptStringFromBytes(buffer);
-                    MessageBox.Show("Otrzymano sól: " + client.salt);
+                    //MessageBox.Show("Otrzymano sól: " + client.salt);
                     LoginWindow window = new LoginWindow(client);
                     window.Show();
                     this.Close();

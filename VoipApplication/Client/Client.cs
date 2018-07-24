@@ -27,6 +27,8 @@ namespace VoIP_Client
         public string salt { get; set; }
         public string LastConfirmMessage { get; set; }
         public string LastErrorMessage { get; set; }
+        public string LastSearchText { get; set; }
+        public string LastBookmark { get; set; }
 
         public IPAddress LocalIP { get; set; }
 
@@ -119,16 +121,25 @@ namespace VoIP_Client
             var msg = protocol.CreateChangePasswordMessage(userData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
+
         public void SendSearchUserRequest(string text)
         {
             var msg = protocol.CreateSearchUserRequest(text);
             client.GetStream().Write(msg, 0, msg.Length);
         }
+
         public void SendAddUserToFriendsListDataRequest(CscChangeFriendData friendData)
         {
             var msg = protocol.CreateAddUserToFriendsListDataMessage(friendData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
+
+        public void SendRemoveUserFromFriendsListDataRequest(CscChangeFriendData friendData)
+        {
+            var msg = protocol.CreateRemoveUserFromFriendsListDataMessage(friendData);
+            client.GetStream().Write(msg, 0, msg.Length);
+        }
+        
 
         public void Connect(IPAddress ip, int port)
         {
