@@ -273,7 +273,8 @@ namespace VoIP_Client
                 try
                 {
                     Connect(endPoint);
-                    SendText(Commands.Invite + ":" + hostTcpClient.Client.LocalEndPoint.AddressFamily.ToString()+":"+ userName);
+                    string localIp = (((IPEndPoint)hostTcpClient.Client.LocalEndPoint).Address.ToString());
+                    SendText(Commands.Invite + ":" +localIp +":"+ userName);
 
 
                     while (isCalling)
