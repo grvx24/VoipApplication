@@ -46,14 +46,20 @@ namespace VoIP_Client
 
         private void LoadServersList()
         {
-            var lines = File.ReadLines("ServersList.json");
-            foreach (var line in lines)
+            if(File.Exists("ServersList.json"))
             {
-                var json = new JavaScriptSerializer().Deserialize<ServerParameters>(line);
-                serversList.Add(json);
+                var lines = File.ReadLines("ServersList.json");
+                foreach (var line in lines)
+                {
+                    var json = new JavaScriptSerializer().Deserialize<ServerParameters>(line);
+                    serversList.Add(json);
+                }
+            }else
+            {
+                File.Create("ServersList.json");
             }
-                // Process line
-                
+
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
