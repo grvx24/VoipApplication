@@ -98,7 +98,7 @@ namespace VoIP_Server
 
         private void LoadGrid(CurrentPage page)
         {
-            //entities = new VoiceChatDBEntities();//n to chyba sie przyda do odswierzania na serwerze ladnego okienek !!!!!
+            var localEntities = new VoiceChatDBEntities();//n to chyba sie przyda do odswierzania na serwerze ladnego okienek !!!!!
             currentPage = page;
             //default button color #FF673AB7
             switch (page)
@@ -109,28 +109,31 @@ namespace VoIP_Server
 
                     CustomUserControl.Content = onlineUsersControl;
                     break;
+
                 case CurrentPage.UsersDB:
-                    var allUsers = entities.Users.ToList();
+                    var allUsers = localEntities.Users.ToList();
                     var userControl = new UsersDBControl();
                     userControl.UsersDataGrid.ItemsSource = allUsers;
 
                     CustomUserControl.Content = userControl;
                     break;
+
                 case CurrentPage.FriendsDB:
 
                     var friendsControl = new FriendsListControl();
-                    friendsControl.FriendsListDataGrid.ItemsSource = entities.FriendsList.ToList();
-
-                    
+                    friendsControl.FriendsListDataGrid.ItemsSource = localEntities.FriendsList.ToList();                    
                     CustomUserControl.Content = friendsControl;
                     break;
+
                 case CurrentPage.ServerLog:
 
                     CustomUserControl.Content = serverLogControl;
                     break;
+
                 case CurrentPage.Settings:
                     CustomUserControl.Content = settingUserControl;
                     break;
+
                 default:
                     break;
             }

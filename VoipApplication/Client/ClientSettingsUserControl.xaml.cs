@@ -24,9 +24,6 @@ using NAudio.Wave;
 
 namespace VoIP_Client
 {
-    /// <summary>
-    /// Interaction logic for Profile.xaml
-    /// </summary>
     public partial class ClientSettingsUserControl : UserControl
     {
         CallingService callingService;

@@ -90,6 +90,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\GuideUserControl.xaml.cs">
+      <DependentUpon>GuideUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Client\FriendsListEditWindow.xaml.cs">
       <DependentUpon>FriendsListEditWindow.xaml</DependentUpon>
     </Compile>
@@ -162,6 +165,10 @@
     <Compile Include="Validators\EmailValidator.cs" />
     <Compile Include="Validators\PasswordlValidator.cs" />
     <Page Include="Client\ClientMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Client\GuideUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
