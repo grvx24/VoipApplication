@@ -50,6 +50,8 @@ namespace VoIP_Client
                     MessageBox.Show(ex.Message);
                 }
             }
+            else
+            { MessageBox.Show("Podaj minimum 3 znaki."); }
         }
     }
 }

@@ -120,6 +120,7 @@ namespace VoIP_Server
 
         private IQueryable<CscUserMainData> FindFriendForUser(string email)
         {
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var user = serverDB.Users.FirstOrDefault(x => x.Email == email);
             if (user == null)
             {
@@ -154,6 +155,7 @@ namespace VoIP_Server
 
         private void SendSearchList(TcpClient client, int connectedUserID, string text)
         {
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var queryResult = serverDB.Users.Where(u => u.Email.Contains(text));
             var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 
@@ -175,6 +177,7 @@ namespace VoIP_Server
 
         private void SendOnlineUsersList(TcpClient client, int connectedUserID)
         {
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var online = OnlineUsers;
             var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 

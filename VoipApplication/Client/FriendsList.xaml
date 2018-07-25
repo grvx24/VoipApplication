@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="460" d:DesignWidth="650">
     <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="100" MinWidth="600" Background="DarkOliveGreen"  Margin="0,0,0.4,0" Width="654">
+        <Grid VerticalAlignment="Top" MinHeight="100" MinWidth="600" Background="DarkOliveGreen"  Margin="0,0">
             <Button Name="ClientSearchButton" Background="LightGreen" Margin="10,25,471,25" MinHeight="50" Width="120" Click="ClientSearchButton_Click">
                 <TextBlock Foreground="Black" TextWrapping="Wrap"><Run Text="Wyszukaj "/><Run Text="kontakty"/></TextBlock>
             </Button>
@@ -18,7 +18,7 @@
                 <TextBlock Foreground="Black" Text="Ulubione" TextWrapping="Wrap"></TextBlock>
             </Button>
             <Label FontSize="26" Content="..." HorizontalAlignment="Center" VerticalAlignment="Center" Name="InfoLabel" Margin="480,25,10,25">
-                
+
             </Label>
 
         </Grid>
