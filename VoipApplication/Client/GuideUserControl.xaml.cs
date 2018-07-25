@@ -24,9 +24,6 @@ using NAudio.Wave;
 
 namespace VoIP_Client
 {
-    /// <summary>
-    /// Interaction logic for Profile.xaml
-    /// </summary>
     public partial class GuideUserControl : UserControl
     {
         CallingService callingService;
@@ -36,7 +33,7 @@ namespace VoIP_Client
         {
             this.client = client;
             this.callingService = callingService;
-            GuideTextBlock.Text = GuideText;
+            GuideTextBlock.Text = GuideText();
             InitializeComponent();
         }
         private string GuideText()
