@@ -64,7 +64,7 @@ namespace VoIP_Server
                         int id = userToRemove.UserId;
                         foreach (var item in db.FriendsList)
                         {
-                            if(item.UserId==id)
+                            if(item.UserId==id || item.FriendId == id)//usuwany rekordy gdy my mamy usera w znajomych ale trez gdy on ma nas
                             {
                                 db.FriendsList.Remove(item);
                             }
