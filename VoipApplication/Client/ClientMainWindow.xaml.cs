@@ -176,6 +176,7 @@ namespace VoIP_Client
         {
             ConnectionWindow loginWindow = new ConnectionWindow();
             loginWindow.Show();
+            client.Disconnect();
             this.Close();
 
         }
@@ -363,12 +364,16 @@ namespace VoIP_Client
                 if (!isSendingPackets)
                 {
                     isSendingPackets = !isSendingPackets;
-                    MuteButton.Content = "On";
+                    MuteButton.Background = Brushes.Blue;
+                    MuteButton.Content = "on";
+                    BitmapImage image = new BitmapImage(new Uri("mic_on.png", UriKind.Relative));
                 }
                 else
                 {
                     isSendingPackets = !isSendingPackets;
-                    MuteButton.Content = "Off";
+                    MuteButton.Background = Brushes.Red;
+                    MuteButton.Content = "off";
+                    BitmapImage image = new BitmapImage(new Uri("mic_off.png", UriKind.Relative));
                 }
             }
         }
@@ -482,11 +487,11 @@ namespace VoIP_Client
                 BreakCallButton.Visibility = Visibility.Visible;
                 BreakCallButton.Content = "Zakończ";
 
-                if(text!=null)
+                if(text==null)
                 {
                     text = "";
                 }
-                CallInfoLabel.Content = "Rozmowa z: " + text;
+                CallInfoLabel.Content =text;
 
             }));
         }
@@ -532,5 +537,6 @@ namespace VoIP_Client
         {
 
         }
+
     }
 }
