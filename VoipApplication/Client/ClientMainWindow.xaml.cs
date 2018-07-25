@@ -19,6 +19,7 @@ using cscprotocol;
 using System.Net;
 using codecs;
 using NAudio.Wave;
+using System.Diagnostics;
 
 namespace VoIP_Client
 {
@@ -176,9 +177,10 @@ namespace VoIP_Client
 
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
+            callingService.DisposeTcpListener();
+            client.Disconnect();
             ConnectionWindow loginWindow = new ConnectionWindow();
             loginWindow.Show();
-            client.Disconnect();
             this.Close();
 
         }
@@ -215,13 +217,18 @@ namespace VoIP_Client
             callingService.UDPListenerStart += StartListening;
 
             IncomingCallGrid.Visibility = Visibility.Hidden;
-            callingService.ErrorEvent += MsgBoxShow;
+            callingService.ErrorEvent += TraceLogShow;
             callingService.StartListening();
         }
 
         private void MsgBoxShow(string msg)
         {
             MessageBox.Show(msg);
+        }
+
+        private void TraceLogShow(string msg)
+        {
+            Trace.WriteLine(msg);
         }
 
         void NetworkChatPanel_Disposed(object sender, EventArgs e)

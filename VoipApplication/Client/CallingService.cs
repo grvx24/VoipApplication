@@ -48,6 +48,13 @@ namespace VoIP_Client
         private TcpClient hostTcpClient;
         private TcpListener tcpListener;
 
+        public void DisposeTcpListener()
+        {
+            if(tcpListener!=null)
+            {
+                tcpListener.Stop();
+            }
+        }
 
         public volatile bool connected = false;
         public volatile bool isListening = false;

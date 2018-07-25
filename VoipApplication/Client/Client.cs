@@ -325,6 +325,7 @@ namespace VoIP_Client
 
         public void Disconnect()
         {
+            
             if (client.Connected)
                 client.Close();
         }
