@@ -312,7 +312,8 @@ namespace VoIP_Client
             catch (Exception)
             {
                 isListening = false;
-                // usually not a problem - just means we have disconnected
+                HideIncomingCallWindow();
+                //Disconnected
             }
         }
 
