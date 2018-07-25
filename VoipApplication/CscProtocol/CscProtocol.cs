@@ -313,6 +313,7 @@ namespace cscprotocol
 
             return result;
         }
+
         public byte[] CreateAddUserToFriendsListDataMessage(CscChangeFriendData userData)
         {
             var mainMessage = Serialize(userData);
@@ -321,6 +322,20 @@ namespace cscprotocol
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
             byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
             fullData[0] = 4;
+            lenghtBytes.CopyTo(fullData, 1);
+            mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
+
+            return fullData;
+        }
+
+        public byte[] CreateRemoveUserFromFriendsListDataMessage(CscChangeFriendData userData)
+        {
+            var mainMessage = Serialize(userData);
+            UInt16 mainMessageLength = (UInt16)mainMessage.Length;
+
+            byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
+            byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
+            fullData[0] = 5;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
 

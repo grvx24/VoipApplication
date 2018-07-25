@@ -86,20 +86,22 @@ namespace VoIP_Client
         {
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
-            MessageBox.Show("Przekazuje usera " + data.Email + " o ID " + data.Id);
+            //MessageBox.Show("Przekazuje usera " + data.Email + " o ID " + data.Id);
             FriendsListEditWindow window;
-            MessageBox.Show("FriendsList zawiera " + client.FriendsList.Count() + " userow");
-            var result = client.FriendsList.FirstOrDefault(u => u.Id == data.Id);
-            MessageBox.Show("Result ID: " + result.Id);
+            //MessageBox.Show("FriendsList zawiera " + client.FriendsList.Count() + " userow");
+            //foreach (var user in client.FriendsList)
+            //{ MessageBox.Show(user.Id + " " + user.Email); }
+            //var result = client.FriendsList.Where(u => u.Id == data.Id);
+            //MessageBox.Show("Takie samo ID ma " + result.Count() + " userów.");
             if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
             {
-                MessageBox.Show("Znajomy");
-                window = new FriendsListEditWindow(client, data, true);
+                //MessageBox.Show("Znajomy");
+                window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
             }
             else
             {
-                MessageBox.Show("Nieznajomy");
-                window = new FriendsListEditWindow(client, data, false);
+                //MessageBox.Show("Nieznajomy");
+                window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false);
             }
             window.Show();
         }
@@ -115,17 +117,21 @@ namespace VoIP_Client
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
+            client.LastBookmark = "online";
             client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetOnlineUsers();
         }
 
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
+            client.LastBookmark = "friends";
+            client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
 
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            client.LastBookmark = "search";
             ClientSearchWindow window = new ClientSearchWindow(FriendsListDataGrid, client);
             window.Show();
         }

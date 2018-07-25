@@ -35,19 +35,21 @@ namespace VoIP_Client
 
         private void SearchUserButton_Click(object sender, RoutedEventArgs e)
         {
-
-            client.SearchedUsers.Clear();
-            client.SendSearchUserRequest(EmailTextBox.Text);
-            try
+            if (EmailTextBox.Text.Length > 2)
             {
-                parentUsersGrid.DataContext = client.GeSearchUsers();
-                Close();
+                client.SearchedUsers.Clear();
+                client.SendSearchUserRequest(EmailTextBox.Text);
+                client.LastSearchText = EmailTextBox.Text;
+                try
+                {
+                    parentUsersGrid.DataContext = client.GeSearchUsers();
+                    Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
         }
     }
 }

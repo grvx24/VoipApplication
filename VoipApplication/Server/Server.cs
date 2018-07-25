@@ -118,8 +118,7 @@ namespace VoIP_Server
             }
         }
 
-
-        private void SendFriendsList(TcpClient client, string email)
+        private IQueryable<CscUserMainData> FindFriendForUser(string email)
         {
             var user = serverDB.Users.FirstOrDefault(x => x.Email == email);
             if (user == null)
@@ -130,39 +129,65 @@ namespace VoIP_Server
             var friendsQueryResult = from f in serverDB.FriendsList
                                      join u in serverDB.Users on f.FriendId equals u.UserId
                                      where f.UserId == user.UserId
-                                     select new { f.UserId, f.FriendName, u.Email, };
+                                     select new CscUserMainData { Id = f.FriendId, FriendName = f.FriendName, Email = u.Email, Status = 0, Ip = "none" };
+            return friendsQueryResult;
+        }
 
-
+        private void SendFriendsList(TcpClient client, string email)
+        {
+            var friendsQueryResult = FindFriendForUser(email);
             foreach (var friend in friendsQueryResult)
             {
-                CscUserMainData friendsUserData = new CscUserMainData() { FriendName = friend.FriendName, Email = friend.Email, Id = friend.UserId, Status = 0, Ip = "none" };
+                CscUserMainData friendsUserData = new CscUserMainData()
+                {
+                    FriendName = friend.FriendName,
+                    Email = friend.Email,
+                    Id = friend.Id,
+                    Status = OnlineUsers.Any(u => u.Email == friend.Email) ? 1 : 0,
+                    Ip = OnlineUsers.Any(u => u.Email == friend.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == friend.Email).Ip : "none"
+                };
+
                 var message = cscProtocol.CreateFriendUserDataMessage(friendsUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
-        private void SendSearchList(TcpClient client, string text)
+
+        private void SendSearchList(TcpClient client, int connectedUserID, string text)
         {
             var queryResult = serverDB.Users.Where(u => u.Email.Contains(text));
+            var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 
             foreach (var user in queryResult)
             {
                 CscUserMainData searchedUserData = new CscUserMainData()
-                { FriendName = user.Email, Email = user.Email, Id = user.UserId,
+                {
+                    FriendName = friendsQueryResult.Any(u => u.Id == user.UserId) ? friendsQueryResult.FirstOrDefault(u => u.Id == user.UserId).FriendName : string.Empty,
+                    Email = user.Email,
+                    Id = user.UserId,
                     Status = OnlineUsers.Any(u => u.Email == user.Email) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none" };
+                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none"
+                };
 
                 var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
 
-        private void SendOnlineUsersList(TcpClient client)
+        private void SendOnlineUsersList(TcpClient client, int connectedUserID)
         {
             var online = OnlineUsers;
+            var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 
             foreach (var user in online)
             {
-                CscUserMainData userData = new CscUserMainData() { Email = user.Email, Id = user.Id, Status = 1, Ip = user.Ip, FriendName = "" };
+                CscUserMainData userData = new CscUserMainData()
+                {
+                    Email = user.Email,
+                    Id = user.Id,
+                    Status = 1,
+                    Ip = user.Ip,
+                    FriendName = friendsQueryResult.Any(u => u.Id == user.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == user.Id).FriendName : string.Empty,
+                };
                 var message = cscProtocol.CreateOnlineUserDataMessage(userData);
                 client.GetStream().Write(message, 0, message.Length);
             }
@@ -255,7 +280,7 @@ namespace VoIP_Server
                         SendFriendsList(connectedUser.Client, currUser.Email);
 
                         //All online users
-                        SendOnlineUsersList(connectedUser.Client);
+                        SendOnlineUsersList(connectedUser.Client, connectedUser.Id);
 
                         break;
                     }
@@ -271,7 +296,7 @@ namespace VoIP_Server
                             connectedUser.Client.GetStream().Write(response, 0, response.Length);
                             break;
                         }
-
+                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         var userWithThisMail = serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
 
                         if (userWithThisMail != null)
@@ -289,36 +314,54 @@ namespace VoIP_Server
                     }
 
                 case 3://odświeżanie listy online
-                    if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
                     {
-                        foreach (var item in connectedUser.NewOnlineUsers)
+                        if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
                         {
-                            SendOnlineUser(connectedUser.Client, item);
+                            foreach (var item in connectedUser.NewOnlineUsers)
+                            {
+                                SendOnlineUser(connectedUser.Client, item);
+                            }
+
+                            connectedUser.NewOnlineUsers.Clear();
                         }
 
-                        connectedUser.NewOnlineUsers.Clear();
-                    }
-
-                    if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
-                    {
-                        foreach (var item in connectedUser.UsersToRemove)
+                        if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
                         {
-                            SendOfflineUser(connectedUser.Client, item);
+                            foreach (var item in connectedUser.UsersToRemove)
+                            {
+                                SendOfflineUser(connectedUser.Client, item);
+                            }
+                            connectedUser.NewOnlineUsers.Clear();
                         }
-                        connectedUser.NewOnlineUsers.Clear();
+
+
+                        break;
                     }
-
-
-                    break;
 
                 case 4://dodanie usera do ulubionych
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
-                        ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " do ulubionych usera " + connectedUser.Id);
+                        ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " jako " + userData.FriendName + " do ulubionych usera " + connectedUser.Id);
+
+                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         serverDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
                         serverDB.SaveChanges();
-                        //niedokonczone
-                        //czy tu powinien być jakis refresh request zeby user otrzymal aktualna liste znajomych?
+
+                        //Friends
+                        ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
+                        SendFriendsList(connectedUser.Client, currUser.Email);
+                        break;
+                    }
+
+                case 5://usuniecie usera z ulubionych
+                    {
+                        var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
+
+                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        serverDB.FriendsList.Remove(serverDB.FriendsList.FirstOrDefault(u => u.FriendId == userData.Id && u.UserId == connectedUser.Id));
+                        serverDB.SaveChanges();
+                        ServerConsoleWriteEvent.Invoke("Usuniecie usera " + userData.Id + " z ulubionych usera " + connectedUser.Id + " zakonczone.");
+
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                         SendFriendsList(connectedUser.Client, currUser.Email);
@@ -338,6 +381,7 @@ namespace VoIP_Server
                             break;
                         }
 
+                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
                         var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
@@ -381,6 +425,7 @@ namespace VoIP_Server
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscPasswordData;
                         ServerConsoleWriteEvent.Invoke("Próba zmiany hasla dla UserID" + connectedUser.Id);
 
+                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
                         var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
@@ -407,7 +452,7 @@ namespace VoIP_Server
                     {
                         var text = Encoding.Unicode.GetString(receivedMessage.ToArray());
                         ServerConsoleWriteEvent.Invoke("Prośba od userID " + connectedUser.Id + " o userów zawierających w adresie e-mail frazę '" + text + "'");
-                        SendSearchList(connectedUser.Client, text);
+                        SendSearchList(connectedUser.Client, connectedUser.Id, text);
                         break;
                     }
 

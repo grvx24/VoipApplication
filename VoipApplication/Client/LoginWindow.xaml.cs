@@ -48,7 +48,7 @@ namespace VoIP_Client
                     Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt) };
                 var bytesToSend = protocol.CreateLoginMessage(userData);
                 client.SendBytes(bytesToSend);
-                MessageBox.Show("wysyłam hasło z solą " + userData.Password);
+                //MessageBox.Show("wysyłam hasło z solą " + userData.Password);
                 client.UserProfile.Email = EmailTextBox.Text;//n
 
                 var response = client.ReceiveBytes();
