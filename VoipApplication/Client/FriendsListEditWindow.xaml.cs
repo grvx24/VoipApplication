@@ -47,7 +47,7 @@ namespace VoIP_Client
         {
             client.SearchedUsers.Clear();
             client.FriendsList.Clear();
-            client.onlineUsers.Clear();
+            //client.onlineUsers.Clear();
 
             if (IsOurFriend)
             {
@@ -58,7 +58,7 @@ namespace VoIP_Client
 
                     client.SearchedUsers.Clear();
                     client.FriendsList.Clear();
-                    client.onlineUsers.Clear();
+                    //client.onlineUsers.Clear();
 
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                 }

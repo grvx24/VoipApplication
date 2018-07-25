@@ -85,6 +85,7 @@ namespace VoIP_Client
             client.SendChangeEmailRequest(userData);
 
             var WaitForMessageTask = Task.Run(() => WaitForEmailMessage(NewEmail));
+
         }
 
         private void PasswordButton_Click(object sender, RoutedEventArgs e)
@@ -114,11 +115,18 @@ namespace VoIP_Client
 
                 MessageBox.Show("Zmiana adresu email wymaga ponownego zalogowania się.");
 
-                callingService.DisposeTcpListener();
-                client.Disconnect();
-                ConnectionWindow loginWindow = new ConnectionWindow();
-                loginWindow.Show();
-                parentWindow.Close();//n !!!! nie uruchamia okna logowania ponownie
+                Dispatcher.Invoke(()=>
+                {
+                    callingService.DisposeTcpListener();
+                    client.Disconnect();
+                    ConnectionWindow loginWindow = new ConnectionWindow();
+                    loginWindow.Show();
+                    parentWindow.Close();//n !!!! nie uruchamia okna logowania ponownie
+
+                }
+                
+                );
+                
             }
             else
             {

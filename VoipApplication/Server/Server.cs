@@ -43,7 +43,7 @@ namespace VoIP_Server
         public MainServer()
         {
             OnlineUsers = new ObservableCollection<ConnectedUsers>();
-            UsersToRemove = new ConcurrentStack<ConnectedUsers>();
+            //UsersToRemove = new ConcurrentStack<ConnectedUsers>();
         }
 
         public void CreateServer(IPAddress iP, int port)
@@ -335,7 +335,7 @@ namespace VoIP_Server
                             {
                                 SendOfflineUser(connectedUser.Client, item);
                             }
-                            connectedUser.NewOnlineUsers.Clear();
+                            connectedUser.UsersToRemove.Clear();
                         }
 
 
@@ -558,7 +558,11 @@ namespace VoIP_Server
                         ExecuteCSCCommand(user, request[0], buffer);
                     }
                 }
-                RemoveOfflineUserEvent(user);
+                RemoveOfflineUserEvent.Invoke(user);
+                foreach (var onlineUser in OnlineUsers)
+                {
+                    onlineUser.UsersToRemove.Push(user);
+                }
                 //UsersToRemove.Push(user);
 
                 user.Client.Close();
@@ -568,7 +572,11 @@ namespace VoIP_Server
             {
                 ServerConsoleWriteEvent.Invoke("Użytkownik: " + user.Email + " Komunikat: " + e.Message);
 
-                RemoveOfflineUserEvent(user);
+                RemoveOfflineUserEvent.Invoke(user);
+                foreach (var onlineUser in OnlineUsers)
+                {
+                    onlineUser.UsersToRemove.Push(user);
+                }
                 //UsersToRemove.Push(user);
 
                 if (user.Client.Connected)

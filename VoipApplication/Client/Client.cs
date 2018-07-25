@@ -190,8 +190,14 @@ namespace VoIP_Client
                     var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                     var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
 
-                    if (RemoveItemEvent != null)
-                        RemoveItemEvent.Invoke(toRemove);
+                    if(toRemove!=null)
+                    {
+                        Trace.WriteLine("Usuwanie: " + toRemove.Email);
+
+                        if (RemoveItemEvent != null)
+                            RemoveItemEvent.Invoke(toRemove);
+                    }
+
 
                     break;
 
