@@ -445,6 +445,7 @@ namespace VoIP_Client
             Dispatcher.Invoke(new Action(() =>
             {
                 IncomingCallGrid.Visibility = Visibility.Visible;
+                CallInfoLabel.Content = username+" dzwoni!";
             }));
 
         }
@@ -481,7 +482,11 @@ namespace VoIP_Client
                 BreakCallButton.Visibility = Visibility.Visible;
                 BreakCallButton.Content = "Zakończ";
 
-                CallInfoLabel.Content = "W trakcie rozmowy.";
+                if(text!=null)
+                {
+                    text = "";
+                }
+                CallInfoLabel.Content = "Rozmowa z: " + text;
 
             }));
         }

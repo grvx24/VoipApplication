@@ -131,8 +131,8 @@ namespace VoIP_Client
 
                         if (message.StartsWith(Commands.Invite))
                         {
-                            IncomingCallEvent.Invoke("Ktoś dzwoni: " + message);
                             var msgAfterSplit = message.Split(':');
+                            IncomingCallEvent.Invoke(msgAfterSplit[2]);
                             remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]),localEndPoint.Port);
                         }
 
@@ -221,7 +221,7 @@ namespace VoIP_Client
 
                 if (UDPListenerStart != null)
                 {
-                    UDPListenerStart.Invoke(new IPEndPoint(GetLocalIPAddress(), localEndPoint.Port));
+                    UDPListenerStart.Invoke(localEndPoint);
                 }
 
             }
@@ -257,7 +257,7 @@ namespace VoIP_Client
         private IPEndPoint remoteEndPointToSendVoice;
         //sender methods
 
-        public async void MakeCall(IPEndPoint endPoint,string userName)
+        public async void MakeCall(IPEndPoint endPoint,string userName,string receiverName)
         {
             if (!isCalling)
             {
@@ -298,13 +298,13 @@ namespace VoIP_Client
 
                             if (UDPListenerStart != null)
                             {
-                                UDPListenerStart.Invoke(new IPEndPoint(GetLocalIPAddress(), localEndPoint.Port));
+                                UDPListenerStart.Invoke(localEndPoint);
                             }
 
                             //Akceptacja połączenia - zmiana gui
                             if (TalkEvent != null)
                             {
-                                TalkEvent.Invoke("W trakcie rozmowy");
+                                TalkEvent.Invoke("Rozmowa z: "+ receiverName);
                             }
                         }
                         else

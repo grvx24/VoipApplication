@@ -64,7 +64,7 @@ namespace VoIP_Client
 
                         Task.Run(() =>
                         {
-                            callingService.MakeCall(iPEndPoint,data.Email);
+                            callingService.MakeCall(iPEndPoint,client.UserProfile.Email,data.Email);
 
                         });
 

@@ -211,20 +211,29 @@ namespace VoIP_Client
 
         private void OnCloseWindow(object sender, EventArgs e)
         {
-            System.IO.File.WriteAllText(@"ServersList.json", string.Empty);
-            using (FileStream fs = new FileStream("ServersList.json", FileMode.OpenOrCreate))
-                foreach (var item in serversList)
+            try
+            {
+                System.IO.File.WriteAllText(@"ServersList.json", string.Empty);
+                using (FileStream fs = new FileStream("ServersList.json", FileMode.OpenOrCreate))
                 {
-                    var json = new JavaScriptSerializer().Serialize(item);
-                    
+                    foreach (var item in serversList)
                     {
-                        var bytes = Encoding.UTF8.GetBytes(json + Environment.NewLine);
-                        fs.Write(bytes, 0, bytes.Length);
+                        var json = new JavaScriptSerializer().Serialize(item);
 
+                        {
+                            var bytes = Encoding.UTF8.GetBytes(json + Environment.NewLine);
+                            fs.Write(bytes, 0, bytes.Length);
+
+                        }
                     }
                 }
+            }
+            catch (Exception)
+            {
+                return;
+            }
 
-            
+
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)

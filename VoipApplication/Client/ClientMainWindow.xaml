@@ -9,7 +9,6 @@
     <Grid Name="MainGrid">
         <Grid Background="LightGreen" VerticalAlignment="Top" MaxHeight="100" MinHeight="100">
             <TextBlock Name="UserEmailLabel" FontSize="30" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="453,26,0,0" Height="51"><Run Text="email@example.com"/></TextBlock>
-            <Image Margin="0,0,494,-144" Source="/VoIP_Server;component/MainLogo.png"/>
         </Grid>
         <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,100,0,0.4">
             <Button BorderBrush="YellowGreen" Background="DarkGreen" MinHeight="60"  BorderThickness="5" Margin="10" Click="SettingsButton_Click">
