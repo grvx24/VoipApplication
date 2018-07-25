@@ -259,6 +259,10 @@ namespace VoIP_Client
 
         public async void MakeCall(IPEndPoint endPoint,string userName,string receiverName)
         {
+            Trace.WriteLine("username: " + userName);
+            Trace.WriteLine("receiver: " + receiverName);
+
+
             if (!isCalling)
             {
                 remoteEndPointToSendVoice = endPoint;
@@ -267,7 +271,7 @@ namespace VoIP_Client
 
                 if (MakeCallEvent != null)
                 {
-                    MakeCallEvent.Invoke("Trwa dzwonienie!");
+                    MakeCallEvent.Invoke("Dzwonię do: "+receiverName);
                 }
 
                 try
@@ -304,7 +308,7 @@ namespace VoIP_Client
                             //Akceptacja połączenia - zmiana gui
                             if (TalkEvent != null)
                             {
-                                TalkEvent.Invoke("Rozmowa z: "+ receiverName);
+                                TalkEvent.Invoke(receiverName);
                             }
                         }
                         else

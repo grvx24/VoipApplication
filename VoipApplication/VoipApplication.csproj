@@ -328,6 +328,8 @@
     <Resource Include="broccoli.png" />
     <Resource Include="MainLogo.png" />
     <Content Include="CPOL\CPOL.htm" />
+    <Resource Include="mic_off.png" />
+    <Resource Include="mic_on.png" />
     <Content Include="UsersModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UsersModel.Context.cs</LastGenOutput>
