@@ -33,10 +33,10 @@ namespace VoIP_Client
         {
             this.client = client;
             this.callingService = callingService;
-            GuideTextBlock.Text = GuideText();
             InitializeComponent();
+            GuideTextBlock.Text = GuideText();
         }
-        private string GuideText()
+        private static string GuideText()
         {
             return
                   "";

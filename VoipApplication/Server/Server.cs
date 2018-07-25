@@ -233,8 +233,8 @@ namespace VoIP_Server
                             connectedUser.Client.GetStream().Write(error, 0, error.Length);
                             return;
                         }
-                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        var queryResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        var queryResult = localServerDB.Users.FirstOrDefault(u => u.Email == userData.Email);
 
                         if (queryResult != null)
                         {
@@ -248,6 +248,7 @@ namespace VoIP_Server
                                 ConnectedUsers user = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                                 user.Email = queryResult.Email;
                                 user.Id = queryResult.UserId;
+                                user.Status = 1;
 
                                 var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
@@ -296,8 +297,8 @@ namespace VoIP_Server
                             connectedUser.Client.GetStream().Write(response, 0, response.Length);
                             break;
                         }
-                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        var userWithThisMail = serverDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        var userWithThisMail = localServerDB.Users.Where(e => e.Email == userToRegister.Email).FirstOrDefault();
 
                         if (userWithThisMail != null)
                         {

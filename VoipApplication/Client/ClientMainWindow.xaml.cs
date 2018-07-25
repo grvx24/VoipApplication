@@ -29,6 +29,7 @@ namespace VoIP_Client
     {
         static FriendsList friendsListGrid;
         static ClientSettingsUserControl settingsGrid;
+        static GuideUserControl guideGrid;
 
         CallingService callingService;
         static int port = 7999;
@@ -40,6 +41,7 @@ namespace VoIP_Client
 
             friendsListGrid = new FriendsList(client, callingService, this);
             settingsGrid = new ClientSettingsUserControl(client, callingService, this);
+            guideGrid = new GuideUserControl(client, callingService, this);
 
             if (!createNewInstance)
             {
@@ -530,7 +532,7 @@ namespace VoIP_Client
 
         private void GuideButton_Click(object sender, RoutedEventArgs e)
         {
-
+            CustomUserControl.Content = guideGrid;
         }
     }
 }
