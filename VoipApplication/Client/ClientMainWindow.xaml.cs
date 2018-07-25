@@ -182,7 +182,6 @@ namespace VoIP_Client
             ConnectionWindow loginWindow = new ConnectionWindow();
             loginWindow.Show();
             this.Close();
-
         }
 
 

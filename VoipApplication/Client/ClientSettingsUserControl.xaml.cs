@@ -110,8 +110,15 @@ namespace VoIP_Client
                 MessageBox.Show(client.LastConfirmMessage);
                 client.LastConfirmMessage = string.Empty;
                 client.UserProfile.Email = email;
-                //UpdateProfileEmail(client.UserProfile);//stare z ClientProfilewindow
                 (parentWindow as ClientMainWindow).UpdateProfileEmail(client.UserProfile);
+
+                MessageBox.Show("Zmiana adresu email wymaga ponownego zalogowania się.");
+
+                callingService.DisposeTcpListener();
+                client.Disconnect();
+                ConnectionWindow loginWindow = new ConnectionWindow();
+                loginWindow.Show();
+                parentWindow.Close();//n !!!! nie uruchamia okna logowania ponownie
             }
             else
             {
