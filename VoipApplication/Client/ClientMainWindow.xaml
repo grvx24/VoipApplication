@@ -12,8 +12,8 @@
             <Image Margin="0,0,494,-144" Source="/VoIP_Server;component/MainLogo.png"/>
         </Grid>
         <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,100,0,0.4">
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="ProfileButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="ProfileButton_Click">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Profil"/>
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" MinHeight="60"  BorderThickness="5" Margin="10" Click="SettingsButton_Click">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Ustawienia"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Użytkownicy"/>

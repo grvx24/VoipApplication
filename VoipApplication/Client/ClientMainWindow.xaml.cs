@@ -28,7 +28,7 @@ namespace VoIP_Client
     public partial class ClientMainWindow : Window
     {
         static FriendsList friendsListGrid;
-        static Profile profileGrid;
+        static ClientSettingsUserControl settingsGrid;
 
         CallingService callingService;
         static int port = 7999;
@@ -39,7 +39,7 @@ namespace VoIP_Client
             callingService = new CallingService(new IPEndPoint(client.LocalIP, port));
 
             friendsListGrid = new FriendsList(client, callingService, this);
-            profileGrid = new Profile(client, callingService, this);
+            settingsGrid = new ClientSettingsUserControl(client, callingService, this);
 
             if (!createNewInstance)
             {
@@ -86,15 +86,11 @@ namespace VoIP_Client
             client.GetBasicInfo();
             UserEmailLabel.Text = client.UserProfile.Email;//n
         }
-        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            ////gdy uzywane bylo ClientProfilewindow a nie Profile
-            //ClientProfileWindow clientProfileWindow = new ClientProfileWindow(callingService, client);
-            //clientProfileWindow.Show();
-            CustomUserControl.Content = profileGrid;
+            CustomUserControl.Content = settingsGrid;
         }
-
-
 
         public void UpdateProfileEmail(CscUserMainData profile)
         {
@@ -382,7 +378,7 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                int inputDeviceNumber = profileGrid.InputDeviceComboBox.SelectedIndex;
+                int inputDeviceNumber = settingsGrid.InputDeviceComboBox.SelectedIndex;
                 Connect(endPoint, inputDeviceNumber, codec);
             }
             ));

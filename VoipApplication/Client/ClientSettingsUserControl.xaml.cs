@@ -27,14 +27,14 @@ namespace VoIP_Client
     /// <summary>
     /// Interaction logic for Profile.xaml
     /// </summary>
-    public partial class Profile : UserControl
+    public partial class ClientSettingsUserControl : UserControl
     {
         CallingService callingService;
         ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();
         Client client;
         Window parentWindow;
 
-        public Profile(Client client, CallingService callingService, Window parentWindow)
+        public ClientSettingsUserControl(Client client, CallingService callingService, Window parentWindow)
         {
             this.client = client;
             this.parentWindow = parentWindow;

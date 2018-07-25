@@ -96,8 +96,8 @@
     <Compile Include="Client\ClientSearchWindow.xaml.cs">
       <DependentUpon>ClientSearchWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Client\Profile.xaml.cs">
-      <DependentUpon>Profile.xaml</DependentUpon>
+    <Compile Include="Client\ClientSettingsUserControl.xaml.cs">
+      <DependentUpon>ClientSettingsUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client\ServerParameters.cs" />
     <Compile Include="CPOL\BigInt.cs" />
@@ -177,7 +177,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Client\Profile.xaml">
+    <Page Include="Client\ClientSettingsUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

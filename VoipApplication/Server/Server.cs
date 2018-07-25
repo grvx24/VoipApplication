@@ -215,7 +215,7 @@ namespace VoIP_Server
         }
 
         private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
-        {//niee liczac diffie hl=ellmana to tutaj bedzie trzeba odszyfrowac receivedMessage przed przekazaniem dalej
+        {//niee liczac diffiehellmana to tutaj bedzie trzeba odszyfrowac receivedMessage przed przekazaniem dalej
             switch (cmdNumber)
             {
                 //Logowanie

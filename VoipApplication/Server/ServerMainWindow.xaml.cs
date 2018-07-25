@@ -98,6 +98,7 @@ namespace VoIP_Server
 
         private void LoadGrid(CurrentPage page)
         {
+            //entities = new VoiceChatDBEntities();//n to chyba sie przyda do odswierzania na serwerze ladnego okienek !!!!!
             currentPage = page;
             //default button color #FF673AB7
             switch (page)
