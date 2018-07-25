@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
-        Background="Orange"
+        Background="LightGreen"
         Title="Wyszukaj kontakty" Height="300" Width="300">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <StackPanel Background="LightGreen" HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Email
         </TextBlock>
         <TextBox Name="EmailTextBox" Background="White" Margin="20,10" FontSize="25">
         </TextBox>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+        <StackPanel Background="LightGreen" HorizontalAlignment="Center" Orientation="Horizontal">
             <Button Name="SearchUserButton" MinWidth="100" Margin="25,15" Click="SearchUserButton_Click">
                 Szukaj
             </Button>

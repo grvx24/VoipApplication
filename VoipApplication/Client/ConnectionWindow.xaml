@@ -1,19 +1,26 @@
-﻿<Window x:Class="VoIP_Client.ConnectionWindow"
+﻿<Window ResizeMode="NoResize" x:Class="VoIP_Client.ConnectionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
-        Title="Brokułofon - wybór serwera" Height="310.4" Width="300">
-    <Grid Background="LightGreen">
-        <TextBox Name="IPTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,142,0,0" Text="192.168.1.17"/>
-        <TextBox Name="PortTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,191,0,0" Text="1024"/>
-        <Button Background="DarkGreen" Content="Połącz" HorizontalAlignment="Left" VerticalAlignment="Top" Width="254" Margin="21,229,0,0" Height="29" Click="Button_Click"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Adres IP" VerticalAlignment="Top" Margin="21,120,0,0" Width="80"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Margin="21,169,0,0" Width="38"/>
-        <Image Margin="149,0,10,174" Source="/VoipApplication;component/Images/broccoli.png"/>
-        <TextBox Text="BrokułoFon" Foreground="DarkGreen"  BorderThickness="5" TextWrapping="Wrap" FontSize="30" TextAlignment="Center" Height="97" Margin="21,10,148,172" FontWeight="Bold" FontFamily="Lobster"/>
+        Title="Brokułofon - wybór serwera" Height="433.141" Width="335.503">
+    <Grid Background="LightGreen" Margin="0,0,0,0">
+        <TextBox Name="IPTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,236,0,0" Text="192.168.1.17"/>
+        <TextBox Name="PortTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,285,0,0" Text="1024"/>
+        <Button Background="DarkGreen" Content="Połącz" HorizontalAlignment="Left" VerticalAlignment="Top" Width="293" Margin="21,313,0,0" Height="29" Click="Button_Click"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Adres IP" VerticalAlignment="Top" Margin="21,215,0,0" Width="80"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Margin="21,264,0,0" Width="38"/>
+        <Image Margin="149,0,16,292" Source="/VoipApplication;component/broccoli.png" RenderTransformOrigin="0.398,0.883"/>
+        <TextBox IsReadOnly="True" Text="BrokułoFon" Foreground="DarkGreen"  BorderThickness="5" TextWrapping="Wrap" FontSize="30" TextAlignment="Center" Margin="10,10,195,297" FontWeight="Bold" FontFamily="Lobster"/>
+        <ComboBox ItemsSource="{Binding Path=ServerParameters}" SelectedValue="{Binding Path=ServerParameters}" DisplayMemberPath="Name" SelectedValuePath="Name" Background="White" x:Name="ServersList" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="21,125,0,0" Width="192" SelectionChanged="ServersList_SelectionChanged" Height="41">
 
+
+        </ComboBox>
+        <Button Name="RemoveButton" Background="Red" Margin="228,125,24,238" Click="RemoveButton_Click" Height="Auto">Usuń</Button>
+        <TextBox x:Name="NameLabel" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,187,0,0"/>
+        <TextBlock Name="ServerNameTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="21,171,0,0" Width="80"><Run Text="Nazwa"/><Run Text=" serwera"/></TextBlock>
+        <Button x:Name="SaveServerButton" Background="ForestGreen" Content="Zapisz serwer" HorizontalAlignment="Left" VerticalAlignment="Top" Width="293" Margin="21,347,0,0" Height="29" Click="SaveServerButton_Click"/>
     </Grid>
 </Window>

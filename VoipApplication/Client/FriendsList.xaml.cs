@@ -49,10 +49,12 @@ namespace VoIP_Client
 
         private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
-            if (!callingService.isCalling || !callingService.isBusy)
+            if (!callingService.isCalling && !callingService.isBusy)
             {
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
                 var text = string.Format("{0} - {1} - {2}", data.FriendName, data.Ip, data.Email);
+
+                MessageBox.Show(text);
 
                 if (data.Status == 1)
                 {
@@ -62,7 +64,8 @@ namespace VoIP_Client
 
                         Task.Run(() =>
                         {
-                            callingService.MakeCall(iPEndPoint);
+                            callingService.MakeCall(iPEndPoint,data.Email);
+
                         });
 
                     }

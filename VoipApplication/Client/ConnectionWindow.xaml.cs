@@ -16,6 +16,12 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using CPOL;
 using cscprotocol;
+using System.Text.RegularExpressions;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Web.Script.Serialization;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace VoIP_Client
 {
@@ -24,11 +30,30 @@ namespace VoIP_Client
     /// </summary>
     public partial class ConnectionWindow : Window
     {
-
+        ObservableCollection<ServerParameters> serversList = new ObservableCollection<ServerParameters>();
         Client client = new Client();
         public ConnectionWindow()
         {
             InitializeComponent();
+
+            LoadServersList();
+
+            ServersList.ItemsSource = serversList;
+
+
+            this.Closed += new EventHandler(OnCloseWindow);
+        }
+
+        private void LoadServersList()
+        {
+            var lines = File.ReadLines("ServersList.json");
+            foreach (var line in lines)
+            {
+                var json = new JavaScriptSerializer().Deserialize<ServerParameters>(line);
+                serversList.Add(json);
+            }
+                // Process line
+                
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -105,6 +130,108 @@ namespace VoIP_Client
                 MessageBox.Show(ex.Message);
             }
 
+        }
+
+
+        private void ServersList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var serverParameters = ServersList.SelectedItem as ServerParameters;
+
+            if(serverParameters!=null)
+            {
+                NameLabel.Text = serverParameters.Name;
+                IPTextBox.Text = serverParameters.IP;
+                PortTextBox.Text = serverParameters.Port;
+            }
+
+
+
+
+        }
+
+        private void SaveServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            var ipText = IPTextBox.Text;
+            var portText = PortTextBox.Text;
+
+            int port;
+            bool isPortCorrect= int.TryParse(portText, out port);
+
+            IPAddress ip;
+            bool isIpCorrect = IPAddress.TryParse(ipText, out ip);
+
+            if(String.IsNullOrEmpty(NameLabel.Text))
+            {
+                MessageBox.Show("Pole nazwa nie może być puste!");
+                return;
+            }
+            
+            if (!isIpCorrect)
+            {
+                MessageBox.Show("Pole adres ip jest niepoprawne!");
+                return;
+            }
+            if(!isPortCorrect)
+            {
+                MessageBox.Show("Pole port jest nipoprawne!");
+                return;
+            }
+
+            ServerParameters serverParameters = new ServerParameters()
+            {
+                Name = NameLabel.Text,
+                IP = ip.ToString(),
+                Port = port.ToString()
+            };
+
+            serversList.Add(serverParameters);
+
+
+            var json = new JavaScriptSerializer().Serialize(serverParameters);
+
+            using (FileStream fs = new FileStream("ServersList.json", FileMode.Append))
+            {
+                var bytes = Encoding.UTF8.GetBytes(json+Environment.NewLine);
+                fs.Write(bytes, 0, bytes.Length);
+
+            }
+
+            if (serversList.Count > 0)
+            {
+                ServersList.SelectedIndex = 0;
+            }
+
+        }
+
+        private void OnCloseWindow(object sender, EventArgs e)
+        {
+            System.IO.File.WriteAllText(@"ServersList.json", string.Empty);
+            using (FileStream fs = new FileStream("ServersList.json", FileMode.OpenOrCreate))
+                foreach (var item in serversList)
+                {
+                    var json = new JavaScriptSerializer().Serialize(item);
+                    
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(json + Environment.NewLine);
+                        fs.Write(bytes, 0, bytes.Length);
+
+                    }
+                }
+
+            
+        }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            var serverParameters=ServersList.SelectedItem as ServerParameters;
+
+            serversList.Remove(serverParameters);
+
+            if(serversList.Count>0)
+            {
+                ServersList.SelectedIndex = 0;
+            }
         }
     }
 }

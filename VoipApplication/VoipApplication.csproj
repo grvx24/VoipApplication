@@ -70,6 +70,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -97,6 +99,7 @@
     <Compile Include="Client\Profile.xaml.cs">
       <DependentUpon>Profile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Client\ServerParameters.cs" />
     <Compile Include="CPOL\BigInt.cs" />
     <Compile Include="CPOL\DiffieHellman.cs" />
     <Compile Include="CPOL\StrongNumberProvider.cs" />

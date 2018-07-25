@@ -255,7 +255,7 @@ namespace VoIP_Client
         private IPEndPoint remoteEndPointToSendVoice;
         //sender methods
 
-        public async void MakeCall(IPEndPoint endPoint)
+        public async void MakeCall(IPEndPoint endPoint,string userName)
         {
             if (!isCalling)
             {
@@ -271,7 +271,7 @@ namespace VoIP_Client
                 try
                 {
                     Connect(endPoint);
-                    SendText(Commands.Invite + ":" + hostTcpClient.Client.LocalEndPoint.AddressFamily.ToString());
+                    SendText(Commands.Invite + ":" + hostTcpClient.Client.LocalEndPoint.AddressFamily.ToString()+":"+ userName);
 
 
                     while (isCalling)
@@ -334,7 +334,11 @@ namespace VoIP_Client
         public void BreakCall(bool sendCancelCommand = false)
         {
             if (sendCancelCommand)
+            {
                 SendText(Commands.Cancel);
+                Trace.WriteLine(Commands.Cancel);
+            }
+
 
             if (hostTcpClient != null)
             {
@@ -352,6 +356,8 @@ namespace VoIP_Client
             }
 
             isCalling = false;
+
+            
         }
 
         private void Connect(IPEndPoint endPoint)

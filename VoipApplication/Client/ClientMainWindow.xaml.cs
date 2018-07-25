@@ -79,8 +79,9 @@ namespace VoIP_Client
             }
 
             InitializeComponent();
-
             client.StartListening();
+
+            InitCallingService();
 
             client.GetBasicInfo();
             UserEmailLabel.Text = client.UserProfile.Email;//n
@@ -174,6 +175,16 @@ namespace VoIP_Client
         }
 
 
+
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            ConnectionWindow loginWindow = new ConnectionWindow();
+            loginWindow.Show();
+            this.Close();
+
+        }
+
+
         //Sygnalizacja
         //Dzwonienie i wysyłanie dźwięku
 
@@ -205,9 +216,8 @@ namespace VoIP_Client
             callingService.UDPListenerStart += StartListening;
 
             IncomingCallGrid.Visibility = Visibility.Hidden;
-
-
             callingService.ErrorEvent += MsgBoxShow;
+            callingService.StartListening();
         }
 
         private void MsgBoxShow(string msg)
@@ -456,9 +466,10 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                IncomingCallGrid.Visibility = Visibility.Visible;
                 AnswerButton.Visibility = Visibility.Hidden;
-
+                RejectButton.Visibility = Visibility.Hidden;
+                IncomingCallGrid.Visibility = Visibility.Visible;
+                BreakCallButton.Visibility = Visibility.Visible;
                 CallInfoLabel.Content = text;
 
             }));
@@ -470,6 +481,9 @@ namespace VoIP_Client
             Dispatcher.Invoke(new Action(() =>
             {
                 AnswerButton.Visibility = Visibility.Hidden;
+                BreakCallButton.Visibility = Visibility.Visible;
+                BreakCallButton.Content = "Zakończ";
+
                 CallInfoLabel.Content = "W trakcie rozmowy.";
 
             }));
@@ -509,9 +523,8 @@ namespace VoIP_Client
         {
             callingService.BreakCall(true);
             Disconnect();
-            IncomingCallGrid.Visibility = Visibility.Visible;
+            IncomingCallGrid.Visibility = Visibility.Hidden;
         }
-
 
     }
 }

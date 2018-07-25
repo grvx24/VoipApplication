@@ -7,31 +7,29 @@
              mc:Ignorable="d" 
              d:DesignHeight="469" d:DesignWidth="642">
     <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
-        <Grid Background="LimeGreen" Margin="0,0,327,150">
-            <TextBlock HorizontalAlignment="Left" Height="17" Margin="8,113,0,0" TextWrapping="Wrap" Text="Hasło" VerticalAlignment="Top" Width="38" />
-            <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="ChangeEmailPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250" Margin="51,104,0,0"/>
-            <TextBlock HorizontalAlignment="Left" Height="17" Margin="8,44,0,0" TextWrapping="Wrap" Text="Email" VerticalAlignment="Top" Width="38" RenderTransformOrigin="0.026,0.059" />
-            <TextBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="EmailTextBox" Margin="51,35,0,0" TextWrapping="Wrap" Text="email@example.com" VerticalAlignment="Top" Width="250" />
-            <Button Background="LightGreen" x:Name="EmailButton" Margin="102,178,93,91" MinHeight="50" Width="120" Click="EmailButton_Click">
+        <StackPanel VerticalAlignment="Center" Orientation="Vertical" Background="LimeGreen" Margin="0,0,327,149" Height="320">
+            <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30"  TextWrapping="Wrap" Text="Email" VerticalAlignment="Top" Width="56" RenderTransformOrigin="0.026,0.059" />
+            <TextBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="EmailTextBox"  TextWrapping="Wrap" Text="email@example.com" VerticalAlignment="Top" Width="250" />
+            <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="31"  TextWrapping="Wrap" Text="Hasło" VerticalAlignment="Top" Width="86" />
+            <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="ChangeEmailPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250" />
+            <Button Margin="30,30" Background="LightGreen" x:Name="EmailButton"  MinHeight="50" Width="120" Click="EmailButton_Click">
                 <TextBlock Foreground="Black" TextWrapping="Wrap"><Run Text="Zmień E-mail"/></TextBlock>
             </Button>
 
-        </Grid>
-        <Grid Background="YellowGreen" Margin="315,0,0,150">
-            <TextBlock HorizontalAlignment="Left" Height="30" Margin="24,35,0,0" TextWrapping="Wrap" Text="Nowe hasło" VerticalAlignment="Top" Width="38" />
-            <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="NewPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250" Margin="67,35,0,0"/>
-            <TextBlock HorizontalAlignment="Left" Height="30" Margin="24,104,0,0" TextWrapping="Wrap" Text="Stare hasło" VerticalAlignment="Top" Width="38" />
-            <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="OldPasswordBox" Margin="67,104,0,0" VerticalAlignment="Top" Width="250" />
-            <Button Background="LightGreen" x:Name="PasswordButton" Margin="118,177,89,92" MinHeight="50" Width="120" Click="PasswordButton_Click">
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Background="YellowGreen" Margin="315,0,0,150">
+            <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="Stare hasło" VerticalAlignment="Top" Width="121" />
+            <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="OldPasswordBox" VerticalAlignment="Top" Width="250" />
+            <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="Nowe hasło" VerticalAlignment="Top" Width="121" />
+            <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="NewPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250"/>
+            <Button Background="LightGreen" x:Name="PasswordButton" Margin="30,30" MinHeight="50" Width="120" Click="PasswordButton_Click">
                 <TextBlock Foreground="Black" Text="Zmień hasło" TextWrapping="Wrap"/>
             </Button>
-        </Grid>
+        </StackPanel>
         <Grid Background="LightSeaGreen" Margin="0,320,0,0">
 
-            <Label FontSize="20" Margin="34,0,377,101">Wybór mikrofonu</Label>
-            <ComboBox Background="White" Margin="10,43,377,58" Height="48">
-                <ComboBox x:Name="InputDeviceComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="239" Margin="271,27,0,0" Height="32"/>
-            </ComboBox>
+            <Label FontSize="20" Margin="34,10,377,91">Wybór mikrofonu</Label>
+            <ComboBox SelectedIndex="0" FontSize="20" Background="White" x:Name="InputDeviceComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="374" Margin="34,53,0,0" Height="57"/>
         </Grid>
     </Grid>
 </UserControl>

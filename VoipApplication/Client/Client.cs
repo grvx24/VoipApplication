@@ -9,6 +9,7 @@ using System.IO;
 using VoIP_Server;
 using System.Collections.ObjectModel;
 using cscprotocol;
+using System.Diagnostics;
 
 namespace VoIP_Client
 {
@@ -149,6 +150,7 @@ namespace VoIP_Client
         {
             isListening = true;
             Task.Run(() => Listening());
+            Trace.WriteLine("TcpListening");
         }
 
         private void ExecuteCSCCommand(byte commandNumber, byte[] receivedMessage)

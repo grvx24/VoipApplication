@@ -16,23 +16,22 @@
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Profil"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Znajomi"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Użytkownicy"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Instrukcja"/>
             </Button>
-            <Button Background="Red" BorderBrush="Green" x:Name="ServerLogButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
+            <Button Background="Red" BorderBrush="Green" x:Name="LogOutButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="LogOutButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Wyloguj się"/>
             </Button>
-            <Image Source="/VoIP_Server;component/broccoli.png" />
 
         </StackPanel>
         <Grid Name="ContentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Margin="150,100,0,0">
             <UserControl Name="CustomUserControl"/>
         </Grid>
-        <Grid Visibility="Hidden" x:Name="IncomingCallGrid" Background="LimeGreen" HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="437">
+        <Grid Visibility="Visible" x:Name="IncomingCallGrid" Background="LimeGreen" HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="437">
             <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="AnswerButton" Content="Odbierz" Margin="10,10,292,58"></Button>
-            <Button BorderBrush="YellowGreen" Background="Red" x:Name="RejectButton" Content="Odrzuć" Margin="164,10,138,58" Click="BreakCall_Click"></Button>
+            <Button BorderBrush="YellowGreen" Background="Red" x:Name="RejectButton" Content="Odrzuć" Margin="164,10,138,58" Click="RejectButton_Click"></Button>
             <Button Visibility="Hidden" BorderBrush="YellowGreen" Background="Red" x:Name="BreakCallButton" Content="Zakończ" Margin="164,10,138,58"></Button>
             <Button BorderBrush="YellowGreen" x:Name="MuteButton" Content="Wycisz" Margin="324,10,30,58"></Button>
             <Label x:Name="CallInfoLabel" FontSize="30" Content="email2@example.com" Margin="10,47,10,0"></Label>
