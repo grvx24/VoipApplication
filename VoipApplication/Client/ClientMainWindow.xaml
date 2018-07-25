@@ -12,16 +12,16 @@
             <Image Margin="0,0,494,-144" Source="/VoIP_Server;component/MainLogo.png"/>
         </Grid>
         <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,100,0,0.4">
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" MinHeight="60"  BorderThickness="5" Margin="10" Click="SettingsButton_Click">
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="SettingsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="SettingsButton_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Ustawienia"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Użytkownicy"/>
             </Button>
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10">
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="GuideButton_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Instrukcja"/>
             </Button>
-            <Button Background="Red" BorderBrush="Green" x:Name="LogOutButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="LogOutButton_Click" >
+            <Button Background="Red" BorderBrush="Green" Name="LogOutButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="LogOutButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Wyloguj się"/>
             </Button>
 

@@ -523,5 +523,9 @@ namespace VoIP_Client
             IncomingCallGrid.Visibility = Visibility.Hidden;
         }
 
+        private void GuideButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
