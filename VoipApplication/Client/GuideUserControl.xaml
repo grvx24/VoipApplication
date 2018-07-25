@@ -8,6 +8,6 @@
              Background="LimeGreen"
              d:DesignHeight="469" d:DesignWidth="642">
     <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
-        <TextBlock Name="GuideTextBlock" FontSize="20" Margin="10"></TextBlock>
+        <TextBlock Name="GuideTextBlock" FontSize="15" Margin="10" TextWrapping="Wrap"></TextBlock>
     </Grid>
 </UserControl>
