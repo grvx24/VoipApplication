@@ -243,6 +243,7 @@ namespace VoIP_Client
             waveIn.StartRecording();
 
             udpSender = new UdpClient();
+            //to wywalilo
             udpSender.Connect(endPoint);
 
 

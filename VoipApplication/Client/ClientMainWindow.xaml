@@ -30,9 +30,9 @@
             <UserControl Name="CustomUserControl"/>
         </Grid>
         <Grid Visibility="Visible" x:Name="IncomingCallGrid" Background="LimeGreen" HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="437">
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="AnswerButton" Content="Odbierz" Margin="10,10,292,58"></Button>
+            <Button BorderBrush="YellowGreen" Background="DarkGreen" x:Name="AnswerButton" Content="Odbierz" Margin="10,10,292,58" Click="AnswerButton_Click"></Button>
             <Button BorderBrush="YellowGreen" Background="Red" x:Name="RejectButton" Content="Odrzuć" Margin="164,10,138,58" Click="RejectButton_Click"></Button>
-            <Button Visibility="Hidden" BorderBrush="YellowGreen" Background="Red" x:Name="BreakCallButton" Content="Zakończ" Margin="164,10,138,58"></Button>
+            <Button Click="BreakCall_Click" Visibility="Hidden" BorderBrush="YellowGreen" Background="Red" x:Name="BreakCallButton" Content="Zakończ" Margin="164,10,138,58"></Button>
             <Button BorderBrush="YellowGreen" x:Name="MuteButton" Content="Wycisz" Margin="324,10,30,58"></Button>
             <Label x:Name="CallInfoLabel" FontSize="30" Content="email2@example.com" Margin="10,47,10,0"></Label>
         </Grid>

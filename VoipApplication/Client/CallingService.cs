@@ -132,6 +132,8 @@ namespace VoIP_Client
                         if (message.StartsWith(Commands.Invite))
                         {
                             IncomingCallEvent.Invoke("Ktoś dzwoni: " + message);
+                            var msgAfterSplit = message.Split(':');
+                            remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]),localEndPoint.Port);
                         }
 
                         if (message.StartsWith(Commands.Cancel))
