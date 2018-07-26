@@ -37,6 +37,7 @@
             <Image x:Name="Mic_image" Source="mic_on.png" Margin="349,5,25,47"></Image>
             <Label x:Name="CallInfoLabel" FontSize="30" Content="email2@example.com" Margin="10,47,93,0"></Label>
         </Grid>
+        <Image HorizontalAlignment="Left" Height="133" VerticalAlignment="Top" Width="145" Margin="0,436,0,0" Source="/VoipApplication;component/broccoli.png"/>
 
 
     </Grid>
