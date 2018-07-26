@@ -134,7 +134,7 @@ namespace VoIP_Client
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
             client.LastBookmark = "search";
-            new ClientSearchWindow(FriendsListDataGrid, client);
+            searchWindow=new ClientSearchWindow(FriendsListDataGrid, client);
             searchWindow.Show();
         }
     }
