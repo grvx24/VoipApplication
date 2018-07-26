@@ -94,6 +94,8 @@ namespace VoIP_Client
                 player = new SoundPlayer("phone_sound.wav");
             }
 
+            CustomUserControl.Content = friendsListGrid;
+
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
