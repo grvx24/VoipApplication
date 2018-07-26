@@ -20,6 +20,7 @@ using System.Net;
 using codecs;
 using NAudio.Wave;
 using System.Diagnostics;
+using System.Media;
 
 namespace VoIP_Client
 {
@@ -88,6 +89,11 @@ namespace VoIP_Client
 
             client.GetBasicInfo();
             UserEmailLabel.Text = client.UserProfile.Email;//n
+            if(System.IO.File.Exists("phone_sound.wav"))
+            {
+                player = new SoundPlayer("phone_sound.wav");
+            }
+
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -184,7 +190,16 @@ namespace VoIP_Client
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
             callingService.DisposeTcpListener();
+            if(callingService.isBusy)
+            {
+                callingService.RejectCall();
+                callingService.BreakCall();
+            }
             client.Disconnect();
+            if(friendsListGrid.searchWindow!=null)
+            {
+                friendsListGrid.searchWindow.Close();
+            }
             ConnectionWindow loginWindow = new ConnectionWindow();
             loginWindow.Show();
             this.Close();
@@ -438,34 +453,19 @@ namespace VoIP_Client
 
         }
 
-        private void TcpListenerButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!callingService.isListening)
-            {
-                callingService.StartListening();
 
-            }
-            else
-            {
-                callingService.StopListening();
-            }
 
-            if (callingService.isListening)
-            {
-                MessageBox.Show("Nasluchiwanie włączone");
-            }
-            else
-            {
-                MessageBox.Show("Nasluchiwanie wyłączone");
-            }
-        }
+        SoundPlayer player;
 
         private void ShowIncomingCallWindow(string username)
         {
             Dispatcher.Invoke(new Action(() =>
             {
                 IncomingCallGrid.Visibility = Visibility.Visible;
-                CallInfoLabel.Content = username+" dzwoni!";
+                CallInfoLabel.Content = username;
+
+                player.PlayLooping();
+                
             }));
 
         }
@@ -474,6 +474,8 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
+                player.Stop();
+
                 IncomingCallGrid.Visibility = Visibility.Hidden;
                 AnswerButton.Visibility = Visibility.Visible;
                 RejectButton.Content = "Odrzuć";
@@ -526,6 +528,8 @@ namespace VoIP_Client
 
         private void AnswerButton_Click(object sender, RoutedEventArgs e)
         {
+            player.Stop();
+
             callingService.AnswerCall();
             AnswerButton.Visibility = Visibility.Hidden;
             RejectButton.Content = "Zakończ";
@@ -534,6 +538,8 @@ namespace VoIP_Client
 
         private void RejectButton_Click(object sender, RoutedEventArgs e)
         {
+            player.Stop();
+
             callingService.RejectCall();
             AnswerButton.Visibility = Visibility.Visible;
             RejectButton.Content = "Odrzuć";

@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using VoIP_Server;
 using VoIP_Server.Client;
 using cscprotocol;
+using System.Diagnostics;
 
 namespace VoIP_Client
 {
@@ -54,7 +55,7 @@ namespace VoIP_Client
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
                 var text = string.Format("{0} - {1} - {2}", data.FriendName, data.Ip, data.Email);
 
-                MessageBox.Show(text);
+                Trace.WriteLine(text);
 
                 if (data.Status == 1)
                 {
@@ -129,11 +130,12 @@ namespace VoIP_Client
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
 
+        public ClientSearchWindow searchWindow;
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
             client.LastBookmark = "search";
-            ClientSearchWindow window = new ClientSearchWindow(FriendsListDataGrid, client);
-            window.Show();
+            new ClientSearchWindow(FriendsListDataGrid, client);
+            searchWindow.Show();
         }
     }
 }

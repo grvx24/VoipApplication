@@ -139,6 +139,10 @@ namespace VoIP_Client
                         if (message.StartsWith(Commands.Invite))
                         {
                             var msgAfterSplit = message.Split(':');
+                            if(msgAfterSplit.Length!=3)
+                            {
+                                break;
+                            }
                             IncomingCallEvent.Invoke(msgAfterSplit[2]);
                             remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]),localEndPoint.Port);
                         }

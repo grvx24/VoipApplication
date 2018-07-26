@@ -330,6 +330,7 @@
     <Content Include="CPOL\CPOL.htm" />
     <Resource Include="mic_off.png" />
     <Resource Include="mic_on.png" />
+    <Content Include="phone_sound.wav" />
     <Content Include="UsersModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UsersModel.Context.cs</LastGenOutput>
