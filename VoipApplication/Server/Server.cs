@@ -118,7 +118,7 @@ namespace VoIP_Server
             }
         }
 
-        private IQueryable<CscUserMainData> FindFriendForUser(string email)
+        private IQueryable<CscUserMainData> FindFriendsForUser(string email)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var user = serverDB.Users.FirstOrDefault(x => x.Email == email);
@@ -136,7 +136,7 @@ namespace VoIP_Server
 
         private void SendFriendsList(TcpClient client, string email)
         {
-            var friendsQueryResult = FindFriendForUser(email);
+            var friendsQueryResult = FindFriendsForUser(email);
             foreach (var friend in friendsQueryResult)
             {
                 CscUserMainData friendsUserData = new CscUserMainData()
@@ -157,7 +157,7 @@ namespace VoIP_Server
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var queryResult = serverDB.Users.Where(u => u.Email.Contains(text));
-            var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
+            var friendsQueryResult = FindFriendsForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 
             foreach (var user in queryResult)
             {
@@ -179,7 +179,7 @@ namespace VoIP_Server
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var online = OnlineUsers;
-            var friendsQueryResult = FindFriendForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
+            var friendsQueryResult = FindFriendsForUser(serverDB.Users.FirstOrDefault(u => u.UserId == connectedUserID).Email);
 
             foreach (var user in online)
             {
@@ -196,9 +196,18 @@ namespace VoIP_Server
             }
         }
 
-        private void SendOnlineUser(TcpClient client, ConnectedUsers newUser)
+        private void SendOnlineUser(TcpClient client, ConnectedUsers newUser, string receiverEmail)
         {
-            CscUserMainData userData = new CscUserMainData() { Email = newUser.Email, Id = newUser.Id, Status = 1, Ip = newUser.Ip, FriendName = "" };
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
+            var friendsQueryResult = FindFriendsForUser(receiverEmail);
+            CscUserMainData userData = new CscUserMainData()
+            {
+                Email = newUser.Email,
+                Id = newUser.Id,
+                Status = 1,
+                Ip = newUser.Ip,
+                FriendName = friendsQueryResult.Any(u => u.Id == newUser.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == newUser.Id).FriendName : string.Empty,
+            };
             var message = cscProtocol.CreateOnlineUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
@@ -301,7 +310,7 @@ namespace VoIP_Server
                     }
 
                 case 1:
-                    {
+                    {//first login message
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                         //Dane użytkownika
                         SendProfileInfo(currUser);
@@ -349,9 +358,8 @@ namespace VoIP_Server
                         {
                             foreach (var item in connectedUser.NewOnlineUsers)
                             {
-                                SendOnlineUser(connectedUser.Client, item);
+                                SendOnlineUser(connectedUser.Client, item, connectedUser.Email);
                             }
-
                             connectedUser.NewOnlineUsers.Clear();
                         }
 
@@ -494,8 +502,6 @@ namespace VoIP_Server
                         connectedUser.DH.HandleResponse(DHclientdata);
                         break;
                     }
-
-
 
                 default:
                     break;
