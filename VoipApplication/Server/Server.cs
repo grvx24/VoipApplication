@@ -166,8 +166,8 @@ namespace VoIP_Server
                     FriendName = friendsQueryResult.Any(u => u.Id == user.UserId) ? friendsQueryResult.FirstOrDefault(u => u.Id == user.UserId).FriendName : string.Empty,
                     Email = user.Email,
                     Id = user.UserId,
-                    Status = OnlineUsers.Any(u => u.Email == user.Email) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Email == user.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == user.Email).Ip : "none"
+                    Status = OnlineUsers.Any(u => u.Id == user.UserId) ? 1 : 0,
+                    Ip = OnlineUsers.Any(u => u.Id == user.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == user.UserId).Ip : "none"
                 };
 
                 var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
