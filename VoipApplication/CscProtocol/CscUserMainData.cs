@@ -14,6 +14,5 @@ namespace cscprotocol
         public string FriendName { get; set; }
         public int Status { get; set; }
         public string Ip { get; set; }
-        public string ChangedField { get; set; }
     }
 }
