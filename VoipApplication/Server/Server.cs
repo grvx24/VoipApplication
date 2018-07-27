@@ -148,7 +148,8 @@ namespace VoIP_Server
                     Ip = OnlineUsers.Any(u => u.Id == friend.Id) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.Id).Ip : "none"
                 };
 
-                var message = cscProtocol.CreateNewFriendUserDataMessage(friendsUserData);
+                //var message = cscProtocol.CreateNewFriendUserDataMessage(friendsUserData);
+                var message = cscProtocol.CreateUnifiedUserDataMessage(friendsUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
@@ -191,7 +192,8 @@ namespace VoIP_Server
                     Ip = user.Ip,
                     FriendName = friendsQueryResult.Any(u => u.Id == user.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == user.Id).FriendName : string.Empty,
                 };
-                var message = cscProtocol.CreateOnlineUserDataMessage(userData);
+                //var message = cscProtocol.CreateOnlineUserDataMessage(userData);
+                var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
@@ -208,14 +210,25 @@ namespace VoIP_Server
                 Ip = newUser.Ip,
                 FriendName = friendsQueryResult.Any(u => u.Id == newUser.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == newUser.Id).FriendName : string.Empty,
             };
-            var message = cscProtocol.CreateOnlineUserDataMessage(userData);
+            //var message = cscProtocol.CreateOnlineUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendOfflineUser(TcpClient client, ConnectedUsers newUser)
+        private void SendOfflineUser(TcpClient client, ConnectedUsers newUser, string receiverEmail)
         {
-            CscUserMainData userData = new CscUserMainData() { Email = newUser.Email, Id = newUser.Id, Status = 0, Ip = newUser.Ip, FriendName = "" };
-            var message = cscProtocol.CreateOfflineUserDataMessage(userData);
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
+            var friendsQueryResult = FindFriendsForUser(receiverEmail);
+            CscUserMainData userData = new CscUserMainData()
+            {
+                Email = newUser.Email,
+                Id = newUser.Id,
+                Status = 0,
+                Ip = newUser.Ip,
+                FriendName = friendsQueryResult.Any(u => u.Id == newUser.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == newUser.Id).FriendName : string.Empty,
+            };
+            //var message = cscProtocol.CreateOfflineUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
 
@@ -225,23 +238,31 @@ namespace VoIP_Server
             var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
             CscUserMainData userData = new CscUserMainData()
             {
-                FriendName = friendData.FriendName,
                 Email = friend.Email,
                 Id = friend.UserId,
                 Status = OnlineUsers.Any(u => u.Id == friend.UserId) ? 1 : 0,
-                Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none"
+                Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none",
+                FriendName = friendData.FriendName
             };
-            var message = cscProtocol.CreateNewFriendUserDataMessage(userData);
+            //var message = cscProtocol.CreateNewFriendUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData Friend)
+        private void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData friendData)
         {
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
+            var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
             CscUserMainData userData = new CscUserMainData()
             {
-                Id = Friend.Id,
+                Email = friend.Email,
+                Id = friend.UserId,
+                Status = OnlineUsers.Any(u => u.Id == friend.UserId) ? 1 : 0,
+                Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none",
+                FriendName = ""
             };
-            var message = cscProtocol.CreateNoFriendAnymoreUserDataMessage(userData);
+            //var message = cscProtocol.CreateNoFriendAnymoreUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
 
@@ -367,7 +388,7 @@ namespace VoIP_Server
                         {
                             foreach (var item in connectedUser.UsersToRemove)
                             {
-                                SendOfflineUser(connectedUser.Client, item);
+                                SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
                             }
                             connectedUser.UsersToRemove.Clear();
                         }

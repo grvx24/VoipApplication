@@ -69,49 +69,60 @@ namespace cscprotocol
             return message;
         }
 
-        //nowy uzytkownik z listy ulubionych
-        public byte[] CreateNewFriendUserDataMessage(CscUserMainData friendsUserData)//CreateFriendUserDataMessage
+        //n zunifikowana zmiana stanu usera !!!!
+        public byte[] CreateUnifiedUserDataMessage(CscUserMainData userMainData)//CreateFriendUserDataMessage
         {
-            var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
+            var friendsAsBytes = CscProtocol.Serialize(userMainData);
             var message = new byte[3 + friendsAsBytes.Length];
-            message[0] = 9;
+            message[0] = 4;
             BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
             friendsAsBytes.CopyTo(message, 3);
             return message;
         }
 
-        //usuwany uzytkownik z listy ulubionych
-        public byte[] CreateNoFriendAnymoreUserDataMessage(CscUserMainData friendsUserData)
-        {
-            var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
-            var message = new byte[3 + friendsAsBytes.Length];
-            message[0] = 10;
-            BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
-            friendsAsBytes.CopyTo(message, 3);
-            return message;
-        }
+        ////nowy uzytkownik z listy ulubionych
+        //public byte[] CreateNewFriendUserDataMessage(CscUserMainData userMainData)//CreateFriendUserDataMessage
+        //{
+        //    var friendsAsBytes = CscProtocol.Serialize(userMainData);
+        //    var message = new byte[3 + friendsAsBytes.Length];
+        //    message[0] = 9;
+        //    BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
+        //    friendsAsBytes.CopyTo(message, 3);
+        //    return message;
+        //}
 
-        //uzytkownik online
-        public byte[] CreateOnlineUserDataMessage(CscUserMainData friendsUserData)
-        {
-            var users = CscProtocol.Serialize(friendsUserData);
-            var message = new byte[3 + users.Length];
-            message[0] = 8;
-            BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-            users.CopyTo(message, 3);
-            return message;
-        }
+        ////usuwany uzytkownik z listy ulubionych
+        //public byte[] CreateNoFriendAnymoreUserDataMessage(CscUserMainData userMainData)
+        //{
+        //    var friendsAsBytes = CscProtocol.Serialize(userMainData);
+        //    var message = new byte[3 + friendsAsBytes.Length];
+        //    message[0] = 10;
+        //    BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
+        //    friendsAsBytes.CopyTo(message, 3);
+        //    return message;
+        //}
 
-        //uzytkownik offline
-        public byte[] CreateOfflineUserDataMessage(CscUserMainData friendsUserData)
-        {
-            var users = CscProtocol.Serialize(friendsUserData);
-            var message = new byte[3 + users.Length];
-            message[0] = 7;
-            BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-            users.CopyTo(message, 3);
-            return message;
-        }
+        ////uzytkownik online
+        //public byte[] CreateOnlineUserDataMessage(CscUserMainData userMainData)
+        //{
+        //    var users = CscProtocol.Serialize(userMainData);
+        //    var message = new byte[3 + users.Length];
+        //    message[0] = 8;
+        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
+        //    users.CopyTo(message, 3);
+        //    return message;
+        //}
+
+        ////uzytkownik offline
+        //public byte[] CreateOfflineUserDataMessage(CscUserMainData userMainData)
+        //{
+        //    var users = CscProtocol.Serialize(userMainData);
+        //    var message = new byte[3 + users.Length];
+        //    message[0] = 7;
+        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
+        //    users.CopyTo(message, 3);
+        //    return message;
+        //}
 
         public byte[] CreateUserProfileMessage(CscUserMainData userMainData)
         {
@@ -162,20 +173,20 @@ namespace cscprotocol
             { throw new ArgumentNullException("Message cannot be null"); }
         }
 
-        public byte[] CreateSaltMessage(string message)
-        {
-            var mainMessage = Encoding.Unicode.GetBytes(message);
-            UInt16 messageLength = (UInt16)mainMessage.Length;
-            var lenghtBytes = BitConverter.GetBytes(messageLength);
+        //public byte[] CreateSaltMessage(string message)
+        //{
+        //    var mainMessage = Encoding.Unicode.GetBytes(message);
+        //    UInt16 messageLength = (UInt16)mainMessage.Length;
+        //    var lenghtBytes = BitConverter.GetBytes(messageLength);
 
-            byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
-            result[0] = 1;
+        //    byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
+        //    result[0] = 1;
 
-            lenghtBytes.CopyTo(result, 1);
-            mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+        //    lenghtBytes.CopyTo(result, 1);
+        //    mainMessage.CopyTo(result, lenghtBytes.Length + 1);
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public byte[] CreateSaltMessage(byte[] mainMessage)
         {

@@ -179,13 +179,55 @@ namespace VoIP_Client
                         break;
                     }
 
+                case 4://n !!! odebranie zunifikowanego info o zmianie stanu kontaktu
+                    {
+                        var changedUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        var online = onlineUsers.FirstOrDefault(u => u.Id == changedUser.Id);
+                        var friend = FriendsList.FirstOrDefault(u => u.Id == changedUser.Id);
+                        try
+                        {
+                            if (RemoveItemEvent != null)
+                                RemoveItemEvent.Invoke(online);
+                        }
+                        catch (Exception) { }
+
+                        try
+                        {
+                            if (RemoveFriendEvent != null)
+                                RemoveFriendEvent.Invoke(friend);
+                        }
+                        catch (Exception) { }
+
+                        if (changedUser.Status == 1 && changedUser.Email != UserProfile.Email)
+                        {
+                            try
+                            {
+                                if (AddItemEvent != null)
+                                { AddItemEvent.Invoke(changedUser); }
+                            }
+                            catch (Exception) { }
+                        }
+
+                        if (changedUser.FriendName != string.Empty)
+                        {
+                            try
+                            {
+                                if (AddFriendEvent != null)
+                                    AddFriendEvent.Invoke(changedUser);
+                            }
+                            catch (Exception) { }
+                        }
+                        break;
+                    }
+
                 case 6:
-
-                    var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    UserProfile = profile;
-                    SetProfileText.Invoke(profile);
-                    break;
-
+                    {
+                        var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        UserProfile = profile;
+                        SetProfileText.Invoke(profile);
+                        break;
+                    }
+                    /*
                 case 7:
                     var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                     var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
@@ -221,12 +263,12 @@ namespace VoIP_Client
 
                 case 10:
                     {
-                        var userToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                         if (RemoveFriendEvent != null)
-                            RemoveFriendEvent.Invoke(userToRemove);
+                            RemoveFriendEvent.Invoke(friendData);
                         //onlineUsers.Remove(userToRemove);
                         break;
-                    }
+                    }*/
 
                 case 12:
                     {
