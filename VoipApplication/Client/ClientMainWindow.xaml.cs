@@ -124,7 +124,7 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                client.FriendsList.Remove(userToRemove);
+                client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u=> u.Id == userToRemove.Id));
             }
             ));
         }

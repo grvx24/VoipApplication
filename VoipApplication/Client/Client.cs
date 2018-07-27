@@ -64,7 +64,7 @@ namespace VoIP_Client
         public ObservableCollection<CscUserMainData> SearchedUsers = new ObservableCollection<CscUserMainData>();
 
         public ObservableCollection<CscUserMainData> GetFriendsList()
-        {
+        {//n !!! tu mozna zrobic przypisywanie statusu usera online ofline przed przekazaniem tej listy do GUI
             if (FriendsList != null)
             {
                 return FriendsList;
@@ -113,13 +113,13 @@ namespace VoIP_Client
 
         public void SendChangeEmailRequest(CscUserData userData)
         {
-            var msg = protocol.CreateChangeEmailMessage(userData);
+            var msg = protocol.CreateChangeEmailRequest(userData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void SendChangePasswordRequest(CscPasswordData userData)
         {
-            var msg = protocol.CreateChangePasswordMessage(userData);
+            var msg = protocol.CreateChangePasswordRequest(userData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
@@ -131,16 +131,16 @@ namespace VoIP_Client
 
         public void SendAddUserToFriendsListDataRequest(CscChangeFriendData friendData)
         {
-            var msg = protocol.CreateAddUserToFriendsListDataMessage(friendData);
+            var msg = protocol.CreateAddUserToFriendsListRequest(friendData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void SendRemoveUserFromFriendsListDataRequest(CscChangeFriendData friendData)
         {
-            var msg = protocol.CreateRemoveUserFromFriendsListDataMessage(friendData);
+            var msg = protocol.CreateRemoveUserFromFriendsListRequest(friendData);
             client.GetStream().Write(msg, 0, msg.Length);
         }
-        
+
 
         public void Connect(IPAddress ip, int port)
         {
@@ -190,15 +190,13 @@ namespace VoIP_Client
                     var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                     var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
 
-                    if(toRemove!=null)
+                    if (toRemove != null)
                     {
                         Trace.WriteLine("Usuwanie: " + toRemove.Email);
 
                         if (RemoveItemEvent != null)
                             RemoveItemEvent.Invoke(toRemove);
                     }
-
-
                     break;
 
 
@@ -222,14 +220,13 @@ namespace VoIP_Client
                     }
 
                 case 10:
-
-                    var userToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (RemoveFriendEvent != null)
-                        RemoveFriendEvent.Invoke(userToRemove);
-                    //onlineUsers.Remove(userToRemove);
-
-                    break;
-
+                    {
+                        var userToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                        if (RemoveFriendEvent != null)
+                            RemoveFriendEvent.Invoke(userToRemove);
+                        //onlineUsers.Remove(userToRemove);
+                        break;
+                    }
 
                 case 12:
                     {
@@ -331,7 +328,7 @@ namespace VoIP_Client
 
         public void Disconnect()
         {
-            
+
             if (client.Connected)
                 client.Close();
         }

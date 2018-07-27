@@ -144,11 +144,11 @@ namespace VoIP_Server
                     FriendName = friend.FriendName,
                     Email = friend.Email,
                     Id = friend.Id,
-                    Status = OnlineUsers.Any(u => u.Email == friend.Email) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Email == friend.Email) ? OnlineUsers.FirstOrDefault(u => u.Email == friend.Email).Ip : "none"
+                    Status = OnlineUsers.Any(u => u.Id == friend.Id) ? 1 : 0,
+                    Ip = OnlineUsers.Any(u => u.Id == friend.Id) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.Id).Ip : "none"
                 };
 
-                var message = cscProtocol.CreateFriendUserDataMessage(friendsUserData);
+                var message = cscProtocol.CreateNewFriendUserDataMessage(friendsUserData);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
@@ -207,6 +207,32 @@ namespace VoIP_Server
         {
             CscUserMainData userData = new CscUserMainData() { Email = newUser.Email, Id = newUser.Id, Status = 0, Ip = newUser.Ip, FriendName = "" };
             var message = cscProtocol.CreateOfflineUserDataMessage(userData);
+            client.GetStream().Write(message, 0, message.Length);
+        }
+
+        private void SendNewFriendUser(TcpClient client, CscChangeFriendData friendData)
+        {
+            VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
+            var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
+            CscUserMainData userData = new CscUserMainData()
+            {
+                FriendName = friendData.FriendName,
+                Email = friend.Email,
+                Id = friend.UserId,
+                Status = OnlineUsers.Any(u => u.Id == friend.UserId) ? 1 : 0,
+                Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none"
+            };
+            var message = cscProtocol.CreateNewFriendUserDataMessage(userData);
+            client.GetStream().Write(message, 0, message.Length);
+        }
+
+        private void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData Friend)
+        {
+            CscUserMainData userData = new CscUserMainData()
+            {
+                Id = Friend.Id,
+            };
+            var message = cscProtocol.CreateNoFriendAnymoreUserDataMessage(userData);
             client.GetStream().Write(message, 0, message.Length);
         }
 
@@ -337,8 +363,7 @@ namespace VoIP_Server
                             }
                             connectedUser.UsersToRemove.Clear();
                         }
-
-
+                        //n !!!!! trzeba tez wyslac dane odnosnie friendlisty
                         break;
                     }
 
@@ -347,13 +372,14 @@ namespace VoIP_Server
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
                         ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " jako " + userData.FriendName + " do ulubionych usera " + connectedUser.Id);
 
-                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         serverDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
                         serverDB.SaveChanges();
 
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
-                        SendFriendsList(connectedUser.Client, currUser.Email);
+                        //SendFriendsList(connectedUser.Client, currUser.Email);
+                        SendNewFriendUser(connectedUser.Client, userData);
                         break;
                     }
 
@@ -361,14 +387,15 @@ namespace VoIP_Server
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
 
-                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
                         serverDB.FriendsList.Remove(serverDB.FriendsList.FirstOrDefault(u => u.FriendId == userData.Id && u.UserId == connectedUser.Id));
                         serverDB.SaveChanges();
                         ServerConsoleWriteEvent.Invoke("Usuniecie usera " + userData.Id + " z ulubionych usera " + connectedUser.Id + " zakonczone.");
 
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
-                        SendFriendsList(connectedUser.Client, currUser.Email);
+                        //SendFriendsList(connectedUser.Client, currUser.Email);
+                        SendNoFriendAnymoreUser(connectedUser.Client, userData);
                         break;
                     }
 

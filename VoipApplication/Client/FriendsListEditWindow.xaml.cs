@@ -46,35 +46,24 @@ namespace VoIP_Client
         private void EditFavouriteUserButton_Click(object sender, RoutedEventArgs e)
         {
             client.SearchedUsers.Clear();
-            client.FriendsList.Clear();
-            //client.onlineUsers.Clear();
 
             if (IsOurFriend)
             {
                 if (UsernameTextBox.Text != string.Empty)
                 {
-                    //MessageBox.Show("Przyjaciel zmien nazwe");
                     client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
-
-                    client.SearchedUsers.Clear();
-                    client.FriendsList.Clear();
-                    //client.onlineUsers.Clear();
-
+                    //client.SearchedUsers.Clear();
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                 }
                 else
                 { //usun tego usera z ulubionych
-                    //MessageBox.Show("Przyjaciel usun go");
                     client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                 }
             }
             else
             {
-                //MessageBox.Show("Nieprzyjaciel");
                 if (UsernameTextBox.Text != string.Empty)
-                {
-                    //MessageBox.Show("Nieprzyjaciel dodaj do ulubionych");
-                    //dodaj tego usera do naszych znajomych
+                {//dodaj tego usera do naszych znajomych                    
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                 }
             }
@@ -82,24 +71,21 @@ namespace VoIP_Client
             //pobranie odpowiedniego okna jeszcze raz zeby FriendName w grid sie odświerzyło na zmienione !!!!            
             try
             {
+                client.SendRefreshRequest();
                 switch (client.LastBookmark)
                 {
                     case "online":
                         {
-                            //MessageBox.Show("online");
-                            client.SendRefreshRequest();
                             parentUsersGrid.DataContext = client.GetOnlineUsers();
                             break;
                         }
                     case "friends":
                         {
-                            //MessageBox.Show("friends");
                             parentUsersGrid.DataContext = client.GetFriendsList();
                             break;
                         }
                     case "search":
                         {
-                            //MessageBox.Show("search");
                             client.SendSearchUserRequest(client.LastSearchText);
                             parentUsersGrid.DataContext = client.GeSearchUsers();
                             break;

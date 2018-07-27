@@ -110,6 +110,14 @@ namespace VoIP_Client
             ));
         }
 
+        public ClientSearchWindow searchWindow;
+        private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            client.LastBookmark = "search";
+            searchWindow=new ClientSearchWindow(FriendsListDataGrid, client);
+            searchWindow.Show();
+        }
+
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
             client.LastBookmark = "online";
@@ -120,17 +128,8 @@ namespace VoIP_Client
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
             client.LastBookmark = "friends";
-            client.SendRefreshRequest();
-            //wyczyscic chyba trzeba friendslist !!!!!
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
 
-        public ClientSearchWindow searchWindow;
-        private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
-        {
-            client.LastBookmark = "search";
-            searchWindow=new ClientSearchWindow(FriendsListDataGrid, client);
-            searchWindow.Show();
-        }
     }
 }

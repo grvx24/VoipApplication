@@ -66,19 +66,28 @@ namespace cscprotocol
             message[0] = 3;
             BitConverter.GetBytes((UInt16)searchUserAsBytes.Length).CopyTo(message, 1);
             searchUserAsBytes.CopyTo(message, 3);
-
             return message;
         }
 
-        //dowolny uzytkownik z listy ulubionych
-        public byte[] CreateFriendUserDataMessage(CscUserMainData friendsUserData)
+        //nowy uzytkownik z listy ulubionych
+        public byte[] CreateNewFriendUserDataMessage(CscUserMainData friendsUserData)//CreateFriendUserDataMessage
         {
             var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
             var message = new byte[3 + friendsAsBytes.Length];
             message[0] = 9;
             BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
             friendsAsBytes.CopyTo(message, 3);
+            return message;
+        }
 
+        //usuwany uzytkownik z listy ulubionych
+        public byte[] CreateNoFriendAnymoreUserDataMessage(CscUserMainData friendsUserData)
+        {
+            var friendsAsBytes = CscProtocol.Serialize(friendsUserData);
+            var message = new byte[3 + friendsAsBytes.Length];
+            message[0] = 10;
+            BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
+            friendsAsBytes.CopyTo(message, 3);
             return message;
         }
 
@@ -90,9 +99,9 @@ namespace cscprotocol
             message[0] = 8;
             BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
             users.CopyTo(message, 3);
-
             return message;
         }
+
         //uzytkownik offline
         public byte[] CreateOfflineUserDataMessage(CscUserMainData friendsUserData)
         {
@@ -101,7 +110,6 @@ namespace cscprotocol
             message[0] = 7;
             BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
             users.CopyTo(message, 3);
-
             return message;
         }
 
@@ -112,10 +120,8 @@ namespace cscprotocol
             message[0] = 6;
             BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
             users.CopyTo(message, 3);
-
             return message;
         }
-
 
         public byte[] CreateConfirmMessage(string message)
         {
@@ -125,13 +131,11 @@ namespace cscprotocol
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
-
                 byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
                 result[0] = 12;
 
                 lenghtBytes.CopyTo(result, 1);
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-
                 return result;
             }
             else
@@ -152,7 +156,6 @@ namespace cscprotocol
 
                 lenghtBytes.CopyTo(result, 1);
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-
                 return result;
             }
             else
@@ -215,7 +218,6 @@ namespace cscprotocol
         public static string ParseConfirmMessage(byte[] message)
         {
             var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
-
             string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
             return text;
         }
@@ -231,7 +233,6 @@ namespace cscprotocol
             fullData[0] = 0;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
-
             return fullData;
         }
 
@@ -246,10 +247,8 @@ namespace cscprotocol
             fullData[0] = 2;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
-
             return fullData;
         }
-
 
         public byte[] CreateStartingInfoRequest()
         {
@@ -257,7 +256,6 @@ namespace cscprotocol
             result[0] = 1;
             result[1] = 0;
             result[2] = 0;
-
             return result;
         }
 
@@ -270,7 +268,7 @@ namespace cscprotocol
 
             return result;
         }
-        public byte[] CreateChangeEmailMessage(CscUserData userData)
+        public byte[] CreateChangeEmailRequest(CscUserData userData)
         {
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
@@ -285,7 +283,7 @@ namespace cscprotocol
             return fullData;
         }
 
-        public byte[] CreateChangePasswordMessage(CscPasswordData userData)
+        public byte[] CreateChangePasswordRequest(CscPasswordData userData)
         {
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
@@ -314,7 +312,7 @@ namespace cscprotocol
             return result;
         }
 
-        public byte[] CreateAddUserToFriendsListDataMessage(CscChangeFriendData userData)
+        public byte[] CreateAddUserToFriendsListRequest(CscChangeFriendData userData)
         {
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
@@ -328,7 +326,7 @@ namespace cscprotocol
             return fullData;
         }
 
-        public byte[] CreateRemoveUserFromFriendsListDataMessage(CscChangeFriendData userData)
+        public byte[] CreateRemoveUserFromFriendsListRequest(CscChangeFriendData userData)
         {
             var mainMessage = Serialize(userData);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
