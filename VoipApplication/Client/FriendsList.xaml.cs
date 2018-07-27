@@ -86,14 +86,8 @@ namespace VoIP_Client
         private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
-
-            //MessageBox.Show("Przekazuje usera " + data.Email + " o ID " + data.Id);
+            
             FriendsListEditWindow window;
-            //MessageBox.Show("FriendsList zawiera " + client.FriendsList.Count() + " userow");
-            //foreach (var user in client.FriendsList)
-            //{ MessageBox.Show(user.Id + " " + user.Email); }
-            //var result = client.FriendsList.Where(u => u.Id == data.Id);
-            //MessageBox.Show("Takie samo ID ma " + result.Count() + " userów.");
             if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
             {
                 //MessageBox.Show("Znajomy");
@@ -127,6 +121,7 @@ namespace VoIP_Client
         {
             client.LastBookmark = "friends";
             client.SendRefreshRequest();
+            //wyczyscic chyba trzeba friendslist !!!!!
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
 
