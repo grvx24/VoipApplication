@@ -36,7 +36,7 @@ namespace VoIP_Client
             this.client = client;
             this.parentWindow = parentWindow;
             this.callingService = callingService;
-            
+
             InitializeComponent();
             PopulateInputDevicesCombo();
             //(parentWindow as ClientMainWindow).UserEmailLabel.Text = client.UserProfile.Email;//to robi fajny blad aplikacji przydatny do zrobienia poprawnego wylogowania usera po craschu apki
@@ -52,9 +52,7 @@ namespace VoIP_Client
 
             }
             if (InputDeviceComboBox.Items.Count > 0)
-            {
-                InputDeviceComboBox.SelectedIndex = 0;
-            }
+            { InputDeviceComboBox.SelectedIndex = 0; }
         }
 
 
@@ -85,7 +83,6 @@ namespace VoIP_Client
             client.SendChangeEmailRequest(userData);
 
             var WaitForMessageTask = Task.Run(() => WaitForEmailMessage(NewEmail));
-
         }
 
         private void PasswordButton_Click(object sender, RoutedEventArgs e)
@@ -115,18 +112,15 @@ namespace VoIP_Client
 
                 MessageBox.Show("Zmiana adresu email wymaga ponownego zalogowania się.");
 
-                Dispatcher.Invoke(()=>
+                Dispatcher.Invoke(() =>
                 {
                     callingService.DisposeTcpListener();
                     client.Disconnect();
                     ConnectionWindow loginWindow = new ConnectionWindow();
                     loginWindow.Show();
-                    parentWindow.Close();//n !!!! nie uruchamia okna logowania ponownie
-
+                    parentWindow.Close();
                 }
-                
                 );
-                
             }
             else
             {
