@@ -198,25 +198,25 @@ namespace VoIP_Client
                         }
                         catch (Exception) { }
 
-                        if (changedUser.Status == 1 && changedUser.Email != UserProfile.Email)
+                        try
                         {
-                            try
+                            if (changedUser.Status > 0 && changedUser.Email != UserProfile.Email)
                             {
                                 if (AddItemEvent != null)
                                 { AddItemEvent.Invoke(changedUser); }
                             }
-                            catch (Exception) { }
                         }
+                        catch (Exception) { }
 
-                        if (changedUser.FriendName != string.Empty)
+                        try
                         {
-                            try
+                            if (changedUser.FriendName != string.Empty)
                             {
                                 if (AddFriendEvent != null)
                                     AddFriendEvent.Invoke(changedUser);
                             }
-                            catch (Exception) { }
                         }
+                        catch (Exception) { }
                         break;
                     }
 
@@ -227,48 +227,48 @@ namespace VoIP_Client
                         SetProfileText.Invoke(profile);
                         break;
                     }
-                    /*
-                case 7:
-                    var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
+                /*
+            case 7:
+                var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
 
-                    if (toRemove != null)
-                    {
-                        Trace.WriteLine("Usuwanie: " + toRemove.Email);
+                if (toRemove != null)
+                {
+                    Trace.WriteLine("Usuwanie: " + toRemove.Email);
 
-                        if (RemoveItemEvent != null)
-                            RemoveItemEvent.Invoke(toRemove);
-                    }
+                    if (RemoveItemEvent != null)
+                        RemoveItemEvent.Invoke(toRemove);
+                }
+                break;
+
+
+            case 8:
+                {
+                    var onlineUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                    if (onlineUser.Email != UserProfile.Email)
+
+                        if (AddItemEvent != null)
+                            AddItemEvent.Invoke(onlineUser);
                     break;
+                }
 
+            case 9:
+                {
+                    var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                    if (AddFriendEvent != null)
+                        AddFriendEvent.Invoke(friendData);
+                    //friendsUserDatas.Add(friendData);
+                    break;
+                }
 
-                case 8:
-                    {
-                        var onlineUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                        if (onlineUser.Email != UserProfile.Email)
-
-                            if (AddItemEvent != null)
-                                AddItemEvent.Invoke(onlineUser);
-                        break;
-                    }
-
-                case 9:
-                    {
-                        var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                        if (AddFriendEvent != null)
-                            AddFriendEvent.Invoke(friendData);
-                        //friendsUserDatas.Add(friendData);
-                        break;
-                    }
-
-                case 10:
-                    {
-                        var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                        if (RemoveFriendEvent != null)
-                            RemoveFriendEvent.Invoke(friendData);
-                        //onlineUsers.Remove(userToRemove);
-                        break;
-                    }*/
+            case 10:
+                {
+                    var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                    if (RemoveFriendEvent != null)
+                        RemoveFriendEvent.Invoke(friendData);
+                    //onlineUsers.Remove(userToRemove);
+                    break;
+                }*/
 
                 case 12:
                     {

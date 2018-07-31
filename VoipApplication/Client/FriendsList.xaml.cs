@@ -128,8 +128,8 @@ namespace VoIP_Client
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
             client.LastBookmark = "friends";
+            client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }
-
     }
 }

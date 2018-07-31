@@ -155,32 +155,34 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() => client.onlineUsers.Remove(user)));
 
-            var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
-            if (friend != null)
-            {
-                CscUserMainData newUser = new CscUserMainData() { Email = friend.Email, Id = friend.Id, Ip = "", FriendName = friend.FriendName, Status = 0 };
-                Dispatcher.Invoke(new Action(() => client.FriendsList.Remove(friend)));
-                client.FriendsList.Add(newUser);
-            }
+            //var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
+            //if (friend != null)
+            //{
+            //    CscUserMainData newUser = new CscUserMainData() { Email = friend.Email, Id = friend.Id, Ip = "", FriendName = friend.FriendName, Status = 0 };
+            //    Dispatcher.Invoke(new Action(() =>
+            //    {
+            //        client.FriendsList.Remove(friend);
+            //        client.FriendsList.Add(newUser);
+            //    }
+            //    ));
+            //}
         }
 
         public void AddOnlineUser(CscUserMainData user)
         {
             Dispatcher.Invoke(new Action(() => client.onlineUsers.Add(user)));
 
-            var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
-            if (friend != null)
-            {
-                CscUserMainData newUser = new CscUserMainData() { Email = friend.Email, Id = friend.Id, Ip = friend.Ip, FriendName = friend.FriendName, Status = 1 };
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    client.FriendsList.Remove(friend);
-                    client.FriendsList.Add(newUser);
-                }
-  
-                ));
-                
-            }
+            //var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
+            //if (friend != null)
+            //{
+            //    CscUserMainData newUser = new CscUserMainData() { Email = friend.Email, Id = friend.Id, Ip = friend.Ip, FriendName = friend.FriendName, Status = 1 };
+            //    Dispatcher.Invoke(new Action(() =>
+            //    {
+            //        client.FriendsList.Remove(friend);
+            //        client.FriendsList.Add(newUser);
+            //    }  
+            //    ));                
+            //}
         }
         public void AddSearchUser(CscUserMainData user)
         {

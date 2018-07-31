@@ -107,6 +107,7 @@ namespace VoIP_Server
                     }
 
                     ThreadPool.QueueUserWorkItem(Process, connectedClient);
+                    //n moim zdaniem tu do kazdego usera powinno byc wyslane info o zmianie !!!!
 
                     //await Process(connectedClient);
 
@@ -373,26 +374,9 @@ namespace VoIP_Server
                         break;
                     }
 
-                case 3://odświeżanie listy online
+                case 3://odświeżanie listy online i friend
                     {
-                        if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
-                        {
-                            foreach (var item in connectedUser.NewOnlineUsers)
-                            {
-                                SendOnlineUser(connectedUser.Client, item, connectedUser.Email);
-                            }
-                            connectedUser.NewOnlineUsers.Clear();
-                        }
-
-                        if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
-                        {
-                            foreach (var item in connectedUser.UsersToRemove)
-                            {
-                                SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
-                            }
-                            connectedUser.UsersToRemove.Clear();
-                        }
-                        //n !!!!! trzeba tez wyslac dane odnosnie friendlisty
+                        SendRefreshResponse(connectedUser);
                         break;
                     }
 
@@ -527,6 +511,28 @@ namespace VoIP_Server
                 default:
                     break;
             }
+        }
+
+        private void SendRefreshResponse(ConnectedUsers connectedUser)
+        {
+            if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
+            {
+                foreach (var item in connectedUser.NewOnlineUsers)
+                {
+                    SendOnlineUser(connectedUser.Client, item, connectedUser.Email);
+                }
+                connectedUser.NewOnlineUsers.Clear();
+            }
+
+            if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
+            {
+                foreach (var item in connectedUser.UsersToRemove)
+                {
+                    SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
+                }
+                connectedUser.UsersToRemove.Clear();
+            }
+            //n !!!!! info odnosnie friendow jest juz zawarte w tych komunikatach
         }
 
         private string SendSalt(ConnectedUsers user)
