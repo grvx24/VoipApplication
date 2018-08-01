@@ -33,6 +33,8 @@ namespace VoIP_Client
         Client client;
         Window parentWindow;
 
+        static Button lastClickedTab = null;
+
         public FriendsList(Client client, CallingService callingService, Window parentWindow)
         {
             this.client = client;
@@ -113,6 +115,13 @@ namespace VoIP_Client
         public ClientSearchWindow searchWindow;
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Yellow;
+
             client.LastBookmark = "search";
             searchWindow=new ClientSearchWindow(FriendsListDataGrid, client);
             searchWindow.Show();
@@ -120,6 +129,14 @@ namespace VoIP_Client
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
+            if(lastClickedTab!=null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Yellow;
+
+
             client.LastBookmark = "online";
             client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetOnlineUsers();
@@ -127,6 +144,12 @@ namespace VoIP_Client
 
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Yellow;
             client.LastBookmark = "friends";
             client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetFriendsList();

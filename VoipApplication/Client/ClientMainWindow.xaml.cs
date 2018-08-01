@@ -33,6 +33,8 @@ namespace VoIP_Client
         static ClientSettingsUserControl settingsGrid;
         static GuideUserControl guideGrid;
 
+        static Button lastClickedTab = null;
+
         CallingService callingService;
         static int port = 7999;
 
@@ -98,8 +100,16 @@ namespace VoIP_Client
 
         }
 
+
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Purple;
+
             CustomUserControl.Content = settingsGrid;
         }
 
@@ -131,6 +141,13 @@ namespace VoIP_Client
 
         private void FriendsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Purple;
+
             CustomUserControl.Content = friendsListGrid;
         }
 
@@ -263,14 +280,22 @@ namespace VoIP_Client
 
         private void Connect(IPEndPoint endPoint, int inputDeviceNumber, INetworkChatCodec codec)
         {
-            waveIn = new WaveIn
+            try
             {
-                BufferMilliseconds = 100,
-                DeviceNumber = inputDeviceNumber,
-                WaveFormat = codec.RecordFormat
-            };
-            waveIn.DataAvailable += WaveIn_DataAvailable;
-            waveIn.StartRecording();
+                waveIn = new WaveIn
+                {
+                    BufferMilliseconds = 100,
+                    DeviceNumber = inputDeviceNumber,
+                    WaveFormat = codec.RecordFormat
+                };
+                waveIn.DataAvailable += WaveIn_DataAvailable;
+                waveIn.StartRecording();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
 
             udpSender = new UdpClient();
             //to wywalilo
@@ -468,7 +493,8 @@ namespace VoIP_Client
                 IncomingCallGrid.Visibility = Visibility.Visible;
                 CallInfoLabel.Content = username;
 
-                player.PlayLooping();
+                if(player!=null)
+                    player.PlayLooping();
                 
             }));
 
@@ -478,7 +504,8 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                player.Stop();
+                if(player!=null)
+                    player.Stop();
 
                 IncomingCallGrid.Visibility = Visibility.Hidden;
                 AnswerButton.Visibility = Visibility.Visible;
@@ -560,6 +587,13 @@ namespace VoIP_Client
 
         private void GuideButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Purple;
+
             CustomUserControl.Content = guideGrid;
         }
 

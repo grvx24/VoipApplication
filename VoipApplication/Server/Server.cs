@@ -515,6 +515,17 @@ namespace VoIP_Server
 
         private void SendRefreshResponse(ConnectedUsers connectedUser)
         {
+
+            //zamieniłem miejscami najpierw usuwanko potem aktualizowanko
+            if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
+            {
+                foreach (var item in connectedUser.UsersToRemove)
+                {
+                    SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
+                }
+                connectedUser.UsersToRemove.Clear();
+            }
+
             if (!connectedUser.NewOnlineUsers.IsEmpty && connectedUser.Id != -1)
             {
                 foreach (var item in connectedUser.NewOnlineUsers)
@@ -524,14 +535,7 @@ namespace VoIP_Server
                 connectedUser.NewOnlineUsers.Clear();
             }
 
-            if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
-            {
-                foreach (var item in connectedUser.UsersToRemove)
-                {
-                    SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
-                }
-                connectedUser.UsersToRemove.Clear();
-            }
+
             //n !!!!! info odnosnie friendow jest juz zawarte w tych komunikatach
         }
 
