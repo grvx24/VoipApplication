@@ -313,7 +313,11 @@ namespace VoIP_Server
                                 var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
 
+                                queryResult.LastLoginDate = DateTime.Now;
+                                localServerDB.SaveChanges();
+
                                 ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
+                            
                             }
                             else
                             {
@@ -677,6 +681,7 @@ namespace VoIP_Server
             serverDB.SaveChanges();
 
         }
+
 
 
 
