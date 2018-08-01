@@ -31,27 +31,25 @@ namespace VoIP_Client
         CallingService callingService;
         ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();
         Client client;
-        Window parentWindow;
+        public ClientSearchWindow searchWindow;
 
         static Button lastClickedTab = null;
 
-        public FriendsList(Client client, CallingService callingService, Window parentWindow)
+        public FriendsList(Client client, CallingService callingService)
         {
             this.client = client;
-            this.parentWindow = parentWindow;
             this.callingService = callingService;
-
             InitializeComponent();
         }
 
         private void MSGBoxShow(string msg)
-        {
-            MessageBox.Show(msg);
-        }
-
+        { MessageBox.Show(msg); }
 
         private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
+            try { searchWindow.Hide(); }
+            catch (Exception) { }
+
             if (!callingService.isCalling && !callingService.isBusy)
             {
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
@@ -63,47 +61,40 @@ namespace VoIP_Client
                 {
                     try
                     {
-                        IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
+                        IPEndPoint iPEndPoint =
+                            new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
 
                         Task.Run(() =>
                         {
-                            callingService.MakeCall(iPEndPoint,client.UserProfile.Email,data.Email);
-
+                            callingService.MakeCall(iPEndPoint, client.UserProfile.Email, data.Email);
                         });
 
                     }
                     catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
+                    { MessageBox.Show(ex.Message); }
                 }
                 else
                 { MessageBox.Show("Użytkownik nie jest dostępny"); }
             }
             else
-            {
-                MessageBox.Show("Jesteś w trakcie rozmowy");
-            }
+            { MessageBox.Show("Jesteś w trakcie rozmowy"); }
         }
         private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {
+            try { searchWindow.Hide(); }
+            catch (Exception) { }
+
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
-            
+
             FriendsListEditWindow window;
             if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
-            {
-                //MessageBox.Show("Znajomy");
-                window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
-            }
+            { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true); }
             else
-            {
-                //MessageBox.Show("Nieznajomy");
-                window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false);
-            }
+            { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false); }
             window.Show();
         }
 
-        public void UpdateInfoLabel(string msg)
+        public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -112,7 +103,6 @@ namespace VoIP_Client
             ));
         }
 
-        public ClientSearchWindow searchWindow;
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
             if (lastClickedTab != null)
@@ -123,13 +113,19 @@ namespace VoIP_Client
             lastClickedTab.Background = Brushes.Yellow;
 
             client.LastBookmark = "search";
-            searchWindow=new ClientSearchWindow(FriendsListDataGrid, client);
+            if (searchWindow == null)
+            {
+                searchWindow = new ClientSearchWindow(FriendsListDataGrid, client);
+            }
             searchWindow.Show();
         }
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
-            if(lastClickedTab!=null)
+            try { searchWindow.Hide(); }
+            catch (Exception) { }
+
+            if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;
             }
@@ -144,6 +140,9 @@ namespace VoIP_Client
 
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
+            try { searchWindow.Hide(); }
+            catch (Exception) { }
+
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;

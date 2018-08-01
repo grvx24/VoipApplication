@@ -124,15 +124,15 @@ namespace cscprotocol
         //    return message;
         //}
 
-        public byte[] CreateUserProfileMessage(CscUserMainData userMainData)
-        {
-            var users = CscProtocol.Serialize(userMainData);
-            var message = new byte[3 + users.Length];
-            message[0] = 6;
-            BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-            users.CopyTo(message, 3);
-            return message;
-        }
+        //public byte[] CreateUserProfileMessage(CscUserMainData userMainData)
+        //{
+        //    var users = CscProtocol.Serialize(userMainData);
+        //    var message = new byte[3 + users.Length];
+        //    message[0] = 6;
+        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
+        //    users.CopyTo(message, 3);
+        //    return message;
+        //}
 
         public byte[] CreateConfirmMessage(string message)
         {

@@ -33,8 +33,8 @@ namespace VoIP_Client
 
         public IPAddress LocalIP { get; set; }
 
-        public delegate void ProfileDelegate(CscUserMainData profile);
-        public event ProfileDelegate SetProfileText;
+        //public delegate void ProfileDelegate(CscUserMainData profile);
+        //public event ProfileDelegate SetProfileText;
 
         public delegate void ChangeItem(CscUserMainData data);
         public event ChangeItem RemoveItemEvent;
@@ -220,13 +220,13 @@ namespace VoIP_Client
                         break;
                     }
 
-                case 6:
-                    {
-                        var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                        UserProfile = profile;
-                        SetProfileText.Invoke(profile);
-                        break;
-                    }
+                //case 6:
+                //    {
+                //        var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
+                //        UserProfile = profile;
+                //        SetProfileText.Invoke(profile);
+                //        break;
+                //    }
                 /*
             case 7:
                 var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;

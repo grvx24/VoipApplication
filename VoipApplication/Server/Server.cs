@@ -267,12 +267,12 @@ namespace VoIP_Server
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendProfileInfo(ConnectedUsers user)
-        {
-            CscUserMainData userData = new CscUserMainData() { Email = user.Email, Id = user.Id, Status = 1, Ip = user.Ip, FriendName = "" };
-            var message = cscProtocol.CreateUserProfileMessage(userData);
-            user.Client.GetStream().Write(message, 0, message.Length);
-        }
+        //private void SendProfileInfo(ConnectedUsers user)
+        //{
+        //    CscUserMainData userData = new CscUserMainData() { Email = user.Email, Id = user.Id, Status = 1, Ip = user.Ip, FriendName = "" };
+        //    var message = cscProtocol.CreateUserProfileMessage(userData);
+        //    user.Client.GetStream().Write(message, 0, message.Length);
+        //}
 
         private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
         {//niee liczac diffiehellmana to tutaj bedzie trzeba odszyfrowac receivedMessage przed przekazaniem dalej
@@ -339,7 +339,7 @@ namespace VoIP_Server
                     {//first login message
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                         //Dane użytkownika
-                        SendProfileInfo(currUser);
+                        //SendProfileInfo(currUser);
 
                         //Friends
                         SendFriendsList(connectedUser.Client, currUser.Email);

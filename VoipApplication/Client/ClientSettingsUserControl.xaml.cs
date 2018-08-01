@@ -108,7 +108,7 @@ namespace VoIP_Client
                 MessageBox.Show(client.LastConfirmMessage);
                 client.LastConfirmMessage = string.Empty;
                 client.UserProfile.Email = email;
-                (parentWindow as ClientMainWindow).UpdateProfileEmail(client.UserProfile);
+                //(parentWindow as ClientMainWindow).UpdateProfileEmail(client.UserProfile);
 
                 MessageBox.Show("Zmiana adresu email wymaga ponownego zalogowania się.");
 

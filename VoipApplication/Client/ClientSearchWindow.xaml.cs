@@ -43,7 +43,7 @@ namespace VoIP_Client
                 try
                 {
                     parentUsersGrid.DataContext = client.GeSearchUsers();
-                    Close();
+                    Hide();
                 }
                 catch (Exception ex)
                 {

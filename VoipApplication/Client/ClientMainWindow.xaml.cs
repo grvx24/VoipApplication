@@ -43,7 +43,7 @@ namespace VoIP_Client
         {
             callingService = new CallingService(new IPEndPoint(client.LocalIP, port));
 
-            friendsListGrid = new FriendsList(client, callingService, this);
+            friendsListGrid = new FriendsList(client, callingService);
             settingsGrid = new ClientSettingsUserControl(client, callingService, this);
             guideGrid = new GuideUserControl(client, callingService, this);
 
@@ -58,7 +58,7 @@ namespace VoIP_Client
                 client.RemoveFriendEvent += RemoveFriendToObsCollection;
 
                 client.ConnectionLostEvent += LeaveServer;
-                client.SetProfileText += UpdateProfileEmail;
+                //client.SetProfileText += UpdateProfileEmail;
                 client.AddSearchEvent += AddSearchUser;
             }
             else
@@ -80,7 +80,7 @@ namespace VoIP_Client
                 this.client.RemoveFriendEvent += RemoveFriendToObsCollection;
 
                 this.client.ConnectionLostEvent += LeaveServer;
-                this.client.SetProfileText += UpdateProfileEmail;
+                //this.client.SetProfileText += UpdateProfileEmail;
                 this.client.AddSearchEvent += AddSearchUser;
             }
 
@@ -90,19 +90,21 @@ namespace VoIP_Client
             InitCallingService();
 
             client.GetBasicInfo();
-            UserEmailLabel.Text = client.UserProfile.Email;//n
-            if(System.IO.File.Exists("phone_sound.wav"))
+            UserEmailLabel.Text = client.UserProfile.Email;//n !!!!
+            if (System.IO.File.Exists("phone_sound.wav"))
             {
                 player = new SoundPlayer("phone_sound.wav");
             }
 
             CustomUserControl.Content = friendsListGrid;
-
         }
 
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
+            try { friendsListGrid.searchWindow.Hide(); }
+            catch (Exception) { }
+
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;
@@ -113,13 +115,13 @@ namespace VoIP_Client
             CustomUserControl.Content = settingsGrid;
         }
 
-        public void UpdateProfileEmail(CscUserMainData profile)
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                UserEmailLabel.Text = profile.Email;
-            }));
-        }
+        //public void UpdateProfileEmail(CscUserMainData profile)
+        //{
+        //    Dispatcher.Invoke(new Action(() =>
+        //    {
+        //        UserEmailLabel.Text = profile.Email;
+        //    }));
+        //}
 
         private void AddFriendToObsCollection(CscUserMainData friendData)
         {
@@ -134,13 +136,16 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u=> u.Id == userToRemove.Id));
+                client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u => u.Id == userToRemove.Id));
             }
             ));
         }
 
         private void FriendsButton_Click(object sender, RoutedEventArgs e)
         {
+            try { friendsListGrid.searchWindow.Hide(); }
+            catch (Exception) { }
+
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;
@@ -151,15 +156,33 @@ namespace VoIP_Client
             CustomUserControl.Content = friendsListGrid;
         }
 
+        private void GuideButton_Click(object sender, RoutedEventArgs e)
+        {
+            try { friendsListGrid.searchWindow.Hide(); }
+            catch (Exception) { }
+
+            if (lastClickedTab != null)
+            {
+                lastClickedTab.Background = Brushes.LightGreen;
+            }
+            lastClickedTab = sender as Button;
+            lastClickedTab.Background = Brushes.Purple;
+
+            CustomUserControl.Content = guideGrid;
+        }
+
         public void LeaveServer()
         {
+            try { friendsListGrid.searchWindow.Close(); }
+            catch (Exception) { }
+
             MessageBox.Show("Połączenie z serwerem zostało zerwane");
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-               //ConnectionWindow window = new ConnectionWindow();
-               //window.Show();
-               Close();
+                //ConnectionWindow window = new ConnectionWindow();
+                //window.Show();
+                Close();
             }));
         }
 
@@ -202,22 +225,20 @@ namespace VoIP_Client
             //}
         }
         public void AddSearchUser(CscUserMainData user)
-        {
-            Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user)));
-        }
+        { Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user))); }
 
 
 
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
         {
             callingService.DisposeTcpListener();
-            if(callingService.isBusy)
+            if (callingService.isBusy)
             {
                 callingService.RejectCall();
                 callingService.BreakCall();
             }
             client.Disconnect();
-            if(friendsListGrid.searchWindow!=null)
+            if (friendsListGrid.searchWindow != null)
             {
                 friendsListGrid.searchWindow.Close();
             }
@@ -320,8 +341,6 @@ namespace VoIP_Client
             ListenerThreadState state = new ListenerThreadState() { Codec = codec, EndPoint = localEndPoint };
             isListening = true;
             ThreadPool.QueueUserWorkItem(this.ListenerThread, state);
-
-
         }
 
         class ListenerThreadState
@@ -336,7 +355,6 @@ namespace VoIP_Client
             IPEndPoint endPoint = listenerThreadState.EndPoint;
             try
             {
-
                 while (isListening)
                 {
                     Thread.Sleep(10);
@@ -348,7 +366,6 @@ namespace VoIP_Client
                         byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
                         waveProvider.AddSamples(decoded, 0, decoded.Length);
                     }
-
                 }
                 isListening = false;
                 udpListener.Close();
@@ -363,10 +380,8 @@ namespace VoIP_Client
 
         private void Disconnect()
         {
-
             //if(connected)
             {
-
                 Dispatcher.Invoke(new Action(() =>
                 {
                     connected = false;
@@ -396,12 +411,9 @@ namespace VoIP_Client
                     }
 
                     this.codec.Dispose();
-
                 }
 
                 ));
-
-
             }
         }
 
@@ -413,7 +425,6 @@ namespace VoIP_Client
                 byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
                 udpSender.Send(encoded, encoded.Length);
             }
-
         }
 
         private void MuteButton_Click(object sender, RoutedEventArgs e)
@@ -446,7 +457,6 @@ namespace VoIP_Client
                 Connect(endPoint, inputDeviceNumber, codec);
             }
             ));
-
         }
 
         private void TurnOffUdpSending()
@@ -456,7 +466,6 @@ namespace VoIP_Client
                 Disconnect();
             }
             ));
-
         }
 
         private void TurnOnUdpListening()
@@ -479,7 +488,6 @@ namespace VoIP_Client
             {
                 isListening = false;
             }
-
         }
 
 
@@ -493,18 +501,16 @@ namespace VoIP_Client
                 IncomingCallGrid.Visibility = Visibility.Visible;
                 CallInfoLabel.Content = username;
 
-                if(player!=null)
+                if (player != null)
                     player.PlayLooping();
-                
             }));
-
         }
 
         private void HideIncomingCallWindow()
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                if(player!=null)
+                if (player != null)
                     player.Stop();
 
                 IncomingCallGrid.Visibility = Visibility.Hidden;
@@ -524,7 +530,6 @@ namespace VoIP_Client
                 CallInfoLabel.Content = text;
 
             }));
-
         }
 
         private void CallingWindowToTalkingWindow(string text)
@@ -535,12 +540,11 @@ namespace VoIP_Client
                 BreakCallButton.Visibility = Visibility.Visible;
                 BreakCallButton.Content = "Zakończ";
 
-                if(text==null)
+                if (text == null)
                 {
                     text = "";
                 }
-                CallInfoLabel.Content =text;
-
+                CallInfoLabel.Content = text;
             }));
         }
 
@@ -564,7 +568,6 @@ namespace VoIP_Client
             callingService.AnswerCall();
             AnswerButton.Visibility = Visibility.Hidden;
             RejectButton.Content = "Zakończ";
-
         }
 
         private void RejectButton_Click(object sender, RoutedEventArgs e)
@@ -577,25 +580,12 @@ namespace VoIP_Client
             HideIncomingCallWindow();
             Disconnect();
         }
-        
+
         private void BreakCall_Click(object sender, RoutedEventArgs e)
         {
             callingService.BreakCall(true);
             Disconnect();
             IncomingCallGrid.Visibility = Visibility.Hidden;
         }
-
-        private void GuideButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (lastClickedTab != null)
-            {
-                lastClickedTab.Background = Brushes.LightGreen;
-            }
-            lastClickedTab = sender as Button;
-            lastClickedTab.Background = Brushes.Purple;
-
-            CustomUserControl.Content = guideGrid;
-        }
-
     }
 }
