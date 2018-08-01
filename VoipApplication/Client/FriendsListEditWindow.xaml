@@ -8,11 +8,12 @@
         Background="LightGreen"
         Title="Edytuj kontakt" Height="300" Width="300">
     <StackPanel Background="LightGreen" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Name="EmailTextBlock" TextAlignment="Center" Margin="30,0" FontSize="25" Text="email@example.com"></TextBlock>
-        <TextBox Name="UsernameTextBox" Background="White" Margin="20,10" FontSize="25"></TextBox>
+        <TextBlock x:Name="EmailTextBlock" TextAlignment="Center" Margin="30,40" FontSize="25" Text="email@example.com"/>
+        <TextBlock x:Name="InfoLabel" TextAlignment="Center" Margin="30,0" FontSize="25" Text="Podaj nick" ToolTip="Nazwa użytkownika widoczna lokalnie."/>
+        <TextBox x:Name="UsernameTextBox" Background="White" Margin="20,10" FontSize="25"/>
         <StackPanel Background="LightGreen" HorizontalAlignment="Center" Orientation="Horizontal">
-            <Button Name="EditFavouriteUserButton" MinWidth="100" Margin="25,15" Content="Edytuj" Click="EditFavouriteUserButton_Click"></Button>
-            <Button Name="CancelButton" MinWidth="100" Margin="25,0" Click="CancelButton_Click" Content="Anuluj"></Button>
+            <Button x:Name="EditFavouriteUserButton" MinWidth="100" Margin="25,15" Content="Dodaj" Click="EditFavouriteUserButton_Click"/>
+            <Button x:Name="CancelButton" MinWidth="100" Margin="25,0" Click="CancelButton_Click" Content="Anuluj"/>
         </StackPanel>
     </StackPanel>
 </Window>

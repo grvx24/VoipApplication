@@ -38,7 +38,7 @@
                         <DataTemplate>
                             <StackPanel Height="50" Orientation="Horizontal" Background="White" Width="300" Margin="0,0,0,0.4">
                                 <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" Margin="10,0" >Zadzwoń</Button>
-                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonEdit_Click" Margin="10,0">Edytuj</Button>
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonEdit_Click" Margin="10,0">Dodaj do ulubionych</Button>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
