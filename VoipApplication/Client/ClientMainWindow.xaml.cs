@@ -107,7 +107,7 @@ namespace VoIP_Client
 
             if (lastClickedTab != null)
             {
-                lastClickedTab.Background = Brushes.LightGreen;
+                lastClickedTab.Background = Brushes.DarkGreen;
             }
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Purple;
@@ -148,7 +148,7 @@ namespace VoIP_Client
 
             if (lastClickedTab != null)
             {
-                lastClickedTab.Background = Brushes.LightGreen;
+                lastClickedTab.Background = Brushes.DarkGreen;
             }
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Purple;
@@ -163,7 +163,7 @@ namespace VoIP_Client
 
             if (lastClickedTab != null)
             {
-                lastClickedTab.Background = Brushes.LightGreen;
+                lastClickedTab.Background = Brushes.DarkGreen;
             }
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Purple;
