@@ -31,8 +31,7 @@ namespace VoIP_Server
             using (VoiceChatDBEntities db = new VoiceChatDBEntities())
             {
                 usersList = db.Users.ToList();
-            }
-                
+            }                
         }
 
         public void RefreshDataGrid()
@@ -49,7 +48,7 @@ namespace VoIP_Server
             {
                 UserControl = this
             };
-            window.Show();
+            window.ShowDialog();
         }
 
         private void DeleteUserButton_Click(object sender, RoutedEventArgs e)
@@ -63,10 +62,8 @@ namespace VoIP_Server
             }
             catch (Exception)
             {
-
                 MessageBox.Show("Wybierz rekord do usunięcia");
             }
-
         }
 
         private void EditUserButton_Click(object sender, RoutedEventArgs e)
@@ -78,13 +75,12 @@ namespace VoIP_Server
                 {
                     UserControl = this,
                 };
-                window.Show();
+                window.ShowDialog();
             }
             else
             {
                 MessageBox.Show("Wybierz rekord do edycji");
             }
-
         }
     }
 }

@@ -73,15 +73,13 @@ namespace VoIP_Server
             {
                 server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
                 settingUserControl.CurrentIPLabel.Content = settingUserControl.GetSelectedIp() + ":"+settingUserControl.GetPort();
-                server.RunAsync();
-                
+                server.RunAsync();                
             }
             else
             {
                 settingUserControl.CurrentIPLabel.Content = "";
                 server.StopRunning();
             }
-
 
             RunServerButton.Content = server.Running ? "Online" : "Offline";
             RunServerButton.Background= server.Running ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
@@ -136,8 +134,7 @@ namespace VoIP_Server
 
                 default:
                     break;
-            }
-            
+            }            
         }
 
         private void UsersButton_Click(object sender, RoutedEventArgs e)

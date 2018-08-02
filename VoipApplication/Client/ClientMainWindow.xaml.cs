@@ -102,8 +102,7 @@ namespace VoIP_Client
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            try { friendsListGrid.searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (lastClickedTab != null)
             {
@@ -143,8 +142,7 @@ namespace VoIP_Client
 
         private void FriendsButton_Click(object sender, RoutedEventArgs e)
         {
-            try { friendsListGrid.searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (lastClickedTab != null)
             {
@@ -158,8 +156,7 @@ namespace VoIP_Client
 
         private void GuideButton_Click(object sender, RoutedEventArgs e)
         {
-            try { friendsListGrid.searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (lastClickedTab != null)
             {
@@ -173,8 +170,7 @@ namespace VoIP_Client
 
         public void LeaveServer()
         {
-            try { friendsListGrid.searchWindow.Close(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             MessageBox.Show("Połączenie z serwerem zostało zerwane");
 
@@ -238,10 +234,8 @@ namespace VoIP_Client
                 callingService.BreakCall();
             }
             client.Disconnect();
-            if (friendsListGrid.searchWindow != null)
-            {
-                friendsListGrid.searchWindow.Close();
-            }
+            //if (friendsListGrid.searchWindow != null)
+            //{ friendsListGrid.searchWindow.Close(); }
             ConnectionWindow loginWindow = new ConnectionWindow();
             loginWindow.Show();
             this.Close();

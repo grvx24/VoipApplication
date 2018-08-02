@@ -47,8 +47,7 @@ namespace VoIP_Client
 
         private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
-            try { searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (!callingService.isCalling && !callingService.isBusy)
             {
@@ -81,8 +80,7 @@ namespace VoIP_Client
         }
         private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {
-            try { searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
@@ -91,7 +89,7 @@ namespace VoIP_Client
             { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true); }
             else
             { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false); }
-            window.Show();
+            window.ShowDialog();
         }
 
         public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?
@@ -113,17 +111,14 @@ namespace VoIP_Client
             lastClickedTab.Background = Brushes.Yellow;
 
             client.LastBookmark = "search";
-            if (searchWindow == null)
-            {
-                searchWindow = new ClientSearchWindow(FriendsListDataGrid, client);
-            }
-            searchWindow.Show();
+            //if (searchWindow == null)
+            { searchWindow = new ClientSearchWindow(FriendsListDataGrid, client); }
+            searchWindow.ShowDialog();
         }
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
-            try { searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (lastClickedTab != null)
             {
@@ -140,8 +135,7 @@ namespace VoIP_Client
 
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
-            try { searchWindow.Hide(); }
-            catch (Exception) { }
+            //try { searchWindow.Hide(); } catch (Exception) { }
 
             if (lastClickedTab != null)
             {
