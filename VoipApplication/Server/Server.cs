@@ -129,8 +129,8 @@ namespace VoIP_Server
             }
 
             var friendsQueryResult = from f in serverDB.FriendsList
-                                     join u in serverDB.Users on f.FriendId equals u.UserId
-                                     where f.UserId == user.UserId
+                                     join u in serverDB.Users on f.FriendId equals u.UserId//powiazanie ID friendow z ich nazwami
+                                     where f.UserId == user.UserId// powiazanie ID glownego usera z obu tabel
                                      select new CscUserMainData { Id = f.FriendId, FriendName = f.FriendName, Email = u.Email, Status = 0, Ip = "none" };
             return friendsQueryResult;
         }
@@ -140,18 +140,7 @@ namespace VoIP_Server
             var friendsQueryResult = FindFriendsForUser(email);
             foreach (var friend in friendsQueryResult)
             {
-                CscUserMainData friendsUserData = new CscUserMainData()
-                {
-                    FriendName = friend.FriendName,
-                    Email = friend.Email,
-                    Id = friend.Id,
-                    Status = OnlineUsers.Any(u => u.Id == friend.Id) ? 1 : 0,
-                    Ip = OnlineUsers.Any(u => u.Id == friend.Id) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.Id).Ip : "none"
-                };
-
-                //var message = cscProtocol.CreateNewFriendUserDataMessage(friendsUserData);
-                var message = cscProtocol.CreateUnifiedUserDataMessage(friendsUserData);
-                client.GetStream().Write(message, 0, message.Length);
+                SendNewFriendUser(client, new CscChangeFriendData { Id = friend.Id, FriendName = friend.FriendName });
             }
         }
 
@@ -519,7 +508,6 @@ namespace VoIP_Server
 
         private void SendRefreshResponse(ConnectedUsers connectedUser)
         {
-
             //zamieniłem miejscami najpierw usuwanko potem aktualizowanko
             if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
             {
@@ -538,8 +526,6 @@ namespace VoIP_Server
                 }
                 connectedUser.NewOnlineUsers.Clear();
             }
-
-
             //n !!!!! info odnosnie friendow jest juz zawarte w tych komunikatach
         }
 
