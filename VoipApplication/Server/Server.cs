@@ -96,21 +96,23 @@ namespace VoIP_Server
                     Random random = new Random();
                     TcpClient client = await listener.AcceptTcpClientAsync();
                     var ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-                    var connectedClient = new ConnectedUsers() { Email = "Niezalogowany użytkownik" + Guid.NewGuid().GetHashCode(), Id = -1, Ip = ip.ToString(), Status = 0, Client = client };
+                    var connectedClient = new ConnectedUsers()
+                    {
+                        Email = "Niezalogowany użytkownik" + Guid.NewGuid().GetHashCode(),
+                        Id = -1,
+                        Ip = ip.ToString(),
+                        Status = 0,
+                        Client = client
+                    };
                     OnlineUsers.Add(connectedClient);
 
                     ServerConsoleWriteEvent.Invoke(client.Client.RemoteEndPoint.ToString());
 
-                    foreach (var item in OnlineUsers)
-                    {
-                        item.NewOnlineUsers.Push(connectedClient);
-                    }
+                    //foreach (var item in OnlineUsers)
+                    //{ item.NewOnlineUsers.Push(connectedClient); }
 
                     ThreadPool.QueueUserWorkItem(Process, connectedClient);
-                    //n moim zdaniem tu do kazdego usera powinno byc wyslane info o zmianie !!!!
-
                     //await Process(connectedClient);
-
                 }
                 catch (Exception e)
                 {
@@ -287,7 +289,6 @@ namespace VoIP_Server
 
                         if (queryResult != null)
                         {
-
                             var passwordFromDB = queryResult.Password;
 
                             var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
@@ -306,7 +307,11 @@ namespace VoIP_Server
                                 localServerDB.SaveChanges();
 
                                 ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
-                                foreach(var singleUser in OnlineUsers)
+
+                                foreach (var item in OnlineUsers)
+                                { item.NewOnlineUsers.Push(connectedUser); }
+
+                                foreach (var singleUser in OnlineUsers)
                                 { SendRefreshResponse(singleUser); }//n !!!
                             }
                             else
