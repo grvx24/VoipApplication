@@ -306,7 +306,8 @@ namespace VoIP_Server
                                 localServerDB.SaveChanges();
 
                                 ServerConsoleWriteEvent.Invoke("Udane logowanie: " + userData.Email + " : " + userData.Password);
-                            
+                                foreach(var singleUser in OnlineUsers)
+                                { SendRefreshResponse(singleUser); }//n !!!
                             }
                             else
                             {
@@ -616,6 +617,7 @@ namespace VoIP_Server
                 foreach (var onlineUser in OnlineUsers)
                 {
                     onlineUser.UsersToRemove.Push(user);
+                    SendRefreshResponse(onlineUser);//n !!!
                 }
                 //UsersToRemove.Push(user);
 
@@ -630,6 +632,7 @@ namespace VoIP_Server
                 foreach (var onlineUser in OnlineUsers)
                 {
                     onlineUser.UsersToRemove.Push(user);
+                    SendRefreshResponse(onlineUser);//n !!!
                 }
                 //UsersToRemove.Push(user);
 
