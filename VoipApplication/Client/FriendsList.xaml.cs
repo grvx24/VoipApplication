@@ -30,7 +30,7 @@ namespace VoIP_Client
     public partial class FriendsList : UserControl
     {
         CallingService callingService;
-        ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();
+        ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();//n !!! czy to gdziekolwiek jest uzywane??
         Client client;
         public ClientSearchWindow searchWindow;
 
