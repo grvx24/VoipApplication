@@ -353,8 +353,8 @@ namespace VoIP_Client
         {
             if (sendCancelCommand)
             {
-                SendText(Commands.Cancel);
-                Trace.WriteLine(Commands.Cancel);
+                SendText(Commands.Bye);
+                Trace.WriteLine(Commands.Bye);
             }
 
 
