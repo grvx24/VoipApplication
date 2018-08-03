@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
         Title="Brokułofon" Height="600" Width="800">
+    
+    
     <Grid Name="MainGrid">
         <Grid Background="LightGreen" VerticalAlignment="Top" MaxHeight="100" MinHeight="100">
             <TextBlock Name="UserEmailLabel" FontSize="30" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="453,26,0,0" Height="51"><Run Text="email@example.com"/></TextBlock>
@@ -48,5 +50,6 @@
         <Style TargetType="DataGridColumnHeader">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
+
     </Window.Resources>
 </Window>

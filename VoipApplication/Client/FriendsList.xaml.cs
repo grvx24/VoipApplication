@@ -20,6 +20,7 @@ using VoIP_Server;
 using VoIP_Server.Client;
 using cscprotocol;
 using System.Diagnostics;
+using System.Data;
 
 namespace VoIP_Client
 {
@@ -40,6 +41,8 @@ namespace VoIP_Client
             this.client = client;
             this.callingService = callingService;
             InitializeComponent();
+
+            //domyślne ustawienie zakładki ulubione - musi tak być, żeby lista znajomych pobrała się szybciej niż lista online!!!
         }
 
         private void MSGBoxShow(string msg)
@@ -84,12 +87,27 @@ namespace VoIP_Client
 
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
-            FriendsListEditWindow window;
             if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
-            { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true); }
+            {
+                client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = data.Id, FriendName = data.FriendName });
+                //window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
+            }
             else
-            { window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false); }
-            window.ShowDialog();
+            {
+                FriendsListEditWindow window = new FriendsListEditWindow(FriendsListDataGrid, client, data,false);
+                window.ShowDialog();
+            }
+        }
+
+        private void RowButtonEditNickname_Click(object sender, RoutedEventArgs args)
+        {
+            CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
+            if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
+            {
+                FriendsListEditWindow window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
+                window.ShowDialog();
+            }
+
         }
 
         public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?

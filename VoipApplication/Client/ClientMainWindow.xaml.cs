@@ -73,12 +73,12 @@ namespace VoIP_Client
                     UserProfile = client.UserProfile
                 };
 
-                this.client.AddItemEvent += AddOnlineUser;
-                this.client.RemoveItemEvent += RemoveOnlineUser;
-
                 this.client.AddFriendEvent += AddFriendToObsCollection;
                 this.client.RemoveFriendEvent += RemoveFriendToObsCollection;
 
+                this.client.AddItemEvent += AddOnlineUser;
+                this.client.RemoveItemEvent += RemoveOnlineUser;
+                
                 this.client.ConnectionLostEvent += LeaveServer;
                 //this.client.SetProfileText += UpdateProfileEmail;
                 this.client.AddSearchEvent += AddSearchUser;
@@ -126,6 +126,8 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
+                friendData.IsNotFriend = false;
+                friendData.CanBeRemoved = true;
                 client.FriendsList.Add(friendData);
             }
             ));
@@ -135,7 +137,15 @@ namespace VoIP_Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u => u.Id == userToRemove.Id));
+                try
+                {
+                    client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u => u.Id == userToRemove.Id));
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                
             }
             ));
         }
@@ -206,6 +216,15 @@ namespace VoIP_Client
 
         public void AddOnlineUser(CscUserMainData user)
         {
+            if (client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault() != null)
+            {
+                user.CanBeRemoved = true;
+            }else
+            {
+                user.IsNotFriend = true;
+            }
+            
+
             Dispatcher.Invoke(new Action(() => client.onlineUsers.Add(user)));
 
             //var friend = client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault();
@@ -256,7 +275,7 @@ namespace VoIP_Client
 
         private volatile bool connected = false;
         private volatile bool isListening = false;
-        private volatile bool isSendingPackets = true;
+        private volatile bool micOn = true;
 
         public void InitCallingService()
         {
@@ -414,7 +433,7 @@ namespace VoIP_Client
 
         void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
         {
-            if (isSendingPackets)
+            if (micOn)
             {
                 byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
                 udpSender.Send(encoded, encoded.Length);
@@ -425,16 +444,16 @@ namespace VoIP_Client
         {
             if (waveIn != null && connected)
             {
-                if (!isSendingPackets)
+                if (!micOn)
                 {
-                    isSendingPackets = !isSendingPackets;
+                    micOn = !micOn;
                     MuteButton.Background = Brushes.Blue;
                     MuteButton.Content = "on";
                     BitmapImage image = new BitmapImage(new Uri("mic_on.png", UriKind.Relative));
                 }
                 else
                 {
-                    isSendingPackets = !isSendingPackets;
+                    micOn = !micOn;
                     MuteButton.Background = Brushes.Red;
                     MuteButton.Content = "off";
                     BitmapImage image = new BitmapImage(new Uri("mic_off.png", UriKind.Relative));
@@ -573,6 +592,7 @@ namespace VoIP_Client
             RejectButton.Content = "Odrzuć";
             HideIncomingCallWindow();
             Disconnect();
+            micOn = true;
         }
 
         private void BreakCall_Click(object sender, RoutedEventArgs e)
@@ -580,6 +600,7 @@ namespace VoIP_Client
             callingService.BreakCall(true);
             Disconnect();
             IncomingCallGrid.Visibility = Visibility.Hidden;
+            micOn = true;
         }
     }
 }

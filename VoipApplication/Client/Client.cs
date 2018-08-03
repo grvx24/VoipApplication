@@ -198,15 +198,6 @@ namespace VoIP_Client
                         }
                         catch (Exception) { }
 
-                        try
-                        {
-                            if (changedUser.Status > 0 && changedUser.Email != UserProfile.Email)
-                            {
-                                if (AddItemEvent != null)
-                                { AddItemEvent.Invoke(changedUser); }
-                            }
-                        }
-                        catch (Exception) { }
 
                         try
                         {
@@ -217,6 +208,17 @@ namespace VoIP_Client
                             }
                         }
                         catch (Exception) { }
+
+                        try
+                        {
+                            if (changedUser.Status > 0 && changedUser.Email != UserProfile.Email)
+                            {
+                                if (AddItemEvent != null)
+                                { AddItemEvent.Invoke(changedUser); }
+                            }
+                        }
+                        catch (Exception) { }
+
                         break;
                     }
 

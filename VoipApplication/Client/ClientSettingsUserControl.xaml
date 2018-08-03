@@ -9,9 +9,9 @@
     <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
         <StackPanel VerticalAlignment="Center" Orientation="Vertical" Background="LimeGreen" Margin="0,0,327,149" Height="320">
             <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30"  TextWrapping="Wrap" Text="Email" VerticalAlignment="Top" Width="56" RenderTransformOrigin="0.026,0.059" />
-            <TextBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="EmailTextBox"  TextWrapping="Wrap" Text="email@example.com" VerticalAlignment="Top" Width="250" />
+            <TextBox Margin="30,0,0,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="EmailTextBox"  TextWrapping="Wrap" Text="email@example.com" VerticalAlignment="Top" Width="231" />
             <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="31"  TextWrapping="Wrap" Text="Hasło" VerticalAlignment="Top" Width="86" />
-            <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="ChangeEmailPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250" />
+            <PasswordBox Margin="30,0,0,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="ChangeEmailPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="231" />
             <Button Margin="30,30" Background="LightGreen" x:Name="EmailButton"  MinHeight="50" Width="120" Click="EmailButton_Click">
                 <TextBlock Foreground="Black" TextWrapping="Wrap"><Run Text="Zmień E-mail"/></TextBlock>
             </Button>
@@ -19,7 +19,7 @@
         </StackPanel>
         <StackPanel Orientation="Vertical" Background="YellowGreen" Margin="315,0,0,150">
             <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="Stare hasło" VerticalAlignment="Top" Width="121" />
-            <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="OldPasswordBox" VerticalAlignment="Top" Width="250" />
+            <PasswordBox Margin="30,0,0,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" HorizontalAlignment="Left" Height="35" x:Name="OldPasswordBox" VerticalAlignment="Top" Width="250" />
             <TextBlock FontSize="20" Margin="30,10,0,10" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="Nowe hasło" VerticalAlignment="Top" Width="121" />
             <PasswordBox Margin="30,0" BorderBrush="#FF673AB7" BorderThickness="2" Background="White" x:Name="NewPasswordBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="250"/>
             <Button Background="LightGreen" x:Name="PasswordButton" Margin="30,30" MinHeight="50" Width="120" Click="PasswordButton_Click">
