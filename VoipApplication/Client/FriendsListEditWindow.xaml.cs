@@ -38,6 +38,7 @@ namespace VoIP_Client
 
             if(changeName)
             {
+                UsernameTextBox.Text = friendData.FriendName;
                 EditFavouriteUserButton.Content = "Edytuj";
             }
         }
@@ -51,8 +52,6 @@ namespace VoIP_Client
 
             if(changeName)
             {
-                Trace.WriteLine("nick: " + friendData.FriendName);
-                UsernameTextBox.Text = friendData.FriendName;
                 if (UsernameTextBox.Text != string.Empty)
                 {
                     client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
@@ -62,7 +61,6 @@ namespace VoIP_Client
             }
             else
             {
-
                 if (UsernameTextBox.Text != string.Empty)
                 {//dodaj tego usera do naszych znajomych                    
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
