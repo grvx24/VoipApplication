@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Server"
         mc:Ignorable="d"
-        Title="BrokułoFon - okno startowe" Height="450" Width="450">
+        Title="BrokułoFon - okno startowe" Height="450" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Border Background="LightGreen">
         <Viewbox>
             <StackPanel Orientation="Vertical">

@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
-        Title="RegisterWindow" Height="300" Width="300">
+        Title="RegisterWindow" Height="300" Width="300"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
-        <Grid Background="LightYellow">
+        <Grid Background="LightGreen">
             <TextBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="RegisterEmailTextBox" HorizontalAlignment="Left" Height="35" TextWrapping="Wrap" VerticalAlignment="Top" Width="202" Margin="82,56,0,0"/>
             <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="RegisterPasswordTextBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="202" Margin="82,96,0,0"/>
             <PasswordBox BorderBrush="#FF673AB7" BorderThickness="2" Background="White" Name="RegisterRepeatPasswordTextBox" HorizontalAlignment="Left" Height="35"  VerticalAlignment="Top" Width="202" Margin="82,136,0,0"/>

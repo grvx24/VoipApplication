@@ -42,7 +42,6 @@ namespace VoIP_Client
             this.callingService = callingService;
             InitializeComponent();
 
-            //domyślne ustawienie zakładki ulubione - musi tak być, żeby lista znajomych pobrała się szybciej niż lista online!!!
         }
 
         private void MSGBoxShow(string msg)
@@ -110,14 +109,14 @@ namespace VoIP_Client
 
         }
 
-        public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                InfoLabel.Content = msg;
-            }
-            ));
-        }
+        //public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?
+        //{
+        //    Dispatcher.Invoke(new Action(() =>
+        //    {
+        //        InfoLabel.Content = msg;
+        //    }
+        //    ));
+        //}
 
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {

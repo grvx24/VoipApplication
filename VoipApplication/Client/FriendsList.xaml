@@ -21,9 +21,6 @@
             <Button Background="LightGreen" Name="AllFriendsButton" Margin="316,25,165,25" MinHeight="50" Width="120" Click="AllFriendsButton_Click">
                 <TextBlock Foreground="Black" Text="Ulubione" TextWrapping="Wrap"></TextBlock>
             </Button>
-            <Label FontSize="26" Content="..." HorizontalAlignment="Center" VerticalAlignment="Center" Name="InfoLabel" Margin="480,25,10,25">
-
-            </Label>
 
         </Grid>
         <DataGrid Background="LightYellow" RowHeight="50" IsReadOnly="True" CanUserAddRows="False" ItemsSource="{Binding}" Name="FriendsListDataGrid" AutoGenerateColumns="False"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="650" Margin="0,100,0,0">

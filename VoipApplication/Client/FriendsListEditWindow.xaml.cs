@@ -106,7 +106,7 @@ namespace VoIP_Client
                     case "search":
                         {
                             client.SendSearchUserRequest(client.LastSearchText);
-                            parentUsersGrid.DataContext = client.GeSearchUsers();
+                            parentUsersGrid.DataContext = client.GetSearchUsers();
                             break;
                         }
                 }

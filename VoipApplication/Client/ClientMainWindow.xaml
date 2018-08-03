@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
-        Title="Brokułofon" Height="600" Width="800">
+        Title="Brokułofon" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     
     
     <Grid Name="MainGrid">
@@ -16,7 +17,7 @@
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="SettingsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="SettingsButton_Click">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Ustawienia"/>
             </Button>
-            <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
+            <Button BorderBrush="YellowGreen" Background="Purple" Name="FriendsButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="FriendsButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Użytkownicy"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="GuideButton_Click">

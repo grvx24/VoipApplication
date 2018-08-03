@@ -86,7 +86,7 @@ namespace VoIP_Client
                 throw new NullReferenceException("OnlineUsers list is null");
             }
         }
-        public ObservableCollection<CscUserMainData> GeSearchUsers()
+        public ObservableCollection<CscUserMainData> GetSearchUsers()
         {
             if (SearchedUsers != null)
             {

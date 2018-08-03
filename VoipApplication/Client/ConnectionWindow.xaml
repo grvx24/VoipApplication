@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
-        Title="Brokułofon - wybór serwera" Height="433.141" Width="335.503">
+        Title="Brokułofon - wybór serwera" Height="433.141" Width="335.503"
+        WindowStartupLocation="CenterScreen">
     <Grid Background="LightGreen" Margin="0,0,0,0">
         <TextBox Name="IPTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,236,0,0" Text="192.168.0.18"/>
         <TextBox Name="PortTextBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="254" Margin="21,285,0,0" Text="1024"/>

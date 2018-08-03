@@ -42,7 +42,7 @@ namespace VoIP_Client
                 client.LastSearchText = EmailTextBox.Text;
                 try
                 {
-                    parentUsersGrid.DataContext = client.GeSearchUsers();
+                    parentUsersGrid.DataContext = client.GetSearchUsers();
                     Hide();
                 }
                 catch (Exception ex)

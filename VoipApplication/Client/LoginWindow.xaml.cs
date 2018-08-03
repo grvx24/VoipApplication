@@ -56,7 +56,7 @@ namespace VoIP_Client
                 {
                     var length=BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(),0);
                     var message = response.Skip(3).ToArray();
-                    MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
+                    //MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
 
 
                     //Create main window

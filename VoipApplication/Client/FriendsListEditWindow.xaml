@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:VoIP_Client"
         mc:Ignorable="d"
         Background="LightGreen"
-        Title="Edytuj kontakt" Height="300" Width="300">
+        Title="Edytuj kontakt" Height="300" Width="300"
+         WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Background="LightGreen" HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBlock x:Name="EmailTextBlock" TextAlignment="Center" Margin="30,40" FontSize="25" Text="email@example.com"/>
         <TextBlock x:Name="InfoLabel" TextAlignment="Center" Margin="30,0" FontSize="25" Text="Podaj nick" ToolTip="Nazwa użytkownika widoczna lokalnie."/>

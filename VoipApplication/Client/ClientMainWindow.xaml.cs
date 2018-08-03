@@ -21,6 +21,7 @@ using codecs;
 using NAudio.Wave;
 using System.Diagnostics;
 using System.Media;
+using System.ComponentModel;
 
 namespace VoIP_Client
 {
@@ -97,8 +98,13 @@ namespace VoIP_Client
             }
 
             CustomUserControl.Content = friendsListGrid;
+            lastClickedTab = FriendsButton;
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+
+        }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -216,7 +222,7 @@ namespace VoIP_Client
 
         public void AddOnlineUser(CscUserMainData user)
         {
-            if (client.FriendsList.Where(u => u.Id == user.Id).FirstOrDefault() != null)
+            if (!String.IsNullOrEmpty(user.FriendName))
             {
                 user.CanBeRemoved = true;
             }else
@@ -240,7 +246,18 @@ namespace VoIP_Client
             //}
         }
         public void AddSearchUser(CscUserMainData user)
-        { Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user))); }
+        {
+            if(!String.IsNullOrEmpty(user.FriendName))
+            {
+                user.CanBeRemoved = true;
+            }else
+            {
+                user.IsNotFriend = true;
+            }
+
+            Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user)));
+
+        }
 
 
 
@@ -602,5 +619,8 @@ namespace VoIP_Client
             IncomingCallGrid.Visibility = Visibility.Hidden;
             micOn = true;
         }
+
+
+        
     }
 }
