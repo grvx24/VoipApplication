@@ -162,7 +162,7 @@ namespace VoIP_Server
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (MessageBox.Show("Zamknąć aplikację?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Zamknąć aplikację?", "Zamykanie aplikacji serwera", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 Environment.Exit(0);
             }
