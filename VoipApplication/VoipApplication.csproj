@@ -326,6 +326,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="broccoli_icon.png" />
+    <Resource Include="offlineIcon.png" />
+    <Resource Include="onlineIcon.png" />
     <Content Include="VoiceChatDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

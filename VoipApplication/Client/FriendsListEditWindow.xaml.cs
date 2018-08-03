@@ -62,9 +62,11 @@ namespace VoIP_Client
             else
             {
                 if (UsernameTextBox.Text != string.Empty)
-                {//dodaj tego usera do naszych znajomych                    
+                {//dodaj tego usera do naszych znajomych      
                     client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                     Trace.WriteLine("Dodano do znajomych");
+                    friendData.CanBeRemoved = true;
+                    friendData.IsNotFriend = false;
                 }
             }
 

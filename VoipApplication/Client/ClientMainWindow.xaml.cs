@@ -94,8 +94,16 @@ namespace VoIP_Client
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            base.OnClosed(e);
+            if(callingService.isBusy)
+            {
+                callingService.BreakCall();
+            }
+            callingService.StopListening();
+            callingService.DisposeTcpListener();
 
         }
+
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -459,14 +467,16 @@ namespace VoIP_Client
                     micOn = !micOn;
                     MuteButton.Background = Brushes.Blue;
                     MuteButton.Content = "on";
-                    BitmapImage image = new BitmapImage(new Uri("mic_on.png", UriKind.Relative));
+                    BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_on.png", UriKind.Relative));
+                    Mic_image.Source = image;
                 }
                 else
                 {
                     micOn = !micOn;
                     MuteButton.Background = Brushes.Red;
                     MuteButton.Content = "off";
-                    BitmapImage image = new BitmapImage(new Uri("mic_off.png", UriKind.Relative));
+                    BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_off.png", UriKind.Relative));
+                    Mic_image.Source = image;
                 }
             }
         }

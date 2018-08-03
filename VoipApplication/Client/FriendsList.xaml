@@ -31,9 +31,28 @@
                 <DataGridTextColumn Binding="{Binding Path=FriendName, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Nick" Width="80">
 
                 </DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding Path=Status, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Status" Width="80">
-
-                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="status">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Tag="{Binding CscUserMainData}" Width="20" Height="20">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Style.Triggers>
+                                            <DataTrigger  Binding="{Binding Status}" Value="1">
+                                                <Setter Property="Source" Value="/VoipApplication;component/onlineIcon.png"/>
+                                                <Setter Property="ToolTip" Value="Dostępny"/>
+                                            </DataTrigger >
+                                            <DataTrigger  Binding="{Binding Status}" Value="0">
+                                                <Setter Property="Source" Value="/VoipApplication;component/offlineIcon.png"/>
+                                                <Setter Property="ToolTip" Value="Niedostępny"/>
+                                            </DataTrigger >
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Opcje" Width="*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

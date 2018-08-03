@@ -86,9 +86,17 @@ namespace VoIP_Client
 
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
-            if (client.FriendsList.FirstOrDefault(u => u.Id == data.Id) != null)
+            if (!String.IsNullOrEmpty(data.FriendName))
             {
                 client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = data.Id, FriendName = data.FriendName });
+                client.SearchedUsers.Remove(data);
+
+
+                //musiałem tak zrobić żeby tabela wyszukiwania się poprawnie aktualizowała :/
+                data.FriendName = String.Empty;
+                data.CanBeRemoved = false;
+                data.IsNotFriend = true;
+                client.SearchedUsers.Add(data);
                 //window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
             }
             else
