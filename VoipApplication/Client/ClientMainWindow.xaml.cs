@@ -192,9 +192,16 @@ namespace VoIP_Client
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                //ConnectionWindow window = new ConnectionWindow();
-                //window.Show();
-                Close();
+                callingService.DisposeTcpListener();
+                if (callingService.isBusy)
+                {
+                    callingService.RejectCall();
+                    callingService.BreakCall();
+                }
+                client.Disconnect();
+                ConnectionWindow loginWindow = new ConnectionWindow();
+                loginWindow.Show();
+                this.Close();
             }));
         }
 
@@ -270,11 +277,6 @@ namespace VoIP_Client
                 callingService.BreakCall();
             }
             client.Disconnect();
-            //if (friendsListGrid.searchWindow != null)
-            //{ friendsListGrid.searchWindow.Close(); }
-            ConnectionWindow loginWindow = new ConnectionWindow();
-            loginWindow.Show();
-            this.Close();
         }
 
 
