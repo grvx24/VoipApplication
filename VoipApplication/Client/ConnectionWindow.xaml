@@ -14,7 +14,7 @@
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Adres IP" VerticalAlignment="Top" Margin="21,215,0,0" Width="80"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Margin="21,264,0,0" Width="38"/>
         <Image Margin="149,0,16,292" Source="/VoipApplication;component/broccoli.png" RenderTransformOrigin="0.398,0.883"/>
-        <TextBox IsReadOnly="True" Text="BrokułoFon" Foreground="DarkGreen"  BorderThickness="5" TextWrapping="Wrap" FontSize="30" TextAlignment="Center" Margin="10,10,195,297" FontWeight="Bold" FontFamily="Lobster"/>
+        <TextBox IsReadOnly="True" Text="Brokuło&#xD;&#xA;Fon" Foreground="DarkGreen"  BorderThickness="5" TextWrapping="Wrap" FontSize="30" TextAlignment="Center" Margin="10,10,162,297" FontWeight="Bold" FontFamily="Lobster"/>
         <ComboBox ItemsSource="{Binding Path=ServerParameters}" SelectedValue="{Binding Path=ServerParameters}" DisplayMemberPath="Name" SelectedValuePath="Name" Background="White" x:Name="ServersList" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="21,125,0,0" Width="192" SelectionChanged="ServersList_SelectionChanged" Height="41">
 
 
