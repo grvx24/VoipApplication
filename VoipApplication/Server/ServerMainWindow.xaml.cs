@@ -109,7 +109,7 @@ namespace VoIP_Server
 
                 case CurrentPage.UsersDB:
                     var allUsers = localEntities.Users.ToList();
-                    var userControl = new UsersDBControl(server.OnlineUsers);
+                    var userControl = new UsersDBControl(server);
                     userControl.UsersDataGrid.ItemsSource = allUsers;
 
                     CustomUserControl.Content = userControl;

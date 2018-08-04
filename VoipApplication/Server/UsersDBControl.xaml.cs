@@ -24,15 +24,15 @@ namespace VoIP_Server
     {
         DatabaseManager databaseManager = new DatabaseManager();
         List<Users> usersList;
-        ObservableCollection<ConnectedUsers> onlineUsers;
+        MainServer server;
 
-        public UsersDBControl(ObservableCollection<ConnectedUsers> OnlineUsers)
+        public UsersDBControl(MainServer server)
         {
             InitializeComponent();
             using (VoiceChatDBEntities db = new VoiceChatDBEntities())
             {
                 usersList = db.Users.ToList();
-                onlineUsers = OnlineUsers;
+                this.server= server;
             }
         }
 
@@ -58,12 +58,18 @@ namespace VoIP_Server
             try
             {
                 var selectedRow = (Users)UsersDataGrid.SelectedItem;
-                if (selectedRow != null && onlineUsers.Any(u => u.Id == selectedRow.UserId))
+                if (selectedRow != null && server.OnlineUsers.Any(u => u.Id == selectedRow.UserId))
                 {
                     MessageBox.Show("Nie można usunąć użytkownika, który jest online!");
                     return;
                 }
-
+                //n !!! trzeba wyslac wszystkim userom online info, zeby usuneli tego usera z friend
+                var onlineUsers = server.OnlineUsers;
+                foreach(var user in onlineUsers)
+                {
+                    server.SendNoFriendAnymoreUser(user.Client,
+                        new cscprotocol.CscChangeFriendData { Id = selectedRow.UserId });
+                }
                 usersList.Remove(selectedRow);
                 databaseManager.DeleteUser(selectedRow);
                 RefreshDataGrid();
@@ -79,12 +85,7 @@ namespace VoIP_Server
             var selectedRow = (Users)UsersDataGrid.SelectedItem;
             if (selectedRow != null)
             {
-                if (onlineUsers.Any(u => u.Id == selectedRow.UserId))
-                {
-                    MessageBox.Show("Nie można edytować użytkownika, który jest online!");
-                    return;
-                }
-                DB_EditUser window = new DB_EditUser(selectedRow)
+                DB_EditUser window = new DB_EditUser(selectedRow, server)
                 {
                     UserControl = this,
                 };

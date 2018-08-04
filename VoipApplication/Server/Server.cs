@@ -224,7 +224,7 @@ namespace VoIP_Server
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendNewFriendUser(TcpClient client, CscChangeFriendData friendData)
+        public void SendNewFriendUser(TcpClient client, CscChangeFriendData friendData)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
@@ -241,7 +241,7 @@ namespace VoIP_Server
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData friendData)
+        public void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData friendData)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);

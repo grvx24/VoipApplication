@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoIP_Server"
         mc:Ignorable="d"
-        Title="DB_EditUser" Height="300" Width="300"
-        WindowStartupLocation="CenterScreen">
-    <StackPanel Background="Green">
+        Title="DB_EditUser" Height="300" Width="450"
+        WindowStartupLocation="CenterScreen"
+        Background="Green">
+    <StackPanel Margin="0,0,0,0">
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Email
         </TextBlock>
@@ -19,8 +20,11 @@
         <PasswordBox Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
         </PasswordBox>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <Button Name="EditUserButton" MinWidth="100" Margin="25,15" Click="EditUserButton_Click">
-                Edytuj
+            <Button Name="EditEmailButton" MinWidth="100" Margin="25,15" Click="EditEmailButton_Click">
+                Zmień email
+            </Button>
+            <Button Name="EditPasswordButton" MinWidth="100" Margin="25,15" Click="EditPasswordButton_Click">
+                Zmień hasło
             </Button>
             <Button Name="CancelButton" MinWidth="100" Margin="25,0" Click="CancelButton_Click">
                 Anuluj

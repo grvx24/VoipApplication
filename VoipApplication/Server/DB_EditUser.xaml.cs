@@ -24,18 +24,21 @@ namespace VoIP_Server
         DatabaseManager manager = new DatabaseManager();
         public UsersDBControl UserControl { get; set; }
         public Users user;
-        public DB_EditUser(Users user)
+        private MainServer server;
+        public DB_EditUser(Users user, MainServer server)
         {
             InitializeComponent();
             this.user = user;
             EmailTextBox.Text = user.Email;
             //PasswordTextBox.Text = user.Password;
+            this.server = server;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         { Close(); }
+        
 
-        private void EditUserButton_Click(object sender, RoutedEventArgs e)
+        private void EditEmailButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -44,28 +47,62 @@ namespace VoIP_Server
                     MessageBox.Show("Adres email niepoprawny!");
                     return;
                 }
+
+                VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
+                var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);
+                if (queryEmailResult != null)
+                {
+                    MessageBox.Show("Podany adres email jest już zajęty!");
+                    return;
+                }
+                if (server.OnlineUsers.Any(u => u.Id == user.UserId))
+                {
+                    MessageBox.Show("Nie można edytować użytkownika, który jest online!");
+                    return;
+                }
+
+                user.Email = EmailTextBox.Text;
+                manager.EditUser(user);
+
+                //n !!! trzeba wyslac wszystkim userom online info, zeby zaktualizowali sobie tego usera
+                var onlineUsers = server.OnlineUsers;
+                foreach (var singleUser in onlineUsers)
+                {
+                    server.SendNewFriendUser(singleUser.Client,
+                        new cscprotocol.CscChangeFriendData { Id = user.UserId });
+                }
+
+                if (UserControl != null)
+                {
+                    UserControl.RefreshDataGrid();
+                }
+
+                MessageBox.Show("Zaktualizowano dane użytkownika.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void EditPasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
                 if (!PasswordValidator.ValidatePassword(PasswordTextBox.Password))
                 {
                     MessageBox.Show("Hasło jest za słabe!");
                     return;
                 }
 
-
                 VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
                 var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);
-                if (!(queryEmailResult == null) && queryEmailResult.Email != user.Email)
+                if (server.OnlineUsers.Any(u => u.Id == user.UserId))
                 {
-                    MessageBox.Show("Podany adres email jest już zajęty!");
+                    MessageBox.Show("Nie można edytować użytkownika, który jest online!");
                     return;
                 }
-
-                //if ()
-                //{
-                //    MessageBox.Show("Nie można edytować zalogowanych użytkowników!");
-                //    return;
-                //}
-
-                user.Email = EmailTextBox.Text;
+                
                 user.Password = CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password);
 
                 manager.EditUser(user);
@@ -75,7 +112,7 @@ namespace VoIP_Server
                     UserControl.RefreshDataGrid();
                 }
 
-                MessageBox.Show("Zaktualizowano dane użytkownika");
+                MessageBox.Show("Zaktualizowano dane użytkownika.");
             }
             catch (Exception ex)
             {

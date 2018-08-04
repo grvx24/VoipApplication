@@ -33,11 +33,14 @@ namespace VoIP_Server
                 using (var db = new VoiceChatDBEntities())
                 {
                     var result = db.Users.FirstOrDefault(u => u.UserId == user.UserId);
-                    if(result!=null)
+                    if (result != null)
                     {
-                        result.UserId = user.UserId;
-                        result.Email = user.Email;
-                        result.Password = user.Password;
+                        //result.UserId = user.UserId;
+                        if (user.Email.Length > 0)
+                        { result.Email = user.Email; }
+
+                        if (user.Password.Length > 0)
+                        { result.Password = user.Password; }
                     }else
                     {
                         throw new Exception("Nie znaleziono takiego rekordu!");
@@ -80,7 +83,5 @@ namespace VoIP_Server
                 throw e;
             }
         }
-        
-
     }
 }
