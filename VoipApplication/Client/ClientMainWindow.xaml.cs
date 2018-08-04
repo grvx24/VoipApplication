@@ -311,6 +311,7 @@ namespace VoIP_Client
 
             IncomingCallGrid.Visibility = Visibility.Hidden;
             callingService.ErrorEvent += TraceLogShow;
+            callingService.BusyUserInfoEvent += MsgBoxShow;
             callingService.StartListening();
         }
 
@@ -536,6 +537,13 @@ namespace VoIP_Client
                 BreakCallButton.Visibility = Visibility.Hidden;
                 CallInfoLabel.Content = username;
 
+
+                micOn = true;
+                MuteButton.Content = "on";
+                MuteButton.Background = Brushes.Blue;
+                BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_on.png", UriKind.Relative));
+                Mic_image.Source = image;
+
                 if (player != null)
                     player.PlayLooping();
             }));
@@ -563,6 +571,13 @@ namespace VoIP_Client
                 IncomingCallGrid.Visibility = Visibility.Visible;
                 BreakCallButton.Visibility = Visibility.Visible;
                 CallInfoLabel.Content = text;
+
+
+                micOn = true;
+                MuteButton.Content = "on";
+                MuteButton.Background = Brushes.Blue;
+                BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_on.png", UriKind.Relative));
+                Mic_image.Source = image;
 
             }));
         }

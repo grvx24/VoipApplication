@@ -38,6 +38,7 @@ namespace VoIP_Client
         public event CallAlert TalkEvent;
         public event EndCallAlert EndCall;
         public event ErrorAlert ErrorEvent;
+        public event ErrorAlert BusyUserInfoEvent;
 
         public event VoiceSending2 UDPSenderStart;
         public event VoiceSending UDPSenderStop;
@@ -299,6 +300,7 @@ namespace VoIP_Client
                         if (msg.StartsWith(Commands.Busy))
                         {
                             ErrorEvent.Invoke("Zajęte");
+                            BusyUserInfoEvent.Invoke("Użytkownik jest w trakcie rozmowy!");
                         }
                         else if (msg.StartsWith(Commands.Reject))
                         {

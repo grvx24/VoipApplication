@@ -62,6 +62,7 @@ namespace VoIP_Client
                 {
                     try
                     {
+                        
                         IPEndPoint iPEndPoint =
                             new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
 
