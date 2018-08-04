@@ -27,9 +27,9 @@ namespace VoIP_Server
         int port;
 
         public ObservableCollection<ConnectedUsers> OnlineUsers { get; private set; }
-        public ConcurrentStack<ConnectedUsers> UsersToRemove { get; private set; }
+        //public ConcurrentStack<ConnectedUsers> UsersToRemove { get; private set; }// n !!! czy to w ogole jest potrzebne?
 
-        VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
+        //VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n !!! lepiej zawsze korzystac z nowego kontekstu BD
 
         private bool running = false;
         public bool Running { get => running; }
@@ -384,9 +384,9 @@ namespace VoIP_Server
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
                         ServerConsoleWriteEvent.Invoke("Dodawanie usera " + userData.Id + " jako " + userData.FriendName + " do ulubionych usera " + connectedUser.Id);
 
-                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        serverDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
-                        serverDB.SaveChanges();
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        localServerDB.FriendsList.Add(new FriendsList { FriendName = userData.FriendName, UserId = connectedUser.Id, FriendId = userData.Id });
+                        localServerDB.SaveChanges();
 
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
@@ -399,9 +399,9 @@ namespace VoIP_Server
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscChangeFriendData;
 
-                        serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        serverDB.FriendsList.Remove(serverDB.FriendsList.FirstOrDefault(u => u.FriendId == userData.Id && u.UserId == connectedUser.Id));
-                        serverDB.SaveChanges();
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        localServerDB.FriendsList.Remove(localServerDB.FriendsList.FirstOrDefault(u => u.FriendId == userData.Id && u.UserId == connectedUser.Id));
+                        localServerDB.SaveChanges();
                         ServerConsoleWriteEvent.Invoke("Usuniecie usera " + userData.Id + " z ulubionych usera " + connectedUser.Id + " zakonczone.");
 
                         //Friends
@@ -424,8 +424,8 @@ namespace VoIP_Server
                             break;
                         }
 
-                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        var queryResult = localServerDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
                         var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
                         bool goodPasswordAndEmailUnused = true;
@@ -439,7 +439,7 @@ namespace VoIP_Server
                         }
 
                         //sprawdzamy czy taki email jest nieuzywany
-                        var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == userData.Email);
+                        var queryEmailResult = localServerDB.Users.FirstOrDefault(u => u.Email == userData.Email);
                         if (!(queryEmailResult == null))
                         {
                             goodPasswordAndEmailUnused = false;
@@ -448,7 +448,7 @@ namespace VoIP_Server
                         if (goodPasswordAndEmailUnused == true)
                         {
                             queryResult.Email = userData.Email;
-                            serverDB.SaveChanges();
+                            localServerDB.SaveChanges();
 
                             ServerConsoleWriteEvent.Invoke("Udana zmiana adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
                             var buffer = cscProtocol.CreateConfirmMessage("Adres e-mail został zmieniony.");
@@ -468,8 +468,8 @@ namespace VoIP_Server
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscPasswordData;
                         ServerConsoleWriteEvent.Invoke("Próba zmiany hasla dla UserID" + connectedUser.Id);
 
-                        //serverDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
-                        var queryResult = serverDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
+                        var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
+                        var queryResult = localServerDB.Users.FirstOrDefault(u => u.UserId == connectedUser.Id);
                         var passwordFromDB = queryResult.Password;
                         var hashWithSalt = (CscSHA512Generator.get_SHA512_hash_as_string(passwordFromDB + connectedUser.Salt));
 
@@ -482,7 +482,7 @@ namespace VoIP_Server
                         else
                         {
                             queryResult.Password = userData.NewPassword;
-                            serverDB.SaveChanges();
+                            localServerDB.SaveChanges();
 
                             ServerConsoleWriteEvent.Invoke("Udana zmiana hasla dla UserID" + connectedUser.Id + " z " + passwordFromDB + " na " + userData.NewPassword);
                             var buffer = cscProtocol.CreateConfirmMessage("Hasło zostało zmienione.");
@@ -665,20 +665,16 @@ namespace VoIP_Server
 
         private void CreateAccount(string email, string password)
         {
+            var localServerDB = new VoiceChatDBEntities();//n odswierzenie kontekstu BD zeby zmienione hasla userów dzialaly
             Users user = new Users();
             user.Email = email;
             user.Password = password;
             user.RegistrationDate = DateTime.Now;
 
-
-            serverDB.Users.Add(user);
-            serverDB.SaveChanges();
+            localServerDB.Users.Add(user);
+            localServerDB.SaveChanges();
 
         }
-
-
-
-
 
         //public ObservableCollection<ConnectedUsers> GetOnlineClients()
         //{
@@ -687,9 +683,7 @@ namespace VoIP_Server
         //    {
         //        list.Add(item.Value);
         //    }
-
         //    return list;
         //}
-
     }
 }
