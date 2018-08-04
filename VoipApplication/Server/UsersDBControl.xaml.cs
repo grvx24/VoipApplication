@@ -24,14 +24,16 @@ namespace VoIP_Server
     {
         DatabaseManager databaseManager = new DatabaseManager();
         List<Users> usersList;
+        ObservableCollection<ConnectedUsers> onlineUsers;
 
-        public UsersDBControl()
+        public UsersDBControl(ObservableCollection<ConnectedUsers> OnlineUsers)
         {
             InitializeComponent();
             using (VoiceChatDBEntities db = new VoiceChatDBEntities())
             {
                 usersList = db.Users.ToList();
-            }                
+                onlineUsers = OnlineUsers;
+            }
         }
 
         public void RefreshDataGrid()
@@ -56,6 +58,12 @@ namespace VoIP_Server
             try
             {
                 var selectedRow = (Users)UsersDataGrid.SelectedItem;
+                if (selectedRow != null && onlineUsers.Any(u => u.Id == selectedRow.UserId))
+                {
+                    MessageBox.Show("Nie można usunąć użytkownika, który jest online!");
+                    return;
+                }
+
                 usersList.Remove(selectedRow);
                 databaseManager.DeleteUser(selectedRow);
                 RefreshDataGrid();
@@ -69,8 +77,13 @@ namespace VoIP_Server
         private void EditUserButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedRow = (Users)UsersDataGrid.SelectedItem;
-            if(selectedRow!=null)
+            if (selectedRow != null)
             {
+                if (onlineUsers.Any(u => u.Id == selectedRow.UserId))
+                {
+                    MessageBox.Show("Nie można edytować użytkownika, który jest online!");
+                    return;
+                }
                 DB_EditUser window = new DB_EditUser(selectedRow)
                 {
                     UserControl = this,

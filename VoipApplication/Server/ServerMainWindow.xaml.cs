@@ -32,8 +32,7 @@ namespace VoIP_Server
         ObservableCollection<ConnectedUsers> onlineUsers = new ObservableCollection<ConnectedUsers>();
 
         //database
-        VoiceChatDBEntities entities = new VoiceChatDBEntities();
-
+        //VoiceChatDBEntities entities = new VoiceChatDBEntities();// n !!! to tez nigdzie nie jest uzywane
 
 
         //server log
@@ -110,7 +109,7 @@ namespace VoIP_Server
 
                 case CurrentPage.UsersDB:
                     var allUsers = localEntities.Users.ToList();
-                    var userControl = new UsersDBControl();
+                    var userControl = new UsersDBControl(server.OnlineUsers);
                     userControl.UsersDataGrid.ItemsSource = allUsers;
 
                     CustomUserControl.Content = userControl;
