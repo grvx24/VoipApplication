@@ -32,7 +32,7 @@ namespace VoIP_Client
             this.client = client;
             protocol = new CscProtocol();
         }
-        
+
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
@@ -44,20 +44,22 @@ namespace VoIP_Client
 
             try
             {
-                CscUserData userData = new CscUserData() { Email = EmailTextBox.Text,
-                    Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt) };
+                CscUserData userData = new CscUserData()
+                {
+                    Email = EmailTextBox.Text,
+                    Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt)
+                };
                 var bytesToSend = protocol.CreateLoginMessage(userData);
                 client.SendBytes(bytesToSend);
                 //MessageBox.Show("wysyłam hasło z solą " + userData.Password);
                 client.UserProfile.Email = EmailTextBox.Text;//n
 
                 var response = client.ReceiveBytes();
-                if(response[0]==12)
+                var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
+                var message = response.Skip(3).ToArray();
+                if (response[0] == 12)
                 {
-                    var length=BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(),0);
-                    var message = response.Skip(3).ToArray();
-                    //MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
-
+                    //MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));//witaj na serwerze
 
                     //Create main window
                     client.initialized = true;
@@ -67,8 +69,6 @@ namespace VoIP_Client
                 }
                 if (response[0] == 13)
                 {
-                    var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
-                    var message = response.Skip(3).ToArray();
                     MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
                     return;
                 }
@@ -79,7 +79,7 @@ namespace VoIP_Client
 
 
             }
-            catch(SocketException ex)
+            catch (SocketException ex)
             {
                 MessageBox.Show("Nastąpiło rozłączenie z serwerem: " + ex.Message);
                 client.Disconnect();
@@ -93,7 +93,7 @@ namespace VoIP_Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Wystąpił nieznany błąd: "+ex.Message);
+                MessageBox.Show("Wystąpił nieznany błąd: " + ex.Message);
             }
 
         }

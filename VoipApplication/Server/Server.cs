@@ -316,8 +316,8 @@ namespace VoIP_Server
                             }
                             else
                             {
-                                ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email + " : " + userData.Password + " =/= " + hashWithSalt);
-                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Hasło niepoprawne.");
+                                ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email);
+                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania.");
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                             }
                         }

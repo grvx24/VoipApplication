@@ -29,13 +29,11 @@ namespace VoIP_Server
             InitializeComponent();
             this.user = user;
             EmailTextBox.Text = user.Email;
-            PasswordTextBox.Text = user.Password;
+            //PasswordTextBox.Text = user.Password;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        { Close(); }
 
         private void EditUserButton_Click(object sender, RoutedEventArgs e)
         {
@@ -46,6 +44,12 @@ namespace VoIP_Server
                     MessageBox.Show("Adres email niepoprawny!");
                     return;
                 }
+                if (!PasswordValidator.ValidatePassword(PasswordTextBox.Password))
+                {
+                    MessageBox.Show("Hasło jest za słabe!");
+                    return;
+                }
+
 
                 VoiceChatDBEntities serverDB = new VoiceChatDBEntities();
                 var queryEmailResult = serverDB.Users.FirstOrDefault(u => u.Email == EmailTextBox.Text);
@@ -55,8 +59,14 @@ namespace VoIP_Server
                     return;
                 }
 
+                //if ()
+                //{
+                //    MessageBox.Show("Nie można edytować zalogowanych użytkowników!");
+                //    return;
+                //}
+
                 user.Email = EmailTextBox.Text;
-                user.Password = CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Text);
+                user.Password = CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password);
 
                 manager.EditUser(user);
 
@@ -66,7 +76,6 @@ namespace VoIP_Server
                 }
 
                 MessageBox.Show("Zaktualizowano dane użytkownika");
-
             }
             catch (Exception ex)
             {

@@ -16,8 +16,8 @@
         <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
             Hasło
         </TextBlock>
-        <TextBox Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
-        </TextBox>
+        <PasswordBox Name="PasswordTextBox" Background="White" Margin="20,10" FontSize="25">
+        </PasswordBox>
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
             <Button Name="EditUserButton" MinWidth="100" Margin="25,15" Click="EditUserButton_Click">
                 Edytuj
