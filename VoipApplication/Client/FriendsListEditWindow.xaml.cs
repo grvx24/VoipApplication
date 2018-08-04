@@ -27,7 +27,7 @@ namespace VoIP_Client
         CscUserMainData friendData;
         bool changeName;
 
-        public FriendsListEditWindow(DataGrid usersGrid, Client client, CscUserMainData userdata,bool changeName)
+        public FriendsListEditWindow(DataGrid usersGrid, Client client, CscUserMainData userdata, bool changeName)
         {
             this.client = client;
             parentUsersGrid = usersGrid;
@@ -36,7 +36,7 @@ namespace VoIP_Client
             EmailTextBlock.Text = userdata.Email;
             this.changeName = changeName;
 
-            if(changeName)
+            if (changeName)
             {
                 UsernameTextBox.Text = friendData.FriendName;
                 EditFavouriteUserButton.Content = "Edytuj";
@@ -50,7 +50,7 @@ namespace VoIP_Client
         {
             client.SearchedUsers.Clear();
 
-            if(changeName)
+            if (changeName)
             {
                 if (UsernameTextBox.Text != string.Empty)
                 {
@@ -95,17 +95,17 @@ namespace VoIP_Client
                 client.SendRefreshRequest();
                 switch (client.LastBookmark)
                 {
-                    case "online":
+                    case LastBookmarkEnum.online:
                         {
                             parentUsersGrid.DataContext = client.GetOnlineUsers();
                             break;
                         }
-                    case "friends":
+                    case LastBookmarkEnum.friendslist:
                         {
                             parentUsersGrid.DataContext = client.GetFriendsList();
                             break;
                         }
-                    case "search":
+                    case LastBookmarkEnum.search:
                         {
                             client.SendSearchUserRequest(client.LastSearchText);
                             parentUsersGrid.DataContext = client.GetSearchUsers();
@@ -115,9 +115,7 @@ namespace VoIP_Client
                 Close();
             }
             catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            { MessageBox.Show(ex.Message); }
 
             Close();
         }

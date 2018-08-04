@@ -35,18 +35,14 @@ namespace VoIP_Client
         public ConnectionWindow()
         {
             InitializeComponent();
-
             LoadServersList();
-
             ServersList.ItemsSource = serversList;
-
-
             this.Closed += new EventHandler(OnCloseWindow);
         }
 
         private void LoadServersList()
         {
-            if(File.Exists("ServersList.json"))
+            if (File.Exists("ServersList.json"))
             {
                 var lines = File.ReadLines("ServersList.json");
                 foreach (var line in lines)
@@ -54,17 +50,13 @@ namespace VoIP_Client
                     var json = new JavaScriptSerializer().Deserialize<ServerParameters>(line);
                     serversList.Add(json);
                 }
-            }else
-            {
-                File.Create("ServersList.json");
             }
-
-
+            else
+            { File.Create("ServersList.json"); }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 IPAddress ip = IPAddress.Parse(IPTextBox.Text);
@@ -88,14 +80,14 @@ namespace VoIP_Client
 
                     //////////////////////////
                     //wysylanie DiffieHellmana do serwera
-                    
+
                     var mainMessage = Encoding.Unicode.GetBytes(DHclient.ToString());
 
                     UInt16 messageLength = (UInt16)mainMessage.Length;
                     var lenghtBytes = BitConverter.GetBytes(messageLength);
 
                     byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
-                    result[0] = 234;//wazne ustalic kod dla DiffieHellmana od klienta od serwera
+                    result[0] = 234;//n !!! wazne ustalic kod dla DiffieHellmana od klienta od serwera
 
                     lenghtBytes.CopyTo(result, 1);
                     mainMessage.CopyTo(result, lenghtBytes.Length + 1);
@@ -143,7 +135,7 @@ namespace VoIP_Client
         {
             var serverParameters = ServersList.SelectedItem as ServerParameters;
 
-            if(serverParameters!=null)
+            if (serverParameters != null)
             {
                 NameLabel.Text = serverParameters.Name;
                 IPTextBox.Text = serverParameters.IP;
@@ -161,23 +153,23 @@ namespace VoIP_Client
             var portText = PortTextBox.Text;
 
             int port;
-            bool isPortCorrect= int.TryParse(portText, out port);
+            bool isPortCorrect = int.TryParse(portText, out port);
 
             IPAddress ip;
             bool isIpCorrect = IPAddress.TryParse(ipText, out ip);
 
-            if(String.IsNullOrEmpty(NameLabel.Text))
+            if (String.IsNullOrEmpty(NameLabel.Text))
             {
                 MessageBox.Show("Pole nazwa nie może być puste!");
                 return;
             }
-            
+
             if (!isIpCorrect)
             {
                 MessageBox.Show("Pole adres ip jest niepoprawne!");
                 return;
             }
-            if(!isPortCorrect)
+            if (!isPortCorrect)
             {
                 MessageBox.Show("Pole port jest nipoprawne!");
                 return;
@@ -197,7 +189,7 @@ namespace VoIP_Client
 
             using (FileStream fs = new FileStream("ServersList.json", FileMode.Append))
             {
-                var bytes = Encoding.UTF8.GetBytes(json+Environment.NewLine);
+                var bytes = Encoding.UTF8.GetBytes(json + Environment.NewLine);
                 fs.Write(bytes, 0, bytes.Length);
 
             }
@@ -239,11 +231,11 @@ namespace VoIP_Client
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
 
-            var serverParameters=ServersList.SelectedItem as ServerParameters;
+            var serverParameters = ServersList.SelectedItem as ServerParameters;
 
             serversList.Remove(serverParameters);
 
-            if(serversList.Count>0)
+            if (serversList.Count > 0)
             {
                 ServersList.SelectedIndex = 0;
             }

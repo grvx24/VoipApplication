@@ -136,7 +136,7 @@ namespace VoIP_Client
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Yellow;
 
-            client.LastBookmark = "search";
+            client.LastBookmark = LastBookmarkEnum.search;
             //if (searchWindow == null)
             { searchWindow = new ClientSearchWindow(FriendsListDataGrid, client); }
             searchWindow.ShowDialog();
@@ -154,7 +154,7 @@ namespace VoIP_Client
             lastClickedTab.Background = Brushes.Yellow;
 
 
-            client.LastBookmark = "online";
+            client.LastBookmark = LastBookmarkEnum.online;
             client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetOnlineUsers();
         }
@@ -169,7 +169,7 @@ namespace VoIP_Client
             }
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Yellow;
-            client.LastBookmark = "friends";
+            client.LastBookmark = LastBookmarkEnum.friendslist;
             client.SendRefreshRequest();
             FriendsListDataGrid.DataContext = client.GetFriendsList();
         }

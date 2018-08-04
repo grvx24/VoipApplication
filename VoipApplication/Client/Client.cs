@@ -13,6 +13,7 @@ using System.Diagnostics;
 
 namespace VoIP_Client
 {
+    public enum LastBookmarkEnum { search, online, friendslist}
     //Communication with Server
     public class Client
     {
@@ -29,7 +30,7 @@ namespace VoIP_Client
         public string LastConfirmMessage { get; set; }
         public string LastErrorMessage { get; set; }
         public string LastSearchText { get; set; }
-        public string LastBookmark { get; set; }
+        public LastBookmarkEnum LastBookmark { get; set; }
 
         public IPAddress LocalIP { get; set; }
 
