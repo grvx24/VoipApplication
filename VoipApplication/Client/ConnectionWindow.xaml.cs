@@ -74,14 +74,14 @@ namespace VoIP_Client
                     byte[] buffer = new byte[msgLen];
                     var l2 = client.client.GetStream().Read(buffer, 0, buffer.Length);
 
-                    var DHdata = Encoding.Unicode.GetString(buffer);
+                    var DHServerData = Encoding.Unicode.GetString(buffer);
 
-                    DiffieHellman DHclient = new DiffieHellman(256).GenerateResponse(DHdata);
+                    client.DH = new DiffieHellman(256).GenerateResponse(DHServerData);
 
                     //////////////////////////
                     //wysylanie DiffieHellmana do serwera
 
-                    var mainMessage = Encoding.Unicode.GetBytes(DHclient.ToString());
+                    var mainMessage = Encoding.Unicode.GetBytes(client.DH.ToString());
 
                     UInt16 messageLength = (UInt16)mainMessage.Length;
                     var lenghtBytes = BitConverter.GetBytes(messageLength);
@@ -98,7 +98,7 @@ namespace VoIP_Client
                     //odtad wszystko co odbieramy powinno juz byc zaszyfrowane
                     ////////////////////////////////////
 
-                    var aes = new CscAes(DHclient.Key);
+                    client.AES = new CscAes(client.DH.Key);
 
                     cmdAndLength = new byte[3];
                     l1 = client.client.GetStream().Read(cmdAndLength, 0, cmdAndLength.Length);
@@ -110,7 +110,7 @@ namespace VoIP_Client
 
                     //var salt = Encoding.Unicode.GetString(buffer);
                     //client.salt = salt;
-                    client.salt = aes.DecryptStringFromBytes(buffer);
+                    client.salt = client.AES.DecryptStringFromBytes(buffer);
                     //MessageBox.Show("Otrzymano sól: " + client.salt);
                     LoginWindow window = new LoginWindow(client);
                     window.Show();

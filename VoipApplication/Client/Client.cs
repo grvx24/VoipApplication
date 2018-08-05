@@ -10,6 +10,7 @@ using VoIP_Server;
 using System.Collections.ObjectModel;
 using cscprotocol;
 using System.Diagnostics;
+using CPOL;
 
 namespace VoIP_Client
 {
@@ -31,6 +32,9 @@ namespace VoIP_Client
         public string LastErrorMessage { get; set; }
         public string LastSearchText { get; set; }
         public LastBookmarkEnum LastBookmark { get; set; }
+        public DiffieHellman DH { get; set; }
+        public CscAes AES { get; set; }
+
 
         public IPAddress LocalIP { get; set; }
 
@@ -112,33 +116,33 @@ namespace VoIP_Client
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void SendChangeEmailRequest(CscUserData userData)
+        public void SendChangeEmailRequestEncrypted(CscUserData userData)
         {
-            var msg = protocol.CreateChangeEmailRequest(userData);
+            var msg = protocol.CreateChangeEmailRequestEncrypted(userData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void SendChangePasswordRequest(CscPasswordData userData)
+        public void SendChangePasswordRequestEncrypted(CscPasswordData userData)
         {
-            var msg = protocol.CreateChangePasswordRequest(userData);
+            var msg = protocol.CreateChangePasswordRequestEncrypted(userData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void SendSearchUserRequest(string text)
         {
-            var msg = protocol.CreateSearchUserRequest(text);
+            var msg = protocol.CreateSearchUserRequestEncrypted(text, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void SendAddUserToFriendsListDataRequest(CscChangeFriendData friendData)
         {
-            var msg = protocol.CreateAddUserToFriendsListRequest(friendData);
+            var msg = protocol.CreateAddUserToFriendsListRequestEncrypted(friendData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
         public void SendRemoveUserFromFriendsListDataRequest(CscChangeFriendData friendData)
         {
-            var msg = protocol.CreateRemoveUserFromFriendsListRequest(friendData);
+            var msg = protocol.CreateRemoveUserFromFriendsListRequestEncrypted(friendData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
@@ -275,16 +279,16 @@ namespace VoIP_Client
 
                 case 12:
                     {
-                        var message = CscProtocol.ParseConfirmMessage(receivedMessage);//n czy to tu musi byc parsowane? chyba nie
+                        //var message = CscProtocol.ParseConfirmMessageAndDecrypt(receivedMessage);//n czy to tu musi byc parsowane? chyba nie
 
-                        if (message == "ONLINE_USERS_OK")
+                        if (Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count()) == "ONLINE_USERS_OK")
                         {
                             Environment.Exit(0);
                         }
                         else
                         {
                             //LastConfirmMessage = message;
-                            LastConfirmMessage = Encoding.Unicode.GetString(receivedMessage, 0, receivedMessage.Count());
+                            LastConfirmMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
                         }
                         break;
                     }
@@ -292,7 +296,7 @@ namespace VoIP_Client
                 case 13:
                     {
                         //var message = CscProtocol.ParseConfirmMessage(receivedMessage);
-                        LastErrorMessage = Encoding.Unicode.GetString(receivedMessage, 0, receivedMessage.Count());
+                        LastErrorMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
                         break;
                     }
 
@@ -322,11 +326,12 @@ namespace VoIP_Client
 
                     if (buffer != null)
                     {
-                        ExecuteCSCCommand(cmdAndLength[0], buffer);
+                    var decrypted = AES.DecrypBytesFromBytes(buffer);
+                        ExecuteCSCCommand(cmdAndLength[0], decrypted);
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Disconnect();
                 ConnectionLostEvent.Invoke();
@@ -343,41 +348,45 @@ namespace VoIP_Client
 
         public byte[] ReceiveBytes()
         {
-            byte[] buffer = new byte[1024];
-            //client.GetStream().ReadTimeout = 5000;
-            client.GetStream().Read(buffer, 0, buffer.Length);
-            return buffer;
+            byte[] request = new byte[3];
+            var l1 = client.GetStream().Read(request, 0, request.Length);
+
+            var msgLen = BitConverter.ToUInt16(request.Skip(1).ToArray(), 0);
+
+            byte[] buffer = new byte[msgLen];
+            var l2 = client.GetStream().Read(buffer, 0, buffer.Length);
+
+            byte[] full = new byte[3 + msgLen];
+            System.Buffer.BlockCopy(request, 0, full, 0, request.Length);
+            System.Buffer.BlockCopy(buffer, 0, full, request.Length, buffer.Length);
+            return full;
         }
 
-        public void SendText(string msg)
-        {
-            StreamWriter writer = new StreamWriter(client.GetStream());
-            writer.AutoFlush = true;
-            writer.WriteLine(msg);
+        //public void SendText(string msg)//n !!! to chyba nie jest potrzebne
+        //{
+        //    StreamWriter writer = new StreamWriter(client.GetStream());
+        //    writer.AutoFlush = true;
+        //    writer.WriteLine(msg);
+        //}
 
-        }
+        //public string ReceiveText()//n !!! to chyba nie jest potrzebne
+        //{
+        //    StreamReader reader = new StreamReader(client.GetStream());
+        //    var result = reader.ReadLine();
+        //    return result;
+        //}
 
-        public string ReceiveText()
-        {
-            StreamReader reader = new StreamReader(client.GetStream());
-            var result = reader.ReadLine();
-            return result;
-        }
-
-        public async Task<string> ReceiveTextAsync()
-        {
-            StreamReader reader = new StreamReader(client.GetStream());
-            var result = await reader.ReadLineAsync();
-            return result;
-        }
+        //public async Task<string> ReceiveTextAsync()//n !!! to chyba nie jest potrzebne
+        //{
+        //    StreamReader reader = new StreamReader(client.GetStream());
+        //    var result = await reader.ReadLineAsync();
+        //    return result;
+        //}
 
         public void Disconnect()
         {
-
             if (client.Connected)
                 client.Close();
         }
-
-
     }
 }

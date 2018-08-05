@@ -137,16 +137,16 @@ namespace VoIP_Server
             return friendsQueryResult;
         }
 
-        private void SendFriendsList(TcpClient client, string email)
+        private void SendFriendsListEncrypted(TcpClient client, string email, byte[] key)
         {
             var friendsQueryResult = FindFriendsForUser(email);
             foreach (var friend in friendsQueryResult)
             {
-                SendNewFriendUser(client, new CscChangeFriendData { Id = friend.Id, FriendName = friend.FriendName });
+                SendNewFriendUserEncrypted(client, new CscChangeFriendData { Id = friend.Id, FriendName = friend.FriendName }, key);
             }
         }
 
-        private void SendSearchList(TcpClient client, int connectedUserID, string text)
+        private void SendSearchListEncrypted(TcpClient client, int connectedUserID, string text, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var queryResult = serverDB.Users.Where(u => u.Email.Contains(text));
@@ -163,12 +163,12 @@ namespace VoIP_Server
                     Ip = OnlineUsers.Any(u => u.Id == user.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == user.UserId).Ip : "none"
                 };
 
-                var message = cscProtocol.CreateSearchUserDataResponse(searchedUserData);
+                var message = cscProtocol.CreateSearchUserDataResponseEncrypted(searchedUserData, key);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
 
-        private void SendOnlineUsersList(TcpClient client, int connectedUserID)
+        private void SendOnlineUsersListEncrypted(TcpClient client, int connectedUserID, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var online = OnlineUsers;
@@ -185,12 +185,12 @@ namespace VoIP_Server
                     FriendName = friendsQueryResult.Any(u => u.Id == user.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == user.Id).FriendName : string.Empty,
                 };
                 //var message = cscProtocol.CreateOnlineUserDataMessage(userData);
-                var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
+                var message = cscProtocol.CreateUnifiedUserDataMessageEncrypted(userData, key);
                 client.GetStream().Write(message, 0, message.Length);
             }
         }
 
-        private void SendOnlineUser(TcpClient client, ConnectedUsers newUser, string receiverEmail)
+        private void SendOnlineUserEncrypted(TcpClient client, ConnectedUsers newUser, string receiverEmail, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friendsQueryResult = FindFriendsForUser(receiverEmail);
@@ -202,12 +202,11 @@ namespace VoIP_Server
                 Ip = newUser.Ip,
                 FriendName = friendsQueryResult.Any(u => u.Id == newUser.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == newUser.Id).FriendName : string.Empty,
             };
-            //var message = cscProtocol.CreateOnlineUserDataMessage(userData);
-            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessageEncrypted(userData, key);
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        private void SendOfflineUser(TcpClient client, ConnectedUsers newUser, string receiverEmail)
+        private void SendOfflineUserEncrypted(TcpClient client, ConnectedUsers newUser, string receiverEmail, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friendsQueryResult = FindFriendsForUser(receiverEmail);
@@ -219,12 +218,11 @@ namespace VoIP_Server
                 Ip = newUser.Ip,
                 FriendName = friendsQueryResult.Any(u => u.Id == newUser.Id) ? friendsQueryResult.FirstOrDefault(u => u.Id == newUser.Id).FriendName : string.Empty,
             };
-            //var message = cscProtocol.CreateOfflineUserDataMessage(userData);
-            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessageEncrypted(userData, key);
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        public void SendNewFriendUser(TcpClient client, CscChangeFriendData friendData)
+        public void SendNewFriendUserEncrypted(TcpClient client, CscChangeFriendData friendData, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
@@ -236,12 +234,11 @@ namespace VoIP_Server
                 Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none",
                 FriendName = friendData.FriendName
             };
-            //var message = cscProtocol.CreateNewFriendUserDataMessage(userData);
-            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessageEncrypted(userData, key);
             client.GetStream().Write(message, 0, message.Length);
         }
 
-        public void SendNoFriendAnymoreUser(TcpClient client, CscChangeFriendData friendData)
+        public void SendNoFriendAnymoreUserEncrypted(TcpClient client, CscChangeFriendData friendData, byte[] key)
         {
             VoiceChatDBEntities serverDB = new VoiceChatDBEntities();//n chyba lepiej lokalny kontekst, co? !!!
             var friend = serverDB.Users.FirstOrDefault(u => u.UserId == friendData.Id);
@@ -253,8 +250,7 @@ namespace VoIP_Server
                 Ip = OnlineUsers.Any(u => u.Id == friend.UserId) ? OnlineUsers.FirstOrDefault(u => u.Id == friend.UserId).Ip : "none",
                 FriendName = ""
             };
-            //var message = cscProtocol.CreateNoFriendAnymoreUserDataMessage(userData);
-            var message = cscProtocol.CreateUnifiedUserDataMessage(userData);
+            var message = cscProtocol.CreateUnifiedUserDataMessageEncrypted(userData, key);
             client.GetStream().Write(message, 0, message.Length);
         }
 
@@ -266,21 +262,19 @@ namespace VoIP_Server
         //}
 
         private void ExecuteCSCCommand(ConnectedUsers connectedUser, byte cmdNumber, byte[] receivedMessage)
-        {//niee liczac diffiehellmana to tutaj bedzie trzeba odszyfrowac receivedMessage przed przekazaniem dalej
+        {
             switch (cmdNumber)
             {
-                //Logowanie
-                case 0:
+                case 0://Logowanie
                     {
                         var userData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserData;
-                        //tu bedzie trza jeszcze odszyfrowac itd, póki co jest jawnie
                         //ServerConsoleWriteEvent.Invoke("Próba zalogowania: " + userData.Email + " : " + userData.Password);
 
                         var onlineUser = OnlineUsers.Where(e => e.Email == userData.Email).FirstOrDefault();
 
                         if (onlineUser != null)
                         {
-                            var error = cscProtocol.CreateErrorMessage("Podany użytkownik jest już zalogowany!");
+                            var error = cscProtocol.CreateErrorMessageEncrypted("Podany użytkownik jest już zalogowany!", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(error, 0, error.Length);
                             return;
                         }
@@ -300,7 +294,7 @@ namespace VoIP_Server
                                 user.Id = queryResult.UserId;
                                 user.Status = 1;
 
-                                var buffer = cscProtocol.CreateConfirmMessage("Witaj na serwerze :)");
+                                var buffer = cscProtocol.CreateConfirmMessageEncrypted("Witaj na serwerze :)", connectedUser.DH.Key);
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
 
                                 queryResult.LastLoginDate = DateTime.Now;
@@ -312,19 +306,19 @@ namespace VoIP_Server
                                 { item.NewOnlineUsers.Push(connectedUser); }
 
                                 foreach (var singleUser in OnlineUsers)
-                                { SendRefreshResponse(singleUser); }//n !!!
+                                { SendRefreshResponseEncrypted(singleUser, singleUser.DH.Key); }//n !!!
                             }
                             else
                             {
                                 ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email);
-                                var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania.");
+                                var buffer = cscProtocol.CreateErrorMessageEncrypted("Błędne dane logowania.", connectedUser.DH.Key);
                                 connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                             }
                         }
                         else
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudane logowanie: " + userData.Email);
-                            var buffer = cscProtocol.CreateErrorMessage("Błędne dane logowania. Taki użytkownik nie istnieje.");
+                            var buffer = cscProtocol.CreateErrorMessageEncrypted("Błędne dane logowania. Taki użytkownik nie istnieje.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -337,11 +331,10 @@ namespace VoIP_Server
                         //SendProfileInfo(currUser);
 
                         //Friends
-                        SendFriendsList(connectedUser.Client, currUser.Email);
+                        SendFriendsListEncrypted(connectedUser.Client, currUser.Email, connectedUser.DH.Key);
 
                         //All online users
-                        SendOnlineUsersList(connectedUser.Client, connectedUser.Id);
-
+                        SendOnlineUsersListEncrypted(connectedUser.Client, connectedUser.Id, connectedUser.DH.Key);
                         break;
                     }
 
@@ -352,7 +345,7 @@ namespace VoIP_Server
 
                         if (!EmailValidator.IsValid(userToRegister.Email))
                         {
-                            var response = cscProtocol.CreateErrorMessage("Adres e-mail niepoprawny.");
+                            var response = cscProtocol.CreateErrorMessageEncrypted("Adres e-mail niepoprawny.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(response, 0, response.Length);
                             break;
                         }
@@ -361,13 +354,13 @@ namespace VoIP_Server
 
                         if (userWithThisMail != null)
                         {
-                            var response = cscProtocol.CreateErrorMessage("Podany adres e-mail już istnieje.");
+                            var response = cscProtocol.CreateErrorMessageEncrypted("Podany adres e-mail już istnieje.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(response, 0, response.Length);
                         }
                         else
                         {
                             CreateAccount(userToRegister.Email, userToRegister.Password);
-                            var response = cscProtocol.CreateConfirmMessage("Rejestracja udana.");
+                            var response = cscProtocol.CreateConfirmMessageEncrypted("Rejestracja udana.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(response, 0, response.Length);
                         }
                         break;
@@ -375,7 +368,7 @@ namespace VoIP_Server
 
                 case 3://odświeżanie listy online i friend
                     {
-                        SendRefreshResponse(connectedUser);
+                        SendRefreshResponseEncrypted(connectedUser, connectedUser.DH.Key);
                         break;
                     }
 
@@ -391,7 +384,7 @@ namespace VoIP_Server
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                         //SendFriendsList(connectedUser.Client, currUser.Email);
-                        SendNewFriendUser(connectedUser.Client, userData);
+                        SendNewFriendUserEncrypted(connectedUser.Client, userData, connectedUser.DH.Key);
                         break;
                     }
 
@@ -407,7 +400,7 @@ namespace VoIP_Server
                         //Friends
                         ConnectedUsers currUser = OnlineUsers.Where(t => t.Client == connectedUser.Client).FirstOrDefault();
                         //SendFriendsList(connectedUser.Client, currUser.Email);
-                        SendNoFriendAnymoreUser(connectedUser.Client, userData);
+                        SendNoFriendAnymoreUserEncrypted(connectedUser.Client, userData, connectedUser.DH.Key);
                         break;
                     }
 
@@ -419,7 +412,7 @@ namespace VoIP_Server
                         if (!EmailValidator.IsValid(userData.Email))
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
-                            var buffer = cscProtocol.CreateErrorMessage("Adres email niepoprawny!");
+                            var buffer = cscProtocol.CreateErrorMessageEncrypted("Adres email niepoprawny!", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                             break;
                         }
@@ -433,7 +426,7 @@ namespace VoIP_Server
                         {
                             goodPasswordAndEmailUnused = false;
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
-                            var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
+                            var buffer = cscProtocol.CreateErrorMessageEncrypted("Hasło niepoprawne!", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                             break;
                         }
@@ -451,13 +444,13 @@ namespace VoIP_Server
                             localServerDB.SaveChanges();
 
                             ServerConsoleWriteEvent.Invoke("Udana zmiana adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
-                            var buffer = cscProtocol.CreateConfirmMessage("Adres e-mail został zmieniony.");
+                            var buffer = cscProtocol.CreateConfirmMessageEncrypted("Adres e-mail został zmieniony.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         else
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany adresu e-mail dla UserID" + connectedUser.Id + " z " + connectedUser.Email + " na " + userData.Email);
-                            var buffer = cscProtocol.CreateErrorMessage("Podany adres email jest już zajęty!");
+                            var buffer = cscProtocol.CreateErrorMessageEncrypted("Podany adres email jest już zajęty!", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -476,7 +469,7 @@ namespace VoIP_Server
                         if (!(hashWithSalt == userData.OldPassword))
                         {
                             ServerConsoleWriteEvent.Invoke("Nieudana próba zmiany hasla dla UserID" + connectedUser.Id);
-                            var buffer = cscProtocol.CreateErrorMessage("Hasło niepoprawne!");
+                            var buffer = cscProtocol.CreateErrorMessageEncrypted("Hasło niepoprawne!", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         else
@@ -485,7 +478,7 @@ namespace VoIP_Server
                             localServerDB.SaveChanges();
 
                             ServerConsoleWriteEvent.Invoke("Udana zmiana hasla dla UserID" + connectedUser.Id + " z " + passwordFromDB + " na " + userData.NewPassword);
-                            var buffer = cscProtocol.CreateConfirmMessage("Hasło zostało zmienione.");
+                            var buffer = cscProtocol.CreateConfirmMessageEncrypted("Hasło zostało zmienione.", connectedUser.DH.Key);
                             connectedUser.Client.GetStream().Write(buffer, 0, buffer.Length);
                         }
                         break;
@@ -493,14 +486,14 @@ namespace VoIP_Server
 
                 case 8://wyszukiwanie userow ktorych email zawiera podana fraze
                     {
-                        var text = Encoding.Unicode.GetString(receivedMessage.ToArray());
+                        var text = Encoding.ASCII.GetString(receivedMessage.ToArray());
                         ServerConsoleWriteEvent.Invoke("Prośba od userID " + connectedUser.Id + " o userów zawierających w adresie e-mail frazę '" + text + "'");
-                        SendSearchList(connectedUser.Client, connectedUser.Id, text);
+                        SendSearchListEncrypted(connectedUser.Client, connectedUser.Id, text, connectedUser.DH.Key);
                         break;
                     }
 
                 case 234:
-                    {
+                    {//to nigdy sie nie zdaza gdy jest polaczenie juz szyfrowane
                         var DHclientdata = Encoding.Unicode.GetString(receivedMessage.ToArray());
                         ServerConsoleWriteEvent.Invoke("Otrzymano od klienta " + connectedUser.Id + " dane algorytmu DiffieHellmana: " + DHclientdata);
                         connectedUser.DH.HandleResponse(DHclientdata);
@@ -512,14 +505,14 @@ namespace VoIP_Server
             }
         }
 
-        private void SendRefreshResponse(ConnectedUsers connectedUser)
+        private void SendRefreshResponseEncrypted(ConnectedUsers connectedUser, byte[] key)
         {
             //zamieniłem miejscami najpierw usuwanko potem aktualizowanko
             if (!connectedUser.UsersToRemove.IsEmpty && connectedUser.Id != -1)
             {
                 foreach (var item in connectedUser.UsersToRemove)
                 {
-                    SendOfflineUser(connectedUser.Client, item, connectedUser.Email);
+                    SendOfflineUserEncrypted(connectedUser.Client, item, connectedUser.Email, key);
                 }
                 connectedUser.UsersToRemove.Clear();
             }
@@ -528,42 +521,32 @@ namespace VoIP_Server
             {
                 foreach (var item in connectedUser.NewOnlineUsers)
                 {
-                    SendOnlineUser(connectedUser.Client, item, connectedUser.Email);
+                    SendOnlineUserEncrypted(connectedUser.Client, item, connectedUser.Email, key);
                 }
                 connectedUser.NewOnlineUsers.Clear();
             }
             //n !!!!! info odnosnie friendow jest juz zawarte w tych komunikatach
         }
 
-        private string SendSalt(ConnectedUsers user)
+        private string SendSaltEncrypted(ConnectedUsers user)
         {
             var salt = CscSHA512Generator.Get_salt();
-
             var stream = user.Client.GetStream();
-
-            var encryptedsalt = new CscAes(user.DH.Key).EncryptStringToBytes(salt);//zamiana tablicy bajtow spowrotem na string w celu szyfrowania
-
+            var encryptedsalt = user.AES.EncryptStringToBytes(salt);
             //var msg = cscProtocol.CreateSaltMessage(salt);
             //var msg = cscProtocol.CreateSaltMessage(Encoding.Unicode.GetString(encryptedsalt.ToArray()));
             var msg = cscProtocol.CreateSaltMessage(encryptedsalt);
-
             stream.Write(msg, 0, msg.Length);
-
             return salt;
         }
         private string SendDiffieHellman(ConnectedUsers user)
         {
             var DHdata = user.DH.ToString();
-
             var stream = user.Client.GetStream();
-
             var msg = cscProtocol.CreateDiffieHellmanMessage(DHdata);
-
             stream.Write(msg, 0, msg.Length);
-
             return DHdata;
         }
-
 
         private async void Process(object obj)
         {
@@ -600,8 +583,8 @@ namespace VoIP_Server
                 ////////////////////////////////////
                 //odtad wszystko co odbieramy powinno juz byc zaszyfrowane
                 ////////////////////////////////////
-
-                user.Salt = SendSalt(user);//wysyłanie soli
+                user.AES = new CscAes(user.DH.Key);
+                user.Salt = SendSaltEncrypted(user);//wysyłanie soli
                 ServerConsoleWriteEvent.Invoke("Wysłano sól " + user.Salt);
                 while (running)
                 {
@@ -612,22 +595,30 @@ namespace VoIP_Server
 
                     byte[] buffer = new byte[msgLen];
                     var l2 = await networkStream.ReadAsync(buffer, 0, buffer.Length);
-
-                    if (buffer != null)
+                    try
                     {
-                        ExecuteCSCCommand(user, request[0], buffer);
+                        if (buffer != null)
+                        {
+                            var decrypted = user.AES.DecrypBytesFromBytes(buffer);
+                            ExecuteCSCCommand(user, request[0], decrypted);
+                        }
+                    }
+                    catch(Exception)
+                    {
+                        if (buffer != null)
+                        {
+                            ExecuteCSCCommand(user, request[0], buffer);
+                        }
                     }
                 }
                 RemoveOfflineUserEvent.Invoke(user);
-                foreach (var onlineUser in OnlineUsers)
+                foreach (var singleUser in OnlineUsers)
                 {
-                    onlineUser.UsersToRemove.Push(user);
-                    SendRefreshResponse(onlineUser);//n !!!
+                    singleUser.UsersToRemove.Push(user);
+                    SendRefreshResponseEncrypted(singleUser, singleUser.DH.Key);//n !!!
                 }
                 //UsersToRemove.Push(user);
-
                 user.Client.Close();
-
             }
             catch (Exception e)
             {
@@ -637,7 +628,7 @@ namespace VoIP_Server
                 foreach (var onlineUser in OnlineUsers)
                 {
                     onlineUser.UsersToRemove.Push(user);
-                    SendRefreshResponse(onlineUser);//n !!!
+                    SendRefreshResponseEncrypted(onlineUser, onlineUser.DH.Key);//n !!!
                 }
                 //UsersToRemove.Push(user);
 
@@ -647,7 +638,6 @@ namespace VoIP_Server
                 }
             }
         }
-
 
         public void StopRunning()
         {
@@ -661,8 +651,6 @@ namespace VoIP_Server
             return OnlineUsers;
         }
 
-
-
         private void CreateAccount(string email, string password)
         {
             var localServerDB = new VoiceChatDBEntities();//n odswiezenie kontekstu BD zeby zmienione hasla userów dzialaly
@@ -673,7 +661,6 @@ namespace VoIP_Server
 
             localServerDB.Users.Add(user);
             localServerDB.SaveChanges();
-
         }
 
         //public ObservableCollection<ConnectedUsers> GetOnlineClients()

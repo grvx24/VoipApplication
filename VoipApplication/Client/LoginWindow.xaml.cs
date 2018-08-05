@@ -49,14 +49,15 @@ namespace VoIP_Client
                     Email = EmailTextBox.Text,
                     Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(PasswordTextBox.Password) + client.salt)
                 };
-                var bytesToSend = protocol.CreateLoginMessage(userData);
+                var bytesToSend = protocol.CreateLoginMessageEncrypted(userData, client.DH.Key);
                 client.SendBytes(bytesToSend);
                 //MessageBox.Show("wysyłam hasło z solą " + userData.Password);
                 client.UserProfile.Email = EmailTextBox.Text;//n
 
                 var response = client.ReceiveBytes();
                 var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
-                var message = response.Skip(3).ToArray();
+                var messageEncrypted = response.Skip(3).ToArray();
+                var message = client.AES.DecryptStringFromBytes(messageEncrypted);
                 if (response[0] == 12)
                 {
                     //MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));//witaj na serwerze
@@ -69,7 +70,8 @@ namespace VoIP_Client
                 }
                 if (response[0] == 13)
                 {
-                    MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
+                    //MessageBox.Show(Encoding.Unicode.GetString(message, 0, length));
+                    MessageBox.Show(message);
                     return;
                 }
                 else

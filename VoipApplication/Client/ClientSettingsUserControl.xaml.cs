@@ -80,7 +80,7 @@ namespace VoIP_Client
                 Email = NewEmail,
                 Password = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(ChangeEmailPasswordBox.Password) + client.salt)
             };
-            client.SendChangeEmailRequest(userData);
+            client.SendChangeEmailRequestEncrypted(userData);
 
             var WaitForMessageTask = Task.Run(() => WaitForEmailMessage(NewEmail));
         }
@@ -94,7 +94,7 @@ namespace VoIP_Client
                 OldPassword = CscSHA512Generator.get_SHA512_hash_as_string(CscSHA512Generator.get_SHA512_hash_as_string(OldPassword) + client.salt),
                 NewPassword = CscSHA512Generator.get_SHA512_hash_as_string(NewPassword)
             };
-            client.SendChangePasswordRequest(passwordData);
+            client.SendChangePasswordRequestEncrypted(passwordData);
 
             var WaitForMessageTask = Task.Run(() => WaitForPasswordMessage());
         }

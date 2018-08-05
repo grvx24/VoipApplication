@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 
 namespace cscprotocol
 {
-
-
     //Client-server communication protocol :)
     class CscProtocol
     {
         //conversion from any object to byte array
         //object need to be tagged with the Serializable
-        enum DataType { UserData, FriendsUserData }
-
+        //enum DataType { UserData, FriendsUserData }
 
         public static byte[] Serialize(object anySerializableObject)
         {
@@ -27,15 +24,14 @@ namespace cscprotocol
             }
         }
 
-        public static object DeserializeWithLengthInfo(byte[] message)
-        {
-            var lengthArray = message.Skip(1).Take(2).ToArray();
-            var length = BitConverter.ToUInt16(lengthArray, 0);
+        //public static object DeserializeWithLengthInfo(byte[] message)
+        //{
+        //    var lengthArray = message.Skip(1).Take(2).ToArray();
+        //    var length = BitConverter.ToUInt16(lengthArray, 0);
 
-
-            using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length + 1).Take(length).ToArray()))
-                return (new BinaryFormatter()).Deserialize(memoryStream);
-        }
+        //    using (var memoryStream = new MemoryStream(message.Skip(lengthArray.Length + 1).Take(length).ToArray()))
+        //        return (new BinaryFormatter()).Deserialize(memoryStream);
+        //}
 
         public static object DeserializeWithoutLenghtInfo(byte[] message)
         {
@@ -48,35 +44,37 @@ namespace cscprotocol
 
         #region ServerMethods
 
-        public CscUserData ReadUserData(byte[] message)
-        {
-            var result = DeserializeWithLengthInfo(message) as CscUserData;
+        //public CscUserData ReadUserData(byte[] message)
+        //{
+        //    var result = DeserializeWithLengthInfo(message) as CscUserData;
 
-            if (result == null)
-                throw new NullReferenceException();
-            else
-                return result;
-        }
+        //    if (result == null)
+        //        throw new NullReferenceException();
+        //    else
+        //        return result;
+        //}
 
-        //user pasujacy
-        public byte[] CreateSearchUserDataResponse(CscUserMainData searchUserData)
+        //user pasujacy do zapytania wyszukiwania userow
+        public byte[] CreateSearchUserDataResponseEncrypted(CscUserMainData searchUserData, byte[] key)
         {
             var searchUserAsBytes = CscProtocol.Serialize(searchUserData);
-            var message = new byte[3 + searchUserAsBytes.Length];
+            var searchUserAsBytesEncrypted = new CscAes(key).EncryptBytesToBytes(searchUserAsBytes);
+            var message = new byte[3 + searchUserAsBytesEncrypted.Length];
             message[0] = 3;
-            BitConverter.GetBytes((UInt16)searchUserAsBytes.Length).CopyTo(message, 1);
-            searchUserAsBytes.CopyTo(message, 3);
+            BitConverter.GetBytes((UInt16)searchUserAsBytesEncrypted.Length).CopyTo(message, 1);
+            searchUserAsBytesEncrypted.CopyTo(message, 3);
             return message;
         }
 
         //n zunifikowana zmiana stanu usera !!!!
-        public byte[] CreateUnifiedUserDataMessage(CscUserMainData userMainData)//CreateFriendUserDataMessage
+        public byte[] CreateUnifiedUserDataMessageEncrypted(CscUserMainData userMainData, byte[] key)//CreateFriendUserDataMessage
         {
             var friendsAsBytes = CscProtocol.Serialize(userMainData);
-            var message = new byte[3 + friendsAsBytes.Length];
+            var friendsAsBytesEncrypted = new CscAes(key).EncryptBytesToBytes(friendsAsBytes);
+            var message = new byte[3 + friendsAsBytesEncrypted.Length];
             message[0] = 4;
-            BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
-            friendsAsBytes.CopyTo(message, 3);
+            BitConverter.GetBytes((UInt16)friendsAsBytesEncrypted.Length).CopyTo(message, 1);
+            friendsAsBytesEncrypted.CopyTo(message, 3);
             return message;
         }
 
@@ -134,11 +132,12 @@ namespace cscprotocol
         //    return message;
         //}
 
-        public byte[] CreateConfirmMessage(string message)
+        public byte[] CreateConfirmMessageEncrypted(string message, byte[] key)
         {
             if (!string.IsNullOrEmpty(message))
             {
-                var mainMessage = Encoding.Unicode.GetBytes(message);
+                var mainMessage = new CscAes(key).EncryptStringToBytes(message);
+                //var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -153,12 +152,12 @@ namespace cscprotocol
             { throw new ArgumentNullException("Message cannot be null"); }
         }
 
-
-        public byte[] CreateErrorMessage(string message)
+        public byte[] CreateErrorMessageEncrypted(string message, byte[] key)
         {
             if (!string.IsNullOrEmpty(message))
             {
-                var mainMessage = Encoding.Unicode.GetBytes(message);
+                var mainMessage = new CscAes(key).EncryptStringToBytes(message);
+                //var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -167,6 +166,7 @@ namespace cscprotocol
 
                 lenghtBytes.CopyTo(result, 1);
                 mainMessage.CopyTo(result, lenghtBytes.Length + 1);
+
                 return result;
             }
             else
@@ -226,16 +226,18 @@ namespace cscprotocol
 
         #region Client methods
 
-        public static string ParseConfirmMessage(byte[] message)
+        public static string ParseConfirmMessageAndDecrypt(byte[] message, byte[] key)
         {
             var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
-            string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
+            //string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
+            string text = new CscAes(key).DecryptStringFromBytes(message.Skip(3).Take(lenght).ToArray());
             return text;
         }
 
-        public byte[] CreateLoginMessage(CscUserData userData)
+        public byte[] CreateLoginMessageEncrypted(CscUserData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
 
@@ -247,9 +249,10 @@ namespace cscprotocol
             return fullData;
         }
 
-        public byte[] CreateRegistrationMessage(CscUserData userData)
+        public byte[] CreateRegistrationMessageEncrypted(CscUserData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
 
@@ -279,11 +282,11 @@ namespace cscprotocol
 
             return result;
         }
-        public byte[] CreateChangeEmailRequest(CscUserData userData)
+        public byte[] CreateChangeEmailRequestEncrypted(CscUserData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
-
 
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
             byte[] fullData = new byte[1 + lenghtBytes.Length + mainMessageLength];
@@ -294,9 +297,10 @@ namespace cscprotocol
             return fullData;
         }
 
-        public byte[] CreateChangePasswordRequest(CscPasswordData userData)
+        public byte[] CreateChangePasswordRequestEncrypted(CscPasswordData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
@@ -308,9 +312,10 @@ namespace cscprotocol
             return fullData;
         }
 
-        public byte[] CreateSearchUserRequest(string message)
+        public byte[] CreateSearchUserRequestEncrypted(string message, byte[] key)
         {
-            var mainMessage = Encoding.Unicode.GetBytes(message);
+            var mainMessage = new CscAes(key).EncryptStringToBytes(message);
+            //var mainMessage = Encoding.Unicode.GetBytes(message);
             UInt16 messageLength = (UInt16)mainMessage.Length;
             var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -323,9 +328,11 @@ namespace cscprotocol
             return result;
         }
 
-        public byte[] CreateAddUserToFriendsListRequest(CscChangeFriendData userData)
+        public byte[] CreateAddUserToFriendsListRequestEncrypted(CscChangeFriendData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            //var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);
@@ -336,10 +343,12 @@ namespace cscprotocol
 
             return fullData;
         }
-
-        public byte[] CreateRemoveUserFromFriendsListRequest(CscChangeFriendData userData)
+        
+        public byte[] CreateRemoveUserFromFriendsListRequestEncrypted(CscChangeFriendData userData, byte[] key)
         {
-            var mainMessage = Serialize(userData);
+            //var mainMessage = Serialize(userData);
+            var mainMessagePlain = Serialize(userData);
+            var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
 
             byte[] lenghtBytes = BitConverter.GetBytes(mainMessageLength);

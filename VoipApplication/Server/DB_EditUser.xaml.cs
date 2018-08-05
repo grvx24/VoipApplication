@@ -68,8 +68,8 @@ namespace VoIP_Server
                 var onlineUsers = server.OnlineUsers;
                 foreach (var singleUser in onlineUsers)
                 {
-                    server.SendNewFriendUser(singleUser.Client,
-                        new cscprotocol.CscChangeFriendData { Id = user.UserId });
+                    server.SendNewFriendUserEncrypted(singleUser.Client,
+                        new cscprotocol.CscChangeFriendData { Id = user.UserId }, singleUser.DH.Key);
                 }
 
                 if (UserControl != null)

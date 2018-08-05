@@ -30,8 +30,10 @@ namespace cscprotocol
             aes_data.KeySize = Key_as_bytes_array.Length * number_of_bits_in_one_byte;
             aes_data.Key = Key_as_bytes_array;
         }
-        public byte[] EncryptBytesToBytes(byte [] message_to_encrypt)
-        { return EncryptStringToBytes(Encoding.Unicode.GetString(message_to_encrypt.ToArray()), mode); }
+        public byte[] EncryptBytesToBytes(byte[] message_to_encrypt)
+        //{ return EncryptStringToBytes(Encoding.Unicode.GetString(message_to_encrypt.ToArray()), mode); }//oryginalnie, ale chyba troche dziwnie
+        //{ return EncryptStringToBytes(Encoding.Unicode.GetString(message_to_encrypt), mode); }
+        { return EncryptStringToBytes(Encoding.ASCII.GetString(message_to_encrypt), mode); }//serializowane dane logowania dzialaja
 
         public byte[] EncryptStringToBytes(string message_to_encrypt)
         { return EncryptStringToBytes(message_to_encrypt, mode); }
@@ -66,7 +68,8 @@ namespace cscprotocol
 
         public byte[] DecrypBytesFromBytes(byte[] message_to_decrypt)
         {
-            return Encoding.Unicode.GetBytes(DecryptStringFromBytes(message_to_decrypt, mode));
+            //return Encoding.Unicode.GetBytes(DecryptStringFromBytes(message_to_decrypt, mode));//oryginalnie
+            return Encoding.ASCII.GetBytes(DecryptStringFromBytes(message_to_decrypt, mode));//serializowane dane logowania dzialaja
         }
         public string DecryptStringFromBytes(byte[] message_to_decrypt)
         {

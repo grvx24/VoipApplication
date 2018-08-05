@@ -17,8 +17,8 @@ namespace VoIP_Server
         public string Ip { get; set; }
         public TcpClient Client { get; set; }
         public string Salt { get; set; }
-        public string EncryptionKey { get; set; }
         public DiffieHellman DH { get; set; }
+        public cscprotocol.CscAes AES { get; set; }
 
         public ConcurrentStack<ConnectedUsers> NewOnlineUsers = new ConcurrentStack<ConnectedUsers>();
         public ConcurrentStack<ConnectedUsers> UsersToRemove = new ConcurrentStack<ConnectedUsers>();

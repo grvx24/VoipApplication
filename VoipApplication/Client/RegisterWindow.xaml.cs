@@ -40,18 +40,18 @@ namespace VoIP_Client
                 Email = RegisterEmailTextBox.Text,
                 Password = CscSHA512Generator.get_SHA512_hash_as_string(RegisterPasswordTextBox.Password)
             };
-            var bytesToSend = protocol.CreateRegistrationMessage(userData);
+            var bytesToSend = protocol.CreateRegistrationMessageEncrypted(userData, client.DH.Key);
             client.SendBytes(bytesToSend);
 
             var response = client.ReceiveBytes();
             if (response[0] == 12)
             {
-                var msg = CscProtocol.ParseConfirmMessage(response);
+                var msg = CscProtocol.ParseConfirmMessageAndDecrypt(response, client.DH.Key);
                 MessageBox.Show(msg);
             }
             if (response[0] == 13)
             {
-                var msg = CscProtocol.ParseConfirmMessage(response);
+                var msg = CscProtocol.ParseConfirmMessageAndDecrypt(response, client.DH.Key);
                 MessageBox.Show(msg);
                 return;
             }

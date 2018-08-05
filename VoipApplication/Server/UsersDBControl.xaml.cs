@@ -67,8 +67,8 @@ namespace VoIP_Server
                 var onlineUsers = server.OnlineUsers;
                 foreach(var user in onlineUsers)
                 {
-                    server.SendNoFriendAnymoreUser(user.Client,
-                        new cscprotocol.CscChangeFriendData { Id = selectedRow.UserId });
+                    server.SendNoFriendAnymoreUserEncrypted(user.Client,
+                        new cscprotocol.CscChangeFriendData { Id = selectedRow.UserId }, user.DH.Key);
                 }
                 usersList.Remove(selectedRow);
                 databaseManager.DeleteUser(selectedRow);
