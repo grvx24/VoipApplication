@@ -44,14 +44,14 @@ namespace VoIP_Client
             client.SendBytes(bytesToSend);
 
             var response = client.ReceiveBytes();
+            var messageEncrypted = response.Skip(3).ToArray();
+            var msg = client.AES.DecryptStringFromBytes(messageEncrypted);
             if (response[0] == 12)
             {
-                var msg = CscProtocol.ParseConfirmMessageAndDecrypt(response, client.DH.Key);
                 MessageBox.Show(msg);
             }
             if (response[0] == 13)
             {
-                var msg = CscProtocol.ParseConfirmMessageAndDecrypt(response, client.DH.Key);
                 MessageBox.Show(msg);
                 return;
             }

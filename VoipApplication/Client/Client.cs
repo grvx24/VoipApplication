@@ -281,11 +281,11 @@ namespace VoIP_Client
                     {
                         //var message = CscProtocol.ParseConfirmMessageAndDecrypt(receivedMessage);//n czy to tu musi byc parsowane? chyba nie
 
-                        if (Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count()) == "ONLINE_USERS_OK")
-                        {
-                            Environment.Exit(0);
-                        }
-                        else
+                        //if (Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count()) == "ONLINE_USERS_OK")
+                        //{
+                        //    Environment.Exit(0);
+                        //}
+                        //else
                         {
                             //LastConfirmMessage = message;
                             LastConfirmMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());

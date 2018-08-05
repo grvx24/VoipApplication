@@ -55,7 +55,7 @@ namespace VoIP_Client
                 client.UserProfile.Email = EmailTextBox.Text;//n
 
                 var response = client.ReceiveBytes();
-                var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
+                //var length = BitConverter.ToInt16(response.Skip(1).Take(2).ToArray(), 0);
                 var messageEncrypted = response.Skip(3).ToArray();
                 var message = client.AES.DecryptStringFromBytes(messageEncrypted);
                 if (response[0] == 12)

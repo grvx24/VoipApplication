@@ -226,13 +226,13 @@ namespace cscprotocol
 
         #region Client methods
 
-        public static string ParseConfirmMessageAndDecrypt(byte[] message, byte[] key)
-        {
-            var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
-            //string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
-            string text = new CscAes(key).DecryptStringFromBytes(message.Skip(3).Take(lenght).ToArray());
-            return text;
-        }
+        //public static string ParseConfirmMessageAndDecrypt(byte[] message, byte[] key)
+        //{
+        //    var lenght = BitConverter.ToUInt16(message.Skip(1).Take(2).ToArray(), 0);
+        //    //string text = Encoding.Unicode.GetString(message.Skip(3).Take(lenght).ToArray());
+        //    string text = new CscAes(key).DecryptStringFromBytes(message.Skip(3).Take(lenght).ToArray());
+        //    return text;
+        //}
 
         public byte[] CreateLoginMessageEncrypted(CscUserData userData, byte[] key)
         {
