@@ -41,7 +41,6 @@ namespace VoIP_Client
             this.client = client;
             this.callingService = callingService;
             InitializeComponent();
-
         }
 
         private void MSGBoxShow(string msg)
@@ -49,8 +48,6 @@ namespace VoIP_Client
 
         private void RowButtonCall_Click(object sender, RoutedEventArgs args)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (!callingService.isCalling && !callingService.isBusy)
             {
                 CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
@@ -61,8 +58,7 @@ namespace VoIP_Client
                 if (data.Status == 1)
                 {
                     try
-                    {
-                        
+                    {                        
                         IPEndPoint iPEndPoint =
                             new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
 

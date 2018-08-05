@@ -70,7 +70,7 @@ namespace VoIP_Client
 
                 this.client.AddItemEvent += AddOnlineUser;
                 this.client.RemoveItemEvent += RemoveOnlineUser;
-                
+
                 this.client.ConnectionLostEvent += LeaveServer;
                 //this.client.SetProfileText += UpdateProfileEmail;
                 this.client.AddSearchEvent += AddSearchUser;
@@ -95,20 +95,17 @@ namespace VoIP_Client
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosed(e);
-            if(callingService.isBusy)
+            if (callingService.isBusy)
             {
                 callingService.BreakCall();
             }
             callingService.StopListening();
             callingService.DisposeTcpListener();
-
         }
 
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.DarkGreen;
@@ -147,18 +144,13 @@ namespace VoIP_Client
                     client.FriendsList.Remove(client.FriendsList.FirstOrDefault(u => u.Id == userToRemove.Id));
                 }
                 catch (Exception)
-                {
-                    return;
-                }
-                
+                { return; }
             }
             ));
         }
 
         private void FriendsButton_Click(object sender, RoutedEventArgs e)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.DarkGreen;
@@ -171,8 +163,6 @@ namespace VoIP_Client
 
         private void GuideButton_Click(object sender, RoutedEventArgs e)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.DarkGreen;
@@ -185,8 +175,6 @@ namespace VoIP_Client
 
         public void LeaveServer()
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             MessageBox.Show("Połączenie z serwerem zostało zerwane");
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -229,13 +217,10 @@ namespace VoIP_Client
         public void AddOnlineUser(CscUserMainData user)
         {
             if (!String.IsNullOrEmpty(user.FriendName))
-            {
-                user.CanBeRemoved = true;
-            }else
-            {
-                user.IsNotFriend = true;
-            }
-            
+            { user.CanBeRemoved = true; }
+            else
+            { user.IsNotFriend = true; }
+
 
             Dispatcher.Invoke(new Action(() => client.onlineUsers.Add(user)));
 
@@ -253,18 +238,13 @@ namespace VoIP_Client
         }
         public void AddSearchUser(CscUserMainData user)
         {
-            if(!String.IsNullOrEmpty(user.FriendName))
-            {
-                user.CanBeRemoved = true;
-            }else
-            {
-                user.IsNotFriend = true;
-            }
+            if (!String.IsNullOrEmpty(user.FriendName))
+            { user.CanBeRemoved = true; }
+            else
+            { user.IsNotFriend = true; }
 
             Dispatcher.Invoke(new Action(() => client.SearchedUsers.Add(user)));
-
         }
-
 
 
         private void LogOutButton_Click(object sender, RoutedEventArgs e)
@@ -349,14 +329,11 @@ namespace VoIP_Client
                 return;
             }
 
-
             udpSender = new UdpClient();
             //to wywalilo
             udpSender.Connect(endPoint);
 
-
             connected = true;
-
         }
 
         private void StartListening(IPEndPoint localEndPoint)
@@ -425,7 +402,6 @@ namespace VoIP_Client
                         waveIn.Dispose();
                     }
 
-
                     if (udpSender != null)
                     {
                         udpSender.Close();
@@ -444,7 +420,6 @@ namespace VoIP_Client
 
                     this.codec.Dispose();
                 }
-
                 ));
             }
         }
@@ -639,8 +614,5 @@ namespace VoIP_Client
             IncomingCallGrid.Visibility = Visibility.Hidden;
             micOn = true;
         }
-
-
-        
     }
 }

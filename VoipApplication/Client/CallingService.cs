@@ -256,11 +256,7 @@ namespace VoIP_Client
                 ConnectedClient.Close();
                 ConnectedClient = null;
                 isBusy = false;
-
-
             }
-
-
         }
 
         //sender fields
@@ -374,11 +370,9 @@ namespace VoIP_Client
             {
                 EndCall.Invoke();
             }
-
-            isCalling = false;
-
-            
+            isCalling = false;            
         }
+
 
         private void Connect(IPEndPoint endPoint)
         {
@@ -394,12 +388,8 @@ namespace VoIP_Client
                 }
                 throw new Exception("Przekroczono czas połączenia.");
             }
-
             connected = true;
-
         }
-
-
 
 
         private void SendText(string text)
