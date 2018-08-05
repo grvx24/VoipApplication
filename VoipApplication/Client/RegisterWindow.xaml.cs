@@ -68,7 +68,7 @@ namespace VoIP_Client
                 MessageBox.Show("Adres email niepoprawny!");
                 return;
             }
-            if(!PasswordValidator.ValidatePassword(RegisterPasswordTextBox.Password))
+            if (!PasswordValidator.ValidatePassword(RegisterPasswordTextBox.Password))
             {
                 MessageBox.Show("Hasło jest za słabe!");
                 return;

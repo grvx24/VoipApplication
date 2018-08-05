@@ -14,7 +14,7 @@ using CPOL;
 
 namespace VoIP_Client
 {
-    public enum LastBookmarkEnum { search, online, friendslist}
+    public enum LastBookmarkEnum { search, online, friendslist }
     //Communication with Server
     public class Client
     {
@@ -288,7 +288,8 @@ namespace VoIP_Client
                         //else
                         {
                             //LastConfirmMessage = message;
-                            LastConfirmMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
+                            LastConfirmMessage = AES.DecryptStringFromBytes(receivedMessage);
+                            //LastConfirmMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
                         }
                         break;
                     }
@@ -296,7 +297,8 @@ namespace VoIP_Client
                 case 13:
                     {
                         //var message = CscProtocol.ParseConfirmMessage(receivedMessage);
-                        LastErrorMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
+                        LastErrorMessage = AES.DecryptStringFromBytes(receivedMessage);
+                        //LastErrorMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
                         break;
                     }
 
@@ -326,8 +328,15 @@ namespace VoIP_Client
 
                     if (buffer != null)
                     {
-                    var decrypted = AES.DecrypBytesFromBytes(buffer);
-                        ExecuteCSCCommand(cmdAndLength[0], decrypted);
+                        if (cmdAndLength[0] == 12 || cmdAndLength[0] == 13)
+                        {//error i confirm nie deszyfrujemy do bytes zeby zachowac polskie znaki
+                            ExecuteCSCCommand(cmdAndLength[0], buffer);
+                        }
+                        else
+                        {
+                            var decrypted = AES.DecrypBytesFromBytes(buffer);
+                            ExecuteCSCCommand(cmdAndLength[0], decrypted);
+                        }
                     }
                 }
             }

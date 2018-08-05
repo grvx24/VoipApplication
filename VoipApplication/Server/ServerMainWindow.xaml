@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:VoIP_Server"
         mc:Ignorable="d"
         Title="Server" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow" ResizeMode="CanResizeWithGrip">
-    <Border Background="DarkGreen">
+    <Border Background="LightGreen">
         <Viewbox>
             <Grid Width="732" Height="524">
-                <StackPanel Background="LightGreen" Orientation="Horizontal" VerticalAlignment="Top" MaxHeight="100" MinHeight="100">
+                <StackPanel Background="LightGreen" Orientation="Horizontal" VerticalAlignment="Bottom" MaxHeight="100" MinHeight="100" HorizontalAlignment="Right" Width="732" Margin="0,0,0,424">
                     <Button BorderBrush="Red" Background="Red" Name="RunServerButton" MinWidth="130" MinHeight="60" BorderThickness="5" Margin="10" Click="RunServerButton_Click">
                         Offline
                     </Button>
@@ -20,7 +20,7 @@
                         <TextBlock TextWrapping="Wrap" TextAlignment="Center">Log serwera</TextBlock>
                     </Button>
                 </StackPanel>
-                <StackPanel Background="LightGreen" HorizontalAlignment="Left" Width="150" Margin="0,92,0,0">
+                <StackPanel Background="LightGreen" HorizontalAlignment="Right" Width="150" Margin="0,0,582,0" Height="432" VerticalAlignment="Bottom">
                     <Button Background="DarkGreen" Name="OnlineUsersButton" MinHeight="60"  BorderThickness="5" Margin="10" Click="OnlineUsersButton_Click">
                         <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Zalogowani użytkownicy"/>
                     </Button>
@@ -39,6 +39,6 @@
             </Grid>
         </Viewbox>
     </Border>
-    
-    
+
+
 </Window>
