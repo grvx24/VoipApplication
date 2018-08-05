@@ -33,6 +33,13 @@ namespace VoIP_Client
             parentUsersGrid = usersGrid;
             friendData = userdata;
             InitializeComponent();
+            if(userdata.Email.Length>=20)
+            {
+                EmailTextBlock.FontSize = 20;
+            }else
+            {
+                EmailTextBlock.FontSize = 25;
+            }
             EmailTextBlock.Text = userdata.Email;
             this.changeName = changeName;
 

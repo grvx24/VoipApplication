@@ -9,9 +9,7 @@
         Title="Wyszukaj kontakty" Height="300" Width="300"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Background="LightGreen" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock TextAlignment="Center" Margin="30,0" FontSize="25">
-            Email
-        </TextBlock>
+        <TextBlock TextWrapping="Wrap" TextAlignment="Left" Margin="20,0" FontSize="20" Width="261" Text="Email" Height="37"/>
         <TextBox Name="EmailTextBox" Background="White" Margin="20,10" FontSize="25">
         </TextBox>
         <StackPanel Background="LightGreen" HorizontalAlignment="Center" Orientation="Horizontal">
