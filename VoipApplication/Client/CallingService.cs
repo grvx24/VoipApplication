@@ -74,7 +74,6 @@ namespace VoIP_Client
         public CallingService(IPEndPoint endPoint)
         {
             localEndPoint = endPoint;
-
         }
 
         private string PrepareDHRequestString()
@@ -85,10 +84,9 @@ namespace VoIP_Client
 
         private string PrepareDHResponseString(string request)
         {
-            DHClient = new DiffieHellman(256);
-            var response = DHClient.GenerateResponse(request).ToString();
+            DHClient = new DiffieHellman(256).GenerateResponse(request);
+            var response = DHClient.ToString();
             DHKey = DHClient.Key;
-
             return response;
         }
         
