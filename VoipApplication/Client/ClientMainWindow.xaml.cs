@@ -321,7 +321,15 @@ namespace VoIP_Client
                     DeviceNumber = inputDeviceNumber,
                     WaveFormat = codec.RecordFormat
                 };
-                waveIn.DataAvailable += WaveIn_DataAvailable;
+
+                if(callingService.EncryptedCallSender || callingService.EncryptedCallReceiver)
+                {
+                    waveIn.DataAvailable += WaveIn_DataAvailableEncrypted;
+                }
+                else
+                {
+                    waveIn.DataAvailable += WaveIn_DataAvailable;
+                }
                 waveIn.StartRecording();
             }
             catch (Exception)
@@ -349,7 +357,15 @@ namespace VoIP_Client
 
             ListenerThreadState state = new ListenerThreadState() { Codec = codec, EndPoint = localEndPoint };
             isListening = true;
-            ThreadPool.QueueUserWorkItem(this.ListenerThread, state);
+
+            if(callingService.EncryptedCallSender || callingService.EncryptedCallReceiver)
+            {
+                ThreadPool.QueueUserWorkItem(this.ListenerThreadEncrypted, state);
+            }
+            else
+            {
+                ThreadPool.QueueUserWorkItem(this.ListenerThread, state);
+            }
         }
 
         class ListenerThreadState
@@ -374,9 +390,47 @@ namespace VoIP_Client
                         {
                             byte[] b = this.udpListener.Receive(ref endPoint);
 
+<<<<<<< HEAD
                             byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);//!!! tu znowu odbieranie dzwieku
                             waveProvider.AddSamples(decoded, 0, decoded.Length);
                         }
+=======
+                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
+
+                    }
+                }
+                isListening = false;
+                udpListener.Close();
+            }
+            catch (Exception)
+            {
+                isListening = false;
+                HideIncomingCallWindow();
+                //Disconnected
+            }
+        }
+
+        private void ListenerThreadEncrypted(object state)
+        {
+            ListenerThreadState listenerThreadState = (ListenerThreadState)state;
+            IPEndPoint endPoint = listenerThreadState.EndPoint;
+            try
+            {
+                while (isListening)
+                {
+                    Thread.Sleep(10);
+
+                    if (udpListener.Available > 0)
+                    {
+                        //$$$ tutaj deszyfrowanie przed decode
+
+                        byte[] b = this.udpListener.Receive(ref endPoint);
+
+                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
+
+>>>>>>> 377db9c34411bbf5df18dc25eb67be6c701817c5
                     }
                 }
                 //else
@@ -461,6 +515,16 @@ namespace VoIP_Client
                     var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(encoded);
                     udpSender.Send(encrypted, encrypted.Length);
                 }*/
+            }
+        }
+
+        void WaveIn_DataAvailableEncrypted(object sender, WaveInEventArgs e)
+        {
+            //$$$ szyfrowanie tutaj
+            if (micOn)
+            {
+                byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
+                udpSender.Send(encoded, encoded.Length);
             }
         }
 
