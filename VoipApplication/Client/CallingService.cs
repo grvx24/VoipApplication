@@ -9,6 +9,7 @@ using System.IO;
 using VoIP_Server;
 using System.Threading;
 using System.Diagnostics;
+using CPOL;
 
 namespace VoIP_Client
 {
@@ -44,7 +45,14 @@ namespace VoIP_Client
         public event VoiceSending UDPSenderStop;
         public event UdpListening UDPListenerStart;
 
+        public bool EncryptedCallSender = false;
+        public bool EncryptedCallReceiver = false;
+        private string DHRequest;
 
+        public byte[] DHKey { get; private set; }
+
+        private DiffieHellman DHServer;
+        private DiffieHellman DHClient;
 
         private TcpClient hostTcpClient;
         private TcpListener tcpListener;
@@ -66,8 +74,24 @@ namespace VoIP_Client
         public CallingService(IPEndPoint endPoint)
         {
             localEndPoint = endPoint;
+
         }
 
+        private string PrepareDHRequestString()
+        {
+            DHServer = new DiffieHellman(256).GenerateRequest();
+            return DHServer.ToString();
+        }
+
+        private string PrepareDHResponseString(string request)
+        {
+            DHClient = new DiffieHellman(256);
+            var response = DHClient.GenerateResponse(request).ToString();
+            DHKey = DHClient.Key;
+
+            return response;
+        }
+        
 
         public async void StartListening()
         {
@@ -139,13 +163,26 @@ namespace VoIP_Client
 
                         if (message.StartsWith(Commands.Invite))
                         {
-                            var msgAfterSplit = message.Split(':');
-                            if(msgAfterSplit.Length!=3)
+                            var msgAfterSplit = message.Split(new char[] { ':' },4);
+                            if(msgAfterSplit.Length==3)
+                            {
+                                EncryptedCallReceiver = false;
+                                IncomingCallEvent.Invoke(msgAfterSplit[2]);
+                                remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]), localEndPoint.Port);
+
+                            }else if (msgAfterSplit.Length==4)
+                            {
+                                EncryptedCallReceiver = true;
+                                DHRequest = msgAfterSplit[3];
+                                //poinformuj o szyfrowaniu, potem odeslanie DH
+                                IncomingCallEvent.Invoke(msgAfterSplit[2]+Environment.NewLine+"Rozmowa szyfrowana");
+                                remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]), localEndPoint.Port);
+                            }
+                            else
                             {
                                 break;
                             }
-                            IncomingCallEvent.Invoke(msgAfterSplit[2]);
-                            remoteEndPointToSendVoice = new IPEndPoint(IPAddress.Parse(msgAfterSplit[1]),localEndPoint.Port);
+                            
                         }
 
                         if (message.StartsWith(Commands.Cancel))
@@ -223,7 +260,18 @@ namespace VoIP_Client
                     AutoFlush = true
                 };
 
-                streamWriter.WriteLine(Commands.Ack);
+                //odesłanie DH razem z komunikatem DH
+                if(EncryptedCallReceiver)
+                {
+                    streamWriter.WriteLine(Commands.Ack+":" + PrepareDHResponseString(DHRequest));
+                }
+                else
+                {
+                    streamWriter.WriteLine(Commands.Ack);
+                }
+
+
+
                 Trace.WriteLine("Ack");
 
                 if (UDPSenderStart != null)
@@ -286,7 +334,14 @@ namespace VoIP_Client
                 {
                     Connect(endPoint);
                     string localIp = (((IPEndPoint)hostTcpClient.Client.LocalEndPoint).Address.ToString());
-                    SendText(Commands.Invite + ":" +localIp +":"+ userName);
+                    if(EncryptedCallSender)
+                    {
+                        SendText(Commands.Invite + ":" + localIp + ":" + userName+":"+PrepareDHRequestString());
+                    }
+                    else
+                    {
+                        SendText(Commands.Invite + ":" + localIp + ":" + userName);
+                    }
 
 
                     while (isCalling)
@@ -304,6 +359,11 @@ namespace VoIP_Client
                         }
                         else if (msg.StartsWith(Commands.Ack))
                         {
+                            var msgAfterSplit = msg.Split(new char[] { ':' }, 2);
+                            DHServer.HandleResponse(msgAfterSplit[1]);
+                            DHKey = DHServer.Key;
+
+
                             if (UDPSenderStart != null)
                             {
                                 UDPSenderStart.Invoke(remoteEndPointToSendVoice);
