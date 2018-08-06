@@ -357,7 +357,15 @@ namespace VoIP_Client
 
             ListenerThreadState state = new ListenerThreadState() { Codec = codec, EndPoint = localEndPoint };
             isListening = true;
-            ThreadPool.QueueUserWorkItem(this.ListenerThread, state);
+
+            if(callingService.EncryptedCallSender || callingService.EncryptedCallReceiver)
+            {
+                ThreadPool.QueueUserWorkItem(this.ListenerThreadEncrypted, state);
+            }
+            else
+            {
+                ThreadPool.QueueUserWorkItem(this.ListenerThread, state);
+            }
         }
 
         class ListenerThreadState
@@ -378,22 +386,42 @@ namespace VoIP_Client
 
                     if (udpListener.Available > 0)
                     {
-                        if (callingService.EncryptedCallReceiver || callingService.EncryptedCallSender)
-                        {
-                            //$$$ deszyfrowanie przed dekodowaniem
-                            byte[] b = this.udpListener.Receive(ref endPoint);
+                        byte[] b = this.udpListener.Receive(ref endPoint);
 
-                            byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
-                            waveProvider.AddSamples(decoded, 0, decoded.Length);
-                        }
-                        else
-                        {
-                            byte[] b = this.udpListener.Receive(ref endPoint);
+                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
 
-                            byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
-                            waveProvider.AddSamples(decoded, 0, decoded.Length);
-                        }
+                    }
+                }
+                isListening = false;
+                udpListener.Close();
+            }
+            catch (Exception)
+            {
+                isListening = false;
+                HideIncomingCallWindow();
+                //Disconnected
+            }
+        }
 
+        private void ListenerThreadEncrypted(object state)
+        {
+            ListenerThreadState listenerThreadState = (ListenerThreadState)state;
+            IPEndPoint endPoint = listenerThreadState.EndPoint;
+            try
+            {
+                while (isListening)
+                {
+                    Thread.Sleep(10);
+
+                    if (udpListener.Available > 0)
+                    {
+                        //$$$ tutaj deszyfrowanie przed decode
+
+                        byte[] b = this.udpListener.Receive(ref endPoint);
+
+                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
 
                     }
                 }
