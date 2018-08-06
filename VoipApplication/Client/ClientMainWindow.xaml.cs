@@ -364,37 +364,18 @@ namespace VoIP_Client
             IPEndPoint endPoint = listenerThreadState.EndPoint;
             try
             {
-                //if ()
+                while (isListening)
                 {
-                    while (isListening)
+                    Thread.Sleep(10);
+
+                    if (udpListener.Available > 0)
                     {
-                        Thread.Sleep(10);
+                        byte[] b = this.udpListener.Receive(ref endPoint);
 
-                        if (udpListener.Available > 0)
-                        {
-                            byte[] b = this.udpListener.Receive(ref endPoint);
-
-                            byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);//!!! tu znowu odbieranie dzwieku
-                            waveProvider.AddSamples(decoded, 0, decoded.Length);
-                        }
+                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
                     }
                 }
-                //else
-                //{
-                //    while (isListening)
-                //    {
-                //        Thread.Sleep(10);
-
-                //        if (udpListener.Available > 0)
-                //        {
-                //            byte[] b = this.udpListener.Receive(ref endPoint);
-                //            string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
-                //            var decrypted = new cscprotocol.CscAes(key).DecrypBytesFromBytes(b);
-                //            byte[] decoded = listenerThreadState.Codec.Decode(decrypted, 0, decrypted.Length);//!!! tu znowu odbieranie dzwieku
-                //            waveProvider.AddSamples(decoded, 0, decoded.Length);
-                //        }
-                //    }
-                //}
                 isListening = false;
                 udpListener.Close();
             }
@@ -448,19 +429,8 @@ namespace VoIP_Client
         {
             if (micOn)
             {
-                
-                //if()
-                {
-                    byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);//!!! wysylanie dzwieku
-                    udpSender.Send(encoded, encoded.Length);
-                }
-                //else                
-                /*{
-                    byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);//!!! wysylanie dzwieku
-                    string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
-                    var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(encoded);
-                    udpSender.Send(encrypted, encrypted.Length);
-                }*/
+                byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
+                udpSender.Send(encoded, encoded.Length);
             }
         }
 
