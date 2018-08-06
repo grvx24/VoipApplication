@@ -321,7 +321,15 @@ namespace VoIP_Client
                     DeviceNumber = inputDeviceNumber,
                     WaveFormat = codec.RecordFormat
                 };
-                waveIn.DataAvailable += WaveIn_DataAvailable;
+
+                if(callingService.EncryptedCallSender || callingService.EncryptedCallReceiver)
+                {
+                    waveIn.DataAvailable += WaveIn_DataAvailableEncrypted;
+                }
+                else
+                {
+                    waveIn.DataAvailable += WaveIn_DataAvailable;
+                }
                 waveIn.StartRecording();
             }
             catch (Exception)
@@ -370,10 +378,23 @@ namespace VoIP_Client
 
                     if (udpListener.Available > 0)
                     {
-                        byte[] b = this.udpListener.Receive(ref endPoint);
+                        if (callingService.EncryptedCallReceiver || callingService.EncryptedCallSender)
+                        {
+                            //$$$ deszyfrowanie przed dekodowaniem
+                            byte[] b = this.udpListener.Receive(ref endPoint);
 
-                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
-                        waveProvider.AddSamples(decoded, 0, decoded.Length);
+                            byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                            waveProvider.AddSamples(decoded, 0, decoded.Length);
+                        }
+                        else
+                        {
+                            byte[] b = this.udpListener.Receive(ref endPoint);
+
+                            byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
+                            waveProvider.AddSamples(decoded, 0, decoded.Length);
+                        }
+
+
                     }
                 }
                 isListening = false;
@@ -427,6 +448,16 @@ namespace VoIP_Client
 
         void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
         {
+            if (micOn)
+            {
+                byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
+                udpSender.Send(encoded, encoded.Length);
+            }
+        }
+
+        void WaveIn_DataAvailableEncrypted(object sender, WaveInEventArgs e)
+        {
+            //$$$ szyfrowanie tutaj
             if (micOn)
             {
                 byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);
