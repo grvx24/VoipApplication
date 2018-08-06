@@ -281,10 +281,7 @@ namespace VoIP_Client
                 {
                     UDPListenerStart.Invoke(localEndPoint);
                 }
-
             }
-
-
         }
 
         public void RejectCall()

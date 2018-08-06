@@ -495,7 +495,7 @@ namespace VoIP_Server
                 case 234:
                     {//to nigdy sie nie zdaza gdy jest polaczenie juz szyfrowane
                         var DHclientdata = Encoding.Unicode.GetString(receivedMessage.ToArray());
-                        ServerConsoleWriteEvent.Invoke("Otrzymano od klienta " + connectedUser.Id + " dane algorytmu DiffieHellmana: " + DHclientdata);
+                        ServerConsoleWriteEvent.Invoke("Otrzymano od klienta " + connectedUser.Id + " dane algorytmu Diffie-Hellmana");
                         connectedUser.DH.HandleResponse(DHclientdata);
                         break;
                     }
@@ -585,7 +585,7 @@ namespace VoIP_Server
                 ////////////////////////////////////
                 user.AES = new CscAes(user.DH.Key);
                 user.Salt = SendSaltEncrypted(user);//wysyłanie soli
-                ServerConsoleWriteEvent.Invoke("Wysłano sól " + user.Salt);
+                ServerConsoleWriteEvent.Invoke("Wysłano sól do użytkownika ID: " + user.Id);
                 while (running)
                 {
                     byte[] request = new byte[3];
