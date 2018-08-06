@@ -102,30 +102,9 @@ namespace VoIP_Client
             public INetworkChatCodec Codec { get; set; }
         }
 
-        private void ListenerThread(object state)
-        {
-            ListenerThreadState listenerThreadState = (ListenerThreadState)state;
-            //IPEndPoint endPoint = listenerThreadState.EndPoint;
-
-            var remoteEP = new IPEndPoint(IPAddress.Any, 1024);
-
-            try
-            {
-                while (connected)
-                {
-                    byte[] b = udpListener.Receive(ref remoteEP);
-                    byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);
-                    waveProvider.AddSamples(decoded, 0, decoded.Length);
-                }
-            }
-            catch (SocketException)
-            {
-                // usually not a problem - just means we have disconnected
-            }
-        }
-
         private void ListenerThread2(object state)
         {
+            //wartość nieważna bo i tak to jest nadpisywane
             var remoteEP = new IPEndPoint(IPAddress.Loopback, 1024);
 
             try
