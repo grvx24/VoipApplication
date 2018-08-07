@@ -31,7 +31,7 @@
                 <DataGridTextColumn Binding="{Binding Path=FriendName, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Nick" Width="80">
 
                 </DataGridTextColumn>
-                <DataGridTemplateColumn Header="status">
+                <DataGridTemplateColumn Header="Status">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Image Tag="{Binding CscUserMainData}" Width="20" Height="20">
@@ -56,8 +56,18 @@
                 <DataGridTemplateColumn Header="Opcje" Width="*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Height="50" Orientation="Horizontal" Background="LightYellow" Width="300" Margin="0,0,0,0.4">
-                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" Margin="10,0" ToolTip="Nawiązanie połączenia głosowego" >Zadzwoń</Button>
+                            <StackPanel Height="50" Orientation="Horizontal" Background="LightYellow" Width="320" Margin="0,0,0,0.4">
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonCall_Click" Margin="10,0" ToolTip="Połączenie głosowe" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/VoipApplication;component/call_icon.png" Width="32" Height="40" />
+                                    </StackPanel>
+                                </Button>
+                                <Button MaxHeight="50" MaxWidth="120" Click="RowButtonEncryptedCall_Click" Margin="10,0" ToolTip="Szyfrowane połączenie głosowe" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/VoipApplication;component/call_icon.png" Width="32" Height="40" />
+                                        <Image Source="/VoipApplication;component/lock_icon.png" Width="25" Height="25" />
+                                    </StackPanel>
+                                </Button>
                                 <Button Visibility="{Binding Path=IsNotFriend, Converter={StaticResource BoolToVis}}" Background="DarkGreen" MaxHeight="50" MaxWidth="120" ToolTip="Dodaj do ulubionych" Click="RowButtonEdit_Click">
                                     <StackPanel>
                                         <Image Source="/VoipApplication;component/broccoli_icon.png" Width="25" Height="25" />

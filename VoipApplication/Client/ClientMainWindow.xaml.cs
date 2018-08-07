@@ -516,7 +516,8 @@ namespace VoIP_Client
                 {
                     micOn = !micOn;
                     MuteButton.Background = Brushes.Blue;
-                    MuteButton.Content = "on";
+                    MuteButton.Content = "Wł.";
+                    MuteButton.ToolTip = "Mikrofon włączony";
                     BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_on.png", UriKind.Relative));
                     Mic_image.Source = image;
                 }
@@ -524,7 +525,8 @@ namespace VoIP_Client
                 {
                     micOn = !micOn;
                     MuteButton.Background = Brushes.Red;
-                    MuteButton.Content = "off";
+                    MuteButton.Content = "Wył.";
+                    MuteButton.ToolTip = "Mikrofon wyłączony";
                     BitmapImage image = new BitmapImage(new Uri("/VoipApplication;component/mic_off.png", UriKind.Relative));
                     Mic_image.Source = image;
                 }

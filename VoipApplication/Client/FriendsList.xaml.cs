@@ -64,6 +64,38 @@ namespace VoIP_Client
 
                         Task.Run(() =>
                         {
+                            callingService.EncryptedCallSender = false;
+                            callingService.MakeCall(iPEndPoint, client.UserProfile.Email, data.Email);
+                        });
+
+                    }
+                    catch (Exception ex)
+                    { MessageBox.Show(ex.Message); }
+                }
+                else
+                { MessageBox.Show("Użytkownik nie jest dostępny"); }
+            }
+            else
+            { MessageBox.Show("Jesteś w trakcie rozmowy"); }
+        }
+        private void RowButtonEncryptedCall_Click(object sender, RoutedEventArgs args)
+        {
+            if (!callingService.isCalling && !callingService.isBusy)
+            {
+                CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
+                var text = string.Format("{0} - {1} - {2}", data.FriendName, data.Ip, data.Email);
+
+                Trace.WriteLine(text);
+
+                if (data.Status == 1)
+                {
+                    try
+                    {
+                        IPEndPoint iPEndPoint =
+                            new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
+
+                        Task.Run(() =>
+                        {
                             callingService.EncryptedCallSender = true;
                             callingService.MakeCall(iPEndPoint, client.UserProfile.Email, data.Email);
                         });
@@ -78,6 +110,8 @@ namespace VoIP_Client
             else
             { MessageBox.Show("Jesteś w trakcie rozmowy"); }
         }
+
+
         private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
         {
             //try { searchWindow.Hide(); } catch (Exception) { }
