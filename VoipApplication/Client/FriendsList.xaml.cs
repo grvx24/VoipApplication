@@ -64,7 +64,7 @@ namespace VoIP_Client
 
                         Task.Run(() =>
                         {
-                            callingService.EncryptedCallSender = true;
+                            //callingService.EncryptedCallSender = true;
                             callingService.MakeCall(iPEndPoint, client.UserProfile.Email, data.Email);
                         });
 

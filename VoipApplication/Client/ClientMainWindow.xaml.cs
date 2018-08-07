@@ -95,11 +95,13 @@ namespace VoIP_Client
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosed(e);
             if (callingService.isBusy)
             {
-                callingService.BreakCall();
+                callingService.BreakCall(true);
             }
+
+            base.OnClosed(e);
+
             callingService.StopListening();
             callingService.DisposeTcpListener();
         }
@@ -422,7 +424,7 @@ namespace VoIP_Client
                         var decrypted = new cscprotocol.CscAes(key).DecrypBytesFromBytes(b);
                         byte[] decoded = listenerThreadState.Codec.Decode(decrypted, 0, decrypted.Length);//!! odbieranie dzwieku
 
-                        Trace.WriteLine("Received: "+Encoding.ASCII.GetString(decrypted));
+                        //Trace.WriteLine("Received: "+Encoding.ASCII.GetString(decrypted));
 
                         waveProvider.AddSamples(decoded, 0, decoded.Length);
                     }
@@ -495,6 +497,8 @@ namespace VoIP_Client
                 string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
                 var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(encoded);
                 udpSender.Send(encrypted, encrypted.Length);
+
+                //Trace.WriteLine(Encoding.ASCII.GetString(encoded));
 
             }
         }
