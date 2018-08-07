@@ -13,6 +13,7 @@ using NAudio.Wave;
 using System.Diagnostics;
 using System.Media;
 using System.ComponentModel;
+using System.Text;
 
 namespace VoIP_Client
 {
@@ -407,6 +408,7 @@ namespace VoIP_Client
         {
             ListenerThreadState listenerThreadState = (ListenerThreadState)state;
             IPEndPoint endPoint = listenerThreadState.EndPoint;
+            string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
             try
             {
                 while (isListening)
@@ -417,10 +419,11 @@ namespace VoIP_Client
                     {
                         byte[] b = this.udpListener.Receive(ref endPoint);
 
-                        string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
                         var decrypted = new cscprotocol.CscAes(key).DecrypBytesFromBytes(b);
                         byte[] decoded = listenerThreadState.Codec.Decode(decrypted, 0, decrypted.Length);//!! odbieranie dzwieku
-                        
+
+                        Trace.WriteLine("Received: "+Encoding.ASCII.GetString(decrypted));
+
                         waveProvider.AddSamples(decoded, 0, decoded.Length);
                     }
                 }
@@ -492,6 +495,7 @@ namespace VoIP_Client
                 string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
                 var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(encoded);
                 udpSender.Send(encrypted, encrypted.Length);
+
             }
         }
 
