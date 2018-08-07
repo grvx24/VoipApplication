@@ -141,5 +141,81 @@ namespace cscprotocol
             catch (Exception e)
             { Console.WriteLine(e.Message); }
         }
+
+        public byte[] EncryptBytes(byte[] message)
+        {
+            // Check arguments.
+            if (message == null || message.Length <= 0)
+                throw new ArgumentNullException("Message is empty.");
+
+            aes_data.Mode = mode;
+
+            // Create a decrytor to perform the stream transform.
+            ICryptoTransform encryptor = aes_data.CreateEncryptor(aes_data.Key, aes_data.IV);
+
+            // Create the streams used for encryption.
+            using (MemoryStream msEncrypt = new MemoryStream())
+            {
+                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                {
+                    csEncrypt.Write(message, 0, message.Length);
+                    csEncrypt.FlushFinalBlock();
+                    return msEncrypt.ToArray();
+                }
+            }
+        }
+
+        public byte[] DecryptBytes(byte[] message)
+        {
+            // Check arguments.
+            if (message == null || message.Length <= 0)
+                throw new ArgumentNullException("Message is empty.");
+
+            // Declare the string used to hold
+            // the decrypted text.
+            aes_data.Mode = mode;
+
+            // Create a decrytor to perform the stream transform.
+            ICryptoTransform decryptor = aes_data.CreateDecryptor(aes_data.Key, aes_data.IV);
+
+            // Create the streams used for decryption.
+            using (MemoryStream msDecrypt = new MemoryStream(message))
+            {
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
+                {
+                    csDecrypt.Write(message, 0, message.Length);
+                    csDecrypt.FlushFinalBlock();
+                    return msDecrypt.ToArray();
+                }
+            }
+        }
+
+
+        public byte[] DecryptBytes(byte[] message, int length)
+        {
+            // Check arguments.
+            if (message == null || message.Length <= 0)
+                throw new ArgumentNullException("Message is empty.");
+
+            // Declare the string used to hold
+            // the decrypted text.
+            aes_data.Mode = mode;
+
+            // Create a decrytor to perform the stream transform.
+            ICryptoTransform decryptor = aes_data.CreateDecryptor(aes_data.Key, aes_data.IV);
+
+
+
+            // Create the streams used for decryption.
+            using (MemoryStream msDecrypt = new MemoryStream(message))
+            {
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
+                {
+                    csDecrypt.Write(message, 0, message.Length);
+                    csDecrypt.FlushFinalBlock();
+                    return message.Take(length).ToArray();
+                }
+            }
+        }
     }
 }
