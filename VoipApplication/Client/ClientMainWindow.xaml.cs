@@ -410,7 +410,7 @@ namespace VoIP_Client
         {
             ListenerThreadState listenerThreadState = (ListenerThreadState)state;
             IPEndPoint endPoint = listenerThreadState.EndPoint;
-            string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
+            //string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
             try
             {
                 while (isListening)
@@ -421,7 +421,7 @@ namespace VoIP_Client
                     {
                         byte[] b = this.udpListener.Receive(ref endPoint);
 
-                        var decrypted = new cscprotocol.CscAes(key).DecryptBytes(b,800);
+                        var decrypted = new cscprotocol.CscAes(callingService.DHKey).DecryptBytes(b,800);
                         byte[] decoded = listenerThreadState.Codec.Decode(decrypted, 0, decrypted.Length);//!! odbieranie dzwieku
 
                         //Trace.WriteLine("Received: "+Encoding.ASCII.GetString(decrypted));
@@ -494,11 +494,16 @@ namespace VoIP_Client
             if (micOn)
             {
                 byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);//!!! wysylanie dzwieku
-                string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
-                var encrypted = new cscprotocol.CscAes(key).EncryptBytes(encoded);
+                //string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
+                
+                var encrypted = new cscprotocol.CscAes(callingService.DHKey).EncryptBytes(encoded);
+               
                 udpSender.Send(encrypted, encrypted.Length);
-
-                //Trace.WriteLine(Encoding.ASCII.GetString(encoded));
+                
+                //długość próbki dźwięku po zakodowaniu wynosi 800!!!
+                //przy odebraniu bajtów pierwsze 800 jest od dźwięku, reszta to śmieci z wypełnienia do pełnego bloku
+                //Trace.WriteLine(encrypted.Length);
+                //Trace.WriteLine(encoded.Length);
 
             }
         }
