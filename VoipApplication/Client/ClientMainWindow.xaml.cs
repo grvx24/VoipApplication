@@ -446,6 +446,7 @@ namespace VoIP_Client
                     if (waveIn != null)
                     {
                         waveIn.DataAvailable -= WaveIn_DataAvailable;
+                        waveIn.DataAvailable -= WaveIn_DataAvailableEncrypted;
                         waveIn.StopRecording();
                         waveIn.Dispose();
                     }
@@ -487,10 +488,10 @@ namespace VoIP_Client
             //$$$ szyfrowanie tutaj
             if (micOn)
             {
+                byte[] encoded = codec.Encode(e.Buffer, 0, e.BytesRecorded);//!!! wysylanie dzwieku
                 string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
-                var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(e.Buffer);
-                byte[] encoded = codec.Encode(encrypted, 0, encrypted.Length);//!!! wysylanie dzwieku
-                udpSender.Send(encoded, encoded.Length);
+                var encrypted = new cscprotocol.CscAes(key).EncryptBytesToBytes(encoded);
+                udpSender.Send(encrypted, encrypted.Length);
             }
         }
 
