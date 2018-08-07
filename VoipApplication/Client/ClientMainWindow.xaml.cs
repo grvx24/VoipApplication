@@ -416,10 +416,12 @@ namespace VoIP_Client
                     if (udpListener.Available > 0)
                     {
                         byte[] b = this.udpListener.Receive(ref endPoint);
-                        byte[] decoded = listenerThreadState.Codec.Decode(b, 0, b.Length);//!! odbieranie dzwieku
+
                         string key = "dnnnnnnnnnnnnnn1dnnnnnnnnnnnnnn1";//klucz ustalony przez DH jako string lub byte []
-                        var decrypted = new cscprotocol.CscAes(key).DecrypBytesFromBytes(decoded);
-                        waveProvider.AddSamples(decrypted, 0, decrypted.Length);
+                        var decrypted = new cscprotocol.CscAes(key).DecrypBytesFromBytes(b);
+                        byte[] decoded = listenerThreadState.Codec.Decode(decrypted, 0, decrypted.Length);//!! odbieranie dzwieku
+                        
+                        waveProvider.AddSamples(decoded, 0, decoded.Length);
                     }
                 }
                 isListening = false;

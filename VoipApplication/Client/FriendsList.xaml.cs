@@ -64,6 +64,7 @@ namespace VoIP_Client
 
                         Task.Run(() =>
                         {
+                            callingService.EncryptedCallSender = true;
                             callingService.MakeCall(iPEndPoint, client.UserProfile.Email, data.Email);
                         });
 
@@ -114,14 +115,6 @@ namespace VoIP_Client
 
         }
 
-        //public void UpdateInfoLabel(string msg)// n !!!! czy to jest potrzebne w ogole?
-        //{
-        //    Dispatcher.Invoke(new Action(() =>
-        //    {
-        //        InfoLabel.Content = msg;
-        //    }
-        //    ));
-        //}
 
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {

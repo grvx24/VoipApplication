@@ -355,9 +355,11 @@ namespace VoIP_Client
                         else if (msg.StartsWith(Commands.Ack))
                         {
                             var msgAfterSplit = msg.Split(new char[] { ':' }, 2);
-                            DHServer.HandleResponse(msgAfterSplit[1]);
-                            DHKey = DHServer.Key;
-
+                            if(msgAfterSplit.Length==2)
+                            {
+                                DHServer.HandleResponse(msgAfterSplit[1]);
+                                DHKey = DHServer.Key;
+                            }
 
                             if (UDPSenderStart != null)
                             {
