@@ -18,6 +18,13 @@ namespace cscprotocol
         {
             Validate_key_length(Key.Length);
             aes_data = Aes.Create();
+            if(Key.Length == 31)
+            {
+                byte[] newKey = new byte[32];
+                Key.CopyTo(newKey, 0);
+                newKey[31] = 0;
+            }
+
             aes_data.KeySize = Key.Length * number_of_bits_in_one_byte;
             aes_data.Key = Key;
         }
