@@ -57,7 +57,7 @@ namespace VoIP_Client
                 if (data.Status == 1)
                 {
                     try
-                    {                        
+                    {
                         IPEndPoint iPEndPoint =
                             new IPEndPoint(IPAddress.Parse(data.Ip), callingService.localEndPoint.Port);
 
@@ -111,7 +111,7 @@ namespace VoIP_Client
         }
 
 
-        private void RowButtonEdit_Click(object sender, RoutedEventArgs args)
+        private void RowButtonRemoveFriend_Click(object sender, RoutedEventArgs args)
         {
             //try { searchWindow.Hide(); } catch (Exception) { }
 
@@ -119,9 +119,8 @@ namespace VoIP_Client
 
             if (!String.IsNullOrEmpty(data.FriendName))
             {
-                client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = data.Id, FriendName = data.FriendName });
+                client.SendRemoveUserFromFriendsListDataRequestEncrypted(new CscChangeFriendData { Id = data.Id, FriendName = data.FriendName });
                 client.SearchedUsers.Remove(data);
-
 
                 //musiałem tak zrobić żeby tabela wyszukiwania się poprawnie aktualizowała :/
                 data.FriendName = String.Empty;
@@ -132,7 +131,7 @@ namespace VoIP_Client
             }
             else
             {
-                FriendsListEditWindow window = new FriendsListEditWindow(FriendsListDataGrid, client, data,false);
+                FriendsListEditWindow window = new FriendsListEditWindow(FriendsListDataGrid, client, data, false);
                 window.ShowDialog();
             }
         }
@@ -145,7 +144,6 @@ namespace VoIP_Client
                 FriendsListEditWindow window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
                 window.ShowDialog();
             }
-
         }
 
 

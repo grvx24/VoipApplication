@@ -68,12 +68,12 @@
                                         <Image Source="/VoipApplication;component/lock_icon.png" Width="25" Height="25" />
                                     </StackPanel>
                                 </Button>
-                                <Button Visibility="{Binding Path=IsNotFriend, Converter={StaticResource BoolToVis}}" Background="DarkGreen" MaxHeight="50" MaxWidth="120" ToolTip="Dodaj do ulubionych" Click="RowButtonEdit_Click">
+                                <Button Visibility="{Binding Path=IsNotFriend, Converter={StaticResource BoolToVis}}" Background="DarkGreen" MaxHeight="50" MaxWidth="120" ToolTip="Dodaj do ulubionych" Click="RowButtonRemoveFriend_Click">
                                     <StackPanel>
                                         <Image Source="/VoipApplication;component/broccoli_icon.png" Width="25" Height="25" />
                                     </StackPanel>
                                 </Button>
-                                <Button Visibility="{Binding Path=CanBeRemoved, Converter={StaticResource BoolToVis}}" Background="Red" MaxHeight="50" MaxWidth="120" ToolTip="Usuń z ulubionych" Click="RowButtonEdit_Click">
+                                <Button Visibility="{Binding Path=CanBeRemoved, Converter={StaticResource BoolToVis}}" Background="Red" MaxHeight="50" MaxWidth="120" ToolTip="Usuń z ulubionych" Click="RowButtonRemoveFriend_Click">
                                     <StackPanel>
                                         <Image Source="/VoipApplication;component/broccoli_icon.png" Width="25" Height="25" />
                                     </StackPanel>

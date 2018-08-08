@@ -1,19 +1,8 @@
 ﻿using cscprotocol;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using VoipApplication;
 
 namespace VoIP_Client
 {
@@ -61,8 +50,8 @@ namespace VoIP_Client
             {
                 if (UsernameTextBox.Text != string.Empty)
                 {
-                    client.SendRemoveUserFromFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
-                    client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
+                    client.SendRemoveUserFromFriendsListDataRequestEncrypted(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
+                    client.SendAddUserToFriendsListDataRequestEncrypted(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                     Trace.WriteLine("Zmieniono nazwę");
                 }
             }
@@ -70,7 +59,7 @@ namespace VoIP_Client
             {
                 if (UsernameTextBox.Text != string.Empty)
                 {//dodaj tego usera do naszych znajomych      
-                    client.SendAddUserToFriendsListDataRequest(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
+                    client.SendAddUserToFriendsListDataRequestEncrypted(new CscChangeFriendData { Id = friendData.Id, FriendName = UsernameTextBox.Text });
                     Trace.WriteLine("Dodano do znajomych");
                     friendData.CanBeRemoved = true;
                     friendData.IsNotFriend = false;
@@ -114,7 +103,7 @@ namespace VoIP_Client
                         }
                     case LastBookmarkEnum.search:
                         {
-                            client.SendSearchUserRequest(client.LastSearchText);
+                            client.SendSearchUserRequestEncrypted(client.LastSearchText);
                             parentUsersGrid.DataContext = client.GetSearchUsers();
                             break;
                         }

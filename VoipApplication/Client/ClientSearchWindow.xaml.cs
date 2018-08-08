@@ -38,7 +38,7 @@ namespace VoIP_Client
             if (EmailTextBox.Text.Length > 2)
             {
                 client.SearchedUsers.Clear();
-                client.SendSearchUserRequest(EmailTextBox.Text);
+                client.SendSearchUserRequestEncrypted(EmailTextBox.Text);
                 client.LastSearchText = EmailTextBox.Text;
                 try
                 {

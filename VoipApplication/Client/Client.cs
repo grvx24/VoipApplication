@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using VoIP_Server;
 using System.Collections.ObjectModel;
 using cscprotocol;
 using System.Diagnostics;
@@ -128,19 +124,19 @@ namespace VoIP_Client
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void SendSearchUserRequest(string text)
+        public void SendSearchUserRequestEncrypted(string text)
         {
             var msg = protocol.CreateSearchUserRequestEncrypted(text, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void SendAddUserToFriendsListDataRequest(CscChangeFriendData friendData)
+        public void SendAddUserToFriendsListDataRequestEncrypted(CscChangeFriendData friendData)
         {
             var msg = protocol.CreateAddUserToFriendsListRequestEncrypted(friendData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-        public void SendRemoveUserFromFriendsListDataRequest(CscChangeFriendData friendData)
+        public void SendRemoveUserFromFriendsListDataRequestEncrypted(CscChangeFriendData friendData)
         {
             var msg = protocol.CreateRemoveUserFromFriendsListRequestEncrypted(friendData, DH.Key);
             client.GetStream().Write(msg, 0, msg.Length);
@@ -227,78 +223,15 @@ namespace VoIP_Client
                         break;
                     }
 
-                //case 6:
-                //    {
-                //        var profile = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                //        UserProfile = profile;
-                //        SetProfileText.Invoke(profile);
-                //        break;
-                //    }
-                /*
-            case 7:
-                var onlineUserToRemove = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                var toRemove = onlineUsers.Where(i => i.Id == onlineUserToRemove.Id).FirstOrDefault();
-
-                if (toRemove != null)
-                {
-                    Trace.WriteLine("Usuwanie: " + toRemove.Email);
-
-                    if (RemoveItemEvent != null)
-                        RemoveItemEvent.Invoke(toRemove);
-                }
-                break;
-
-
-            case 8:
-                {
-                    var onlineUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (onlineUser.Email != UserProfile.Email)
-
-                        if (AddItemEvent != null)
-                            AddItemEvent.Invoke(onlineUser);
-                    break;
-                }
-
-            case 9:
-                {
-                    var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (AddFriendEvent != null)
-                        AddFriendEvent.Invoke(friendData);
-                    //friendsUserDatas.Add(friendData);
-                    break;
-                }
-
-            case 10:
-                {
-                    var friendData = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
-                    if (RemoveFriendEvent != null)
-                        RemoveFriendEvent.Invoke(friendData);
-                    //onlineUsers.Remove(userToRemove);
-                    break;
-                }*/
-
                 case 12:
                     {
-                        //var message = CscProtocol.ParseConfirmMessageAndDecrypt(receivedMessage);//n czy to tu musi byc parsowane? chyba nie
-
-                        //if (Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count()) == "ONLINE_USERS_OK")
-                        //{
-                        //    Environment.Exit(0);
-                        //}
-                        //else
-                        {
-                            //LastConfirmMessage = message;
-                            LastConfirmMessage = AES.DecryptStringFromBytes(receivedMessage);
-                            //LastConfirmMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
-                        }
+                        LastConfirmMessage = AES.DecryptStringFromBytes(receivedMessage);
                         break;
                     }
 
                 case 13:
                     {
-                        //var message = CscProtocol.ParseConfirmMessage(receivedMessage);
                         LastErrorMessage = AES.DecryptStringFromBytes(receivedMessage);
-                        //LastErrorMessage = Encoding.ASCII.GetString(receivedMessage, 0, receivedMessage.Count());
                         break;
                     }
 

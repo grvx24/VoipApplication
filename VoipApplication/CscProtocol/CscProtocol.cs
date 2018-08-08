@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace cscprotocol
 {
@@ -77,60 +74,6 @@ namespace cscprotocol
             friendsAsBytesEncrypted.CopyTo(message, 3);
             return message;
         }
-
-        ////nowy uzytkownik z listy ulubionych
-        //public byte[] CreateNewFriendUserDataMessage(CscUserMainData userMainData)//CreateFriendUserDataMessage
-        //{
-        //    var friendsAsBytes = CscProtocol.Serialize(userMainData);
-        //    var message = new byte[3 + friendsAsBytes.Length];
-        //    message[0] = 9;
-        //    BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
-        //    friendsAsBytes.CopyTo(message, 3);
-        //    return message;
-        //}
-
-        ////usuwany uzytkownik z listy ulubionych
-        //public byte[] CreateNoFriendAnymoreUserDataMessage(CscUserMainData userMainData)
-        //{
-        //    var friendsAsBytes = CscProtocol.Serialize(userMainData);
-        //    var message = new byte[3 + friendsAsBytes.Length];
-        //    message[0] = 10;
-        //    BitConverter.GetBytes((UInt16)friendsAsBytes.Length).CopyTo(message, 1);
-        //    friendsAsBytes.CopyTo(message, 3);
-        //    return message;
-        //}
-
-        ////uzytkownik online
-        //public byte[] CreateOnlineUserDataMessage(CscUserMainData userMainData)
-        //{
-        //    var users = CscProtocol.Serialize(userMainData);
-        //    var message = new byte[3 + users.Length];
-        //    message[0] = 8;
-        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-        //    users.CopyTo(message, 3);
-        //    return message;
-        //}
-
-        ////uzytkownik offline
-        //public byte[] CreateOfflineUserDataMessage(CscUserMainData userMainData)
-        //{
-        //    var users = CscProtocol.Serialize(userMainData);
-        //    var message = new byte[3 + users.Length];
-        //    message[0] = 7;
-        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-        //    users.CopyTo(message, 3);
-        //    return message;
-        //}
-
-        //public byte[] CreateUserProfileMessage(CscUserMainData userMainData)
-        //{
-        //    var users = CscProtocol.Serialize(userMainData);
-        //    var message = new byte[3 + users.Length];
-        //    message[0] = 6;
-        //    BitConverter.GetBytes((UInt16)users.Length).CopyTo(message, 1);
-        //    users.CopyTo(message, 3);
-        //    return message;
-        //}
 
         public byte[] CreateConfirmMessageEncrypted(string message, byte[] key)
         {

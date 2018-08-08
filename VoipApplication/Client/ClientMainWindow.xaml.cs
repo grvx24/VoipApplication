@@ -38,7 +38,7 @@ namespace VoIP_Client
 
             friendsListGrid = new FriendsList(client, callingService);
             settingsGrid = new ClientSettingsUserControl(client, callingService, this);
-            guideGrid = new GuideUserControl(client, callingService, this);
+            guideGrid = new GuideUserControl();
 
             if (!createNewInstance)
             {
