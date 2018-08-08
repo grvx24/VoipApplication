@@ -21,7 +21,7 @@
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Użytkownicy"/>
             </Button>
             <Button BorderBrush="YellowGreen" Background="DarkGreen" Name="GuideButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="GuideButton_Click">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Instrukcja"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Autorzy"/>
             </Button>
             <Button Background="Red" BorderBrush="Green" Name="LogOutButton" MinHeight="60"  BorderThickness="5" Margin="10,10,10.4,10" Click="LogOutButton_Click" >
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Wyloguj się"/>

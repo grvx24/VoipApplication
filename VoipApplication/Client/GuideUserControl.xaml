@@ -7,7 +7,10 @@
              mc:Ignorable="d"
              Background="LimeGreen"
              d:DesignHeight="469" d:DesignWidth="642">
-    <Grid Width="auto" Height="auto" Background="DarkSeaGreen">
-        <TextBlock Name="GuideTextBlock" FontSize="15" Margin="10" TextWrapping="Wrap"></TextBlock>
+    <Grid Width="auto" Height="auto" Background="LightGreen">
+        <Image Source="/VoipApplication;component/broccoli.png" Margin="0,0,376,301"></Image>
+        <Image Source="/VoipApplication;component/broccoli.png" Margin="181,0,195,301"></Image>
+        <Image Source="/VoipApplication;component/broccoli.png" Margin="376,0,0,301"></Image>
+        <TextBlock Foreground="DarkGreen" FontWeight="UltraBold" TextAlignment="Center" FontSize="50" x:Name="GuideTextBlock" Margin="10,216,10,10" TextWrapping="Wrap"><Run Text="Autorzy:"/><LineBreak/><Run Text="Natalia Popielarz"/><LineBreak/><Run Text="Kamil Sagalara"/></TextBlock>
     </Grid>
 </UserControl>
