@@ -200,10 +200,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Client\UDPUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Client\VoiceChatTest.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -232,9 +228,6 @@
     </Compile>
     <Compile Include="Client\RegisterWindow.xaml.cs">
       <DependentUpon>RegisterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Client\UDPUserControl.xaml.cs">
-      <DependentUpon>UDPUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client\UserEmail.cs" />
     <Compile Include="Client\UserProfile.cs" />
