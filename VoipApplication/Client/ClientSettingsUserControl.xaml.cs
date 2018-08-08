@@ -102,9 +102,6 @@ namespace VoIP_Client
                 {
                     callingService.DisposeTcpListener();
                     client.Disconnect();
-                    ConnectionWindow loginWindow = new ConnectionWindow();
-                    loginWindow.Show();
-                    parentWindow.Close();
                 }
                 );
             }
