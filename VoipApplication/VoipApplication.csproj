@@ -124,6 +124,9 @@
     <Compile Include="Server\FriendsListControl.xaml.cs">
       <DependentUpon>FriendsListControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Server\GuideUserControl.xaml.cs">
+      <DependentUpon>GuideUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Server\OnlineUsersControl.xaml.cs">
       <DependentUpon>OnlineUsersControl.xaml</DependentUpon>
     </Compile>
@@ -245,6 +248,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Server\FriendsListControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Server\GuideUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

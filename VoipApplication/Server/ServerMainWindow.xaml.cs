@@ -24,7 +24,7 @@ namespace VoIP_Server
     public partial class ServerMainWindow : Window
     {
         //front end info
-        private enum CurrentPage { OnlineUsers, UsersDB,FriendsDB, ServerLog,Settings}
+        private enum CurrentPage { OnlineUsers, UsersDB, FriendsDB, ServerLog, Settings, Guide }
         CurrentPage currentPage = CurrentPage.OnlineUsers;
 
         //network
@@ -58,20 +58,20 @@ namespace VoIP_Server
         public void UpdateServerLog(string message)
         {
             string msg = DateTime.Now + ": " + message + Environment.NewLine;
-            Dispatcher.Invoke(new Action(() => 
+            Dispatcher.Invoke(new Action(() =>
             {
                 serverLogControl.ServerConsole.AppendText(msg);
             }));
-            
+
         }
 
         private void RunServerButton_Click(object sender, RoutedEventArgs e)
-        {   
+        {
             if (!server.Running)
             {
                 server.CreateServer(settingUserControl.GetSelectedIp(), settingUserControl.GetPort());
-                settingUserControl.CurrentIPLabel.Content = settingUserControl.GetSelectedIp() + ":"+settingUserControl.GetPort();
-                server.RunAsync();                
+                settingUserControl.CurrentIPLabel.Content = settingUserControl.GetSelectedIp() + ":" + settingUserControl.GetPort();
+                server.RunAsync();
             }
             else
             {
@@ -80,7 +80,7 @@ namespace VoIP_Server
             }
 
             RunServerButton.Content = server.Running ? "Online" : "Offline";
-            RunServerButton.Background= server.Running ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+            RunServerButton.Background = server.Running ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
             RunServerButton.BorderBrush = server.Running ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
         }
 
@@ -117,7 +117,7 @@ namespace VoIP_Server
                 case CurrentPage.FriendsDB:
 
                     var friendsControl = new FriendsListControl();
-                    friendsControl.FriendsListDataGrid.ItemsSource = localEntities.FriendsList.ToList();                    
+                    friendsControl.FriendsListDataGrid.ItemsSource = localEntities.FriendsList.ToList();
                     CustomUserControl.Content = friendsControl;
                     break;
 
@@ -130,9 +130,13 @@ namespace VoIP_Server
                     CustomUserControl.Content = settingUserControl;
                     break;
 
+                case CurrentPage.Guide:
+                    CustomUserControl.Content = new GuideUserControl();
+                    break;
+
                 default:
                     break;
-            }            
+            }
         }
 
         private void UsersButton_Click(object sender, RoutedEventArgs e)
@@ -158,7 +162,7 @@ namespace VoIP_Server
             lastClickedButton = sender as Button;
             lastClickedButton.Background = Brushes.Purple;
 
-            LoadGrid(CurrentPage.OnlineUsers);       
+            LoadGrid(CurrentPage.OnlineUsers);
         }
 
         private void FriendsListButton_Click(object sender, RoutedEventArgs e)
@@ -176,7 +180,7 @@ namespace VoIP_Server
 
         private void ServerLogButton_Click(object sender, RoutedEventArgs e)
         {
-            if(lastClickedButton!=null)
+            if (lastClickedButton != null)
             {
                 lastClickedButton.Background = Brushes.DarkGreen;
             }
@@ -215,6 +219,21 @@ namespace VoIP_Server
 
             if (currentPage != CurrentPage.Settings)
                 LoadGrid(CurrentPage.Settings);
+            else
+                return;
+        }
+
+        private void GuideButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (lastClickedButton != null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
+            if (currentPage != CurrentPage.Guide)
+                LoadGrid(CurrentPage.Guide);
             else
                 return;
         }
