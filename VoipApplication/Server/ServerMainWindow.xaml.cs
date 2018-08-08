@@ -31,9 +31,8 @@ namespace VoIP_Server
         MainServer server;
         ObservableCollection<ConnectedUsers> onlineUsers = new ObservableCollection<ConnectedUsers>();
 
-        //database
-        //VoiceChatDBEntities entities = new VoiceChatDBEntities();// n !!! to tez nigdzie nie jest uzywane
-
+        //ostatnio kliknięty przycisk
+        Button lastClickedButton = null;
 
         //server log
         //Musi być stworzony od początku programu, żeby nie tracić do niego referencji
@@ -138,21 +137,53 @@ namespace VoIP_Server
 
         private void UsersButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedButton != null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
             LoadGrid(CurrentPage.UsersDB);
         }
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedButton != null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
             LoadGrid(CurrentPage.OnlineUsers);       
         }
 
         private void FriendsListButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedButton != null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
             LoadGrid(CurrentPage.FriendsDB);
         }
 
         private void ServerLogButton_Click(object sender, RoutedEventArgs e)
         {
+            if(lastClickedButton!=null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
             if (currentPage != CurrentPage.ServerLog)
                 LoadGrid(CurrentPage.ServerLog);
             else
@@ -174,6 +205,14 @@ namespace VoIP_Server
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (lastClickedButton != null)
+            {
+                lastClickedButton.Background = Brushes.DarkGreen;
+            }
+
+            lastClickedButton = sender as Button;
+            lastClickedButton.Background = Brushes.Purple;
+
             if (currentPage != CurrentPage.Settings)
                 LoadGrid(CurrentPage.Settings);
             else
