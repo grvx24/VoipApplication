@@ -23,7 +23,7 @@
             </Button>
 
         </Grid>
-        <DataGrid Background="LightYellow" RowHeight="50" IsReadOnly="True" CanUserAddRows="False" ItemsSource="{Binding}" Name="FriendsListDataGrid" AutoGenerateColumns="False"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="650" Margin="0,100,0,0">
+        <DataGrid Background="White" RowHeight="50" IsReadOnly="True" CanUserAddRows="False" ItemsSource="{Binding}" Name="FriendsListDataGrid" AutoGenerateColumns="False"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="650" Margin="0,100,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=Email, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Header="Email" Width="150">
 
