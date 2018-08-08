@@ -185,8 +185,7 @@ namespace VoIP_Client
                 callingService.DisposeTcpListener();
                 if (callingService.isBusy)
                 {
-                    callingService.RejectCall();
-                    callingService.BreakCall();
+                    callingService.BreakCall(true);
                 }
                 client.Disconnect();
                 ConnectionWindow loginWindow = new ConnectionWindow();
