@@ -17,7 +17,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using VoIP_Server;
-using VoIP_Server.Client;
 using cscprotocol;
 using System.Diagnostics;
 using System.Data;

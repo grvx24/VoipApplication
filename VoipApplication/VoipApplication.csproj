@@ -200,10 +200,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Client\VoiceChatTest.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -228,12 +224,6 @@
     </Compile>
     <Compile Include="Client\RegisterWindow.xaml.cs">
       <DependentUpon>RegisterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Client\UserEmail.cs" />
-    <Compile Include="Client\UserProfile.cs" />
-    <Compile Include="Client\VoiceChatClient.cs" />
-    <Compile Include="Client\VoiceChatTest.xaml.cs">
-      <DependentUpon>VoiceChatTest.xaml</DependentUpon>
     </Compile>
     <Compile Include="codecs\AcmChatCodec.cs" />
     <Compile Include="codecs\G722ChatCodec.cs" />
