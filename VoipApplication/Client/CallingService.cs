@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO;
-using VoIP_Server;
-using System.Threading;
 using System.Diagnostics;
 using CPOL;
 
@@ -88,13 +83,11 @@ namespace VoIP_Client
             var response = DHClient.ToString();
             DHKey = DHClient.Key;
             return response;
-        }
-        
+        }        
 
         public async void StartListening()
         {
             tcpListener = new TcpListener(localEndPoint);
-
             tcpListener.Start();
             isListening = true;
 
@@ -112,7 +105,6 @@ namespace VoIP_Client
             }
             catch (Exception e)
             {
-
                 if (tcpListener != null)
                 {
                     tcpListener.Stop();
@@ -123,7 +115,6 @@ namespace VoIP_Client
                 isListening = false;
 
                 ErrorEvent.Invoke(e.Message);
-
             }
         }
 
@@ -134,7 +125,6 @@ namespace VoIP_Client
             tcpListener = null;
             isListening = false;
         }
-
 
         private void HandleConnection(TcpClient client)
         {
@@ -148,13 +138,13 @@ namespace VoIP_Client
             {
                 if (isBusy || isCalling)
                 {
-                    //odrzuć połączenie
+                    //odrzuc polaczenie
                     streamWriter.WriteLine(Commands.Busy);
                 }
                 else
                 {
                     isBusy = true;
-                    //akceptuj połączenie
+                    //akceptuj polaczenie
                     while (isBusy)
                     {
                         var message = streamReader.ReadLine();
@@ -179,8 +169,7 @@ namespace VoIP_Client
                             else
                             {
                                 break;
-                            }
-                            
+                            }                            
                         }
 
                         if (message.StartsWith(Commands.Cancel))
@@ -194,7 +183,6 @@ namespace VoIP_Client
                             {
                                 UDPSenderStop.Invoke();
                             }
-
                             break;
                         }
 
@@ -209,10 +197,8 @@ namespace VoIP_Client
                             {
                                 UDPSenderStop.Invoke();
                             }
-
                             break;
                         }
-
                     }
                 }
                 if (ConnectedClient == client)
@@ -223,8 +209,6 @@ namespace VoIP_Client
 
                 client.GetStream().Close();
                 client.Close();
-
-
             }
             catch (Exception e)
             {
@@ -239,13 +223,9 @@ namespace VoIP_Client
                 {
                     client.Close();
                 }
-
                 ErrorEvent.Invoke(e.Message);
             }
-
-
         }
-
 
         //receiver methods
 
@@ -267,8 +247,6 @@ namespace VoIP_Client
                 {
                     streamWriter.WriteLine(Commands.Ack);
                 }
-
-
 
                 Trace.WriteLine("Ack");
 
@@ -313,7 +291,6 @@ namespace VoIP_Client
             Trace.WriteLine("username: " + userName);
             Trace.WriteLine("receiver: " + receiverName);
 
-
             if (!isCalling)
             {
                 remoteEndPointToSendVoice = endPoint;
@@ -337,8 +314,7 @@ namespace VoIP_Client
                     {
                         SendText(Commands.Invite + ":" + localIp + ":" + userName);
                     }
-
-
+                    
                     while (isCalling)
                     {
                         var msg = await ReceiveTextAsync();
@@ -382,8 +358,6 @@ namespace VoIP_Client
                             ErrorEvent.Invoke(msg);
                         }
                     }
-
-
                 }
                 catch (Exception e)
                 {
@@ -398,10 +372,8 @@ namespace VoIP_Client
                     {
                         EndCall.Invoke();
                     }
-
                 }
             }
-
         }
 
         public void BreakCall(bool sendCancelCommand = false)
@@ -412,7 +384,6 @@ namespace VoIP_Client
                 Trace.WriteLine(Commands.Bye);
             }
 
-
             if (hostTcpClient != null)
             {
                 if (hostTcpClient.Connected)
@@ -422,14 +393,12 @@ namespace VoIP_Client
                 }
             }
 
-
             if (EndCall != null)
             {
                 EndCall.Invoke();
             }
             isCalling = false;            
         }
-
 
         private void Connect(IPEndPoint endPoint)
         {
@@ -447,7 +416,6 @@ namespace VoIP_Client
             }
             connected = true;
         }
-
 
         private void SendText(string text)
         {
@@ -467,8 +435,6 @@ namespace VoIP_Client
             {
                 return;
             }
-
-
         }
 
         private async Task<string> ReceiveTextAsync()
@@ -477,7 +443,6 @@ namespace VoIP_Client
 
             var text = await streamReader.ReadLineAsync();
             return text;
-
         }
 
         public static string GetLocalIPAddressString()

@@ -15,7 +15,6 @@ namespace VoIP_Client
     public class Client
     {
         CscProtocol protocol = new CscProtocol();
-        //public CscUserData UserProfile { get; set; }
         public CscUserMainData UserProfile { get; set; }
         public TcpClient client;
         IPAddress serverIpAddress;
@@ -34,9 +33,6 @@ namespace VoIP_Client
 
         public IPAddress LocalIP { get; set; }
 
-        //public delegate void ProfileDelegate(CscUserMainData profile);
-        //public event ProfileDelegate SetProfileText;
-
         public delegate void ChangeItem(CscUserMainData data);
         public event ChangeItem RemoveItemEvent;
         public event ChangeItem AddItemEvent;
@@ -52,7 +48,6 @@ namespace VoIP_Client
             LastErrorMessage = string.Empty;
         }
 
-
         public delegate void ConnectionLost();
         public event ConnectionLost ConnectionLostEvent;
 
@@ -65,7 +60,7 @@ namespace VoIP_Client
         public ObservableCollection<CscUserMainData> SearchedUsers = new ObservableCollection<CscUserMainData>();
 
         public ObservableCollection<CscUserMainData> GetFriendsList()
-        {//n !!! tu mozna zrobic przypisywanie statusu usera online ofline przed przekazaniem tej listy do GUI
+        {
             if (FriendsList != null)
             {
                 return FriendsList;
@@ -142,7 +137,6 @@ namespace VoIP_Client
             client.GetStream().Write(msg, 0, msg.Length);
         }
 
-
         public void Connect(IPAddress ip, int port)
         {
             IPAddress = ip;
@@ -180,7 +174,7 @@ namespace VoIP_Client
                         break;
                     }
 
-                case 4://n !!! odebranie zunifikowanego info o zmianie stanu kontaktu
+                case 4://odebranie zunifikowanego info o zmianie stanu kontaktu
                     {
                         var changedUser = CscProtocol.DeserializeWithoutLenghtInfo(receivedMessage) as CscUserMainData;
                         var online = onlineUsers.FirstOrDefault(u => u.Id == changedUser.Id);
@@ -198,7 +192,6 @@ namespace VoIP_Client
                                 RemoveFriendEvent.Invoke(friend);
                         }
                         catch (Exception) { }
-
 
                         try
                         {
@@ -219,7 +212,6 @@ namespace VoIP_Client
                             }
                         }
                         catch (Exception) { }
-
                         break;
                     }
 

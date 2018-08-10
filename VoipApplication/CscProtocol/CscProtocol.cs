@@ -80,7 +80,6 @@ namespace cscprotocol
             if (!string.IsNullOrEmpty(message))
             {
                 var mainMessage = new CscAes(key).EncryptStringToBytes(message);
-                //var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -100,7 +99,6 @@ namespace cscprotocol
             if (!string.IsNullOrEmpty(message))
             {
                 var mainMessage = new CscAes(key).EncryptStringToBytes(message);
-                //var mainMessage = Encoding.Unicode.GetBytes(message);
                 UInt16 messageLength = (UInt16)mainMessage.Length;
                 var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -116,21 +114,6 @@ namespace cscprotocol
             { throw new ArgumentNullException("Message cannot be null"); }
         }
 
-        //public byte[] CreateSaltMessage(string message)
-        //{
-        //    var mainMessage = Encoding.Unicode.GetBytes(message);
-        //    UInt16 messageLength = (UInt16)mainMessage.Length;
-        //    var lenghtBytes = BitConverter.GetBytes(messageLength);
-
-        //    byte[] result = new byte[mainMessage.Length + lenghtBytes.Length + 1];
-        //    result[0] = 1;
-
-        //    lenghtBytes.CopyTo(result, 1);
-        //    mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-
-        //    return result;
-        //}
-
         public byte[] CreateSaltMessage(byte[] mainMessage)
         {
             UInt16 messageLength = (UInt16)mainMessage.Length;
@@ -141,7 +124,6 @@ namespace cscprotocol
 
             lenghtBytes.CopyTo(result, 1);
             mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-
             return result;
         }
 
@@ -156,7 +138,6 @@ namespace cscprotocol
 
             lenghtBytes.CopyTo(result, 1);
             mainMessage.CopyTo(result, lenghtBytes.Length + 1);
-
             return result;
         }
 
@@ -222,7 +203,6 @@ namespace cscprotocol
             result[0] = 3;
             result[1] = 0;
             result[2] = 0;
-
             return result;
         }
         public byte[] CreateChangeEmailRequestEncrypted(CscUserData userData, byte[] key)
@@ -258,7 +238,6 @@ namespace cscprotocol
         public byte[] CreateSearchUserRequestEncrypted(string message, byte[] key)
         {
             var mainMessage = new CscAes(key).EncryptStringToBytes(message);
-            //var mainMessage = Encoding.Unicode.GetBytes(message);
             UInt16 messageLength = (UInt16)mainMessage.Length;
             var lenghtBytes = BitConverter.GetBytes(messageLength);
 
@@ -273,7 +252,6 @@ namespace cscprotocol
 
         public byte[] CreateAddUserToFriendsListRequestEncrypted(CscChangeFriendData userData, byte[] key)
         {
-            //var mainMessage = Serialize(userData);
             var mainMessagePlain = Serialize(userData);
             var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
@@ -283,13 +261,11 @@ namespace cscprotocol
             fullData[0] = 4;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
-
             return fullData;
         }
         
         public byte[] CreateRemoveUserFromFriendsListRequestEncrypted(CscChangeFriendData userData, byte[] key)
         {
-            //var mainMessage = Serialize(userData);
             var mainMessagePlain = Serialize(userData);
             var mainMessage = new CscAes(key).EncryptBytesToBytes(mainMessagePlain);
             UInt16 mainMessageLength = (UInt16)mainMessage.Length;
@@ -299,7 +275,6 @@ namespace cscprotocol
             fullData[0] = 5;
             lenghtBytes.CopyTo(fullData, 1);
             mainMessage.CopyTo(fullData, lenghtBytes.Length + 1);
-
             return fullData;
         }
 

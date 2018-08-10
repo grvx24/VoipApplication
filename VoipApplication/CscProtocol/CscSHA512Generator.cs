@@ -20,7 +20,7 @@ namespace cscprotocol
             byte[] data = Encoding.ASCII.GetBytes(data_as_string);
             SHA512 sha = SHA512Managed.Create();
             var hash = sha.ComputeHash(data);
-            return Encoding.ASCII.GetString(hash);//tego nie wolno zmieniac bo wywala aes
+            return Encoding.ASCII.GetString(hash);//tego nie wolno zmieniac bo psuje aes
         }
         public static string RandomString(int length)
         {

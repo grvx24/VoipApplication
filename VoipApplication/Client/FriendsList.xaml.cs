@@ -1,25 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using VoIP_Server;
 using cscprotocol;
 using System.Diagnostics;
-using System.Data;
 
 namespace VoIP_Client
 {
@@ -29,7 +16,6 @@ namespace VoIP_Client
     public partial class FriendsList : UserControl
     {
         CallingService callingService;
-        ObservableCollection<CscUserMainData> obsCollection = new ObservableCollection<CscUserMainData>();//n !!! czy to gdziekolwiek jest uzywane??
         Client client;
         public ClientSearchWindow searchWindow;
 
@@ -110,24 +96,18 @@ namespace VoIP_Client
             { MessageBox.Show("Jesteś w trakcie rozmowy"); }
         }
 
-
         private void RowButtonRemoveFriend_Click(object sender, RoutedEventArgs args)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             CscUserMainData data = ((FrameworkElement)sender).DataContext as CscUserMainData;
 
             if (!String.IsNullOrEmpty(data.FriendName))
             {
                 client.SendRemoveUserFromFriendsListDataRequestEncrypted(new CscChangeFriendData { Id = data.Id, FriendName = data.FriendName });
                 client.SearchedUsers.Remove(data);
-
-                //musiałem tak zrobić żeby tabela wyszukiwania się poprawnie aktualizowała :/
                 data.FriendName = String.Empty;
                 data.CanBeRemoved = false;
                 data.IsNotFriend = true;
                 client.SearchedUsers.Add(data);
-                //window = new FriendsListEditWindow(FriendsListDataGrid, client, data, true);
             }
             else
             {
@@ -146,7 +126,6 @@ namespace VoIP_Client
             }
         }
 
-
         private void ClientSearchButton_Click(object sender, RoutedEventArgs e)
         {
             if (lastClickedTab != null)
@@ -157,22 +136,18 @@ namespace VoIP_Client
             lastClickedTab.Background = Brushes.Yellow;
 
             client.LastBookmark = LastBookmarkEnum.search;
-            //if (searchWindow == null)
-            { searchWindow = new ClientSearchWindow(FriendsListDataGrid, client); }
+            searchWindow = new ClientSearchWindow(FriendsListDataGrid, client);
             searchWindow.ShowDialog();
         }
 
         private void OnlineUsersButton_Click(object sender, RoutedEventArgs e)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;
             }
             lastClickedTab = sender as Button;
             lastClickedTab.Background = Brushes.Yellow;
-
 
             client.LastBookmark = LastBookmarkEnum.online;
             client.SendRefreshRequest();
@@ -181,8 +156,6 @@ namespace VoIP_Client
 
         private void AllFriendsButton_Click(object sender, RoutedEventArgs e)
         {
-            //try { searchWindow.Hide(); } catch (Exception) { }
-
             if (lastClickedTab != null)
             {
                 lastClickedTab.Background = Brushes.LightGreen;
